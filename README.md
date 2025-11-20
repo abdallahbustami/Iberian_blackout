@@ -8,10 +8,10 @@ A simplified replication of the April 28, 2025 Iberian Peninsula cascade using t
 
 ## Running the Simulation
 1. Make sure the ANDES case files are available (they come with the standard ANDES install).
-2. Execute the final scenario:
+2. Execute the blackout scenario:
 
    ```bash
-   python final.py
+   python blackout.py
    ```
 
    This generates the time-domain trajectories and saves the CSV/JSON outputs used by the figures:
@@ -21,7 +21,7 @@ A simplified replication of the April 28, 2025 Iberian Peninsula cascade using t
    - `iberian_cascade_events.json`
 
 ## Generating Figures
-After `final.py` finishes, simply run:
+After ` blackout.py` finishes, simply run:
 
 ```bash
 python figures.py
