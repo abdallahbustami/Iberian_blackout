@@ -1,0 +1,26 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+*.egg-info/
+.DS_Store
+archive/
+tools/TinyTeX/
+results/
+LaTeX/
+Final Report on the Grid Incident in Spain and Portugal on 28 April 2025.pdf
+entso-e_incident_report_ES-PT_April_2025_06.pdf
+docs-andes-app-en-stable.pdf
+*.zip
+*.tar.gz
+*.7z
+results/.matplotlib/
+results/.andes/
+results/phase0/
+results/**/mplconfig/
+results/**/*_preview.png
+results/**/*_preview_gs.png
+LaTeX/figures/generated/*.png
+LaTeX/figures/generated/*.svg
