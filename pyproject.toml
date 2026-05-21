@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pa-dvsa"
+version = "0.1.0"
+description = "Protection-aware dynamic voltage security assessment tooling for the Iberian blackout study."
+requires-python = ">=3.10"
+dependencies = [
+  "andes>=1.6",
+  "numpy>=1.24",
+  "scipy>=1.10",
+  "pandas>=1.5",
+  "matplotlib>=3.6",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
