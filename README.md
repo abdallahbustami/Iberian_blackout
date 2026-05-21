@@ -42,13 +42,13 @@ available margin to pickup. Candidate events are converted into signed
 disturbance channels and mapped to normalized finite-window margin erosion
 values,
 
-\[
+$$
 K_{ij}^{\mathrm{pk}}
 =
-\frac{\max_{0\le t\le T_i}[\Delta z_i(t)]_+}{h_i},
-\]
+\frac{\max_{0 \le t \le T_i} [\Delta z_i(t)]_+}{h_i}.
+$$
 
-where \(h_i\) is the protected-side margin to pickup. The resulting \(K\) matrix
+where $h_i$ is the protected-side margin to pickup. The resulting $K$ matrix
 is used to rank events, compute additive cascade fixed points, and decide which
 scenarios should be certified, flagged, sent to nonlinear validation, or
 mitigated.
