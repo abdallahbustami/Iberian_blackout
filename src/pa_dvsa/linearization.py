@@ -1,26 +1,10 @@
-r"""Mode-wise linear DAE reduction.
-
-This module implements the reduction in ``LaTeX/root.tex``:
-
-.. math::
-
-   A_r = A_x - A_y G_y^{-1} G_x,\quad
-   B_r = B_x - A_y G_y^{-1} B_y,\quad
-   D_r = D_x - A_y G_y^{-1} D_y,
-
-   C_r = C_x - C_y G_y^{-1} G_x,\quad
-   F_u = -C_y G_y^{-1} B_y,\quad
-   F_d = -C_y G_y^{-1} D_y.
-
-No dense inverse of ``G_y`` is formed.  A sparse LU factorization of ``G_y`` is
-computed once and reused for the right-hand-side blocks.
-"""
+"""Linear model of a mode: elimination of the algebraic variables of the DAE with a sparse LU factorization."""
 
 from __future__ import annotations
 
 from dataclasses import dataclass
 import math
-from typing import Any
+from typing import Any, Sequence
 
 import numpy as np
 from scipy import sparse
@@ -30,22 +14,46 @@ from .andes_adapter import JacobianBlocks
 
 
 class LinearizationError(RuntimeError):
-    """Raised when a mode-wise linearization cannot be reduced."""
+    pass
+
+
+DEFAULT_MAX_CONDITION = 1.0e11
+
+
+@dataclass(frozen=True, slots=True)
+class AndesIndexMap:
+    n_raw: int
+    m_raw: int
+    dynamic_idx: np.ndarray
+    zero_idx: np.ndarray
+    kept_aug_idx: np.ndarray
+    removed_aug_idx: np.ndarray
+    removed_zero_diagonal: np.ndarray
+    inv_tf: np.ndarray
+
+    def map_residual(self, df: Any, dg: Any) -> tuple[np.ndarray, np.ndarray]:
+        df = np.asarray(df, dtype=float).reshape(-1)
+        dg = np.asarray(dg, dtype=float).reshape(-1)
+        if df.size != self.n_raw or dg.size != self.m_raw:
+            raise LinearizationError(
+                f"residual sizes ({df.size}, {dg.size}) do not match ({self.n_raw}, {self.m_raw})"
+            )
+        if not (np.all(np.isfinite(df)) and np.all(np.isfinite(dg))):
+            raise LinearizationError("residual difference contains non-finite values")
+        dx = self.inv_tf * df[self.dynamic_idx]
+        aug = np.concatenate((df[self.zero_idx], dg))
+        if self.removed_aug_idx.size:
+            bad = self.removed_aug_idx[self.removed_zero_diagonal & (aug[self.removed_aug_idx] != 0.0)]
+            if bad.size:
+                raise LinearizationError(
+                    "forcing enters an empty (decoupled) equation at augmented indices "
+                    + ", ".join(str(int(item)) for item in bad[:10])
+                )
+        return dx, aug[self.kept_aug_idx]
 
 
 @dataclass(frozen=True, slots=True)
 class LinearDAEModel:
-    """Linearized mode-wise DAE blocks.
-
-    Shapes follow the paper notation:
-
-    * ``x``: dynamic states, length ``n``.
-    * ``y``: algebraic variables/equations, length ``m``.
-    * ``z``: protected outputs, length ``p``.
-    * ``u``: control channels, length ``r``.
-    * ``d``: disturbance channels, length ``q``.
-    """
-
     ax: sparse.csc_matrix
     ay: sparse.csc_matrix
     gx: sparse.csc_matrix
@@ -57,6 +65,10 @@ class LinearDAEModel:
     dx: sparse.csc_matrix
     dy: sparse.csc_matrix
     mode_id: str = "mode"
+    x_names: tuple[str, ...] | None = None
+    y_names: tuple[str, ...] | None = None
+    removed_algebraic: tuple[str, ...] = ()
+    index_map: "AndesIndexMap | None" = None
 
     @classmethod
     def from_blocks(
@@ -73,9 +85,10 @@ class LinearDAEModel:
         dx: Any | None = None,
         dy: Any | None = None,
         mode_id: str = "mode",
+        x_names: Sequence[str] | None = None,
+        y_names: Sequence[str] | None = None,
+        removed_algebraic: Sequence[str] = (),
     ) -> "LinearDAEModel":
-        """Create and validate a linear DAE from matrix-like blocks."""
-
         ax_c = _as_csc(ax, "A_x")
         ay_c = _as_csc(ay, "A_y")
         gx_c = _as_csc(gx, "G_x")
@@ -116,6 +129,9 @@ class LinearDAEModel:
             dx=dx_c,
             dy=dy_c,
             mode_id=mode_id,
+            x_names=None if x_names is None else tuple(str(item) for item in x_names),
+            y_names=None if y_names is None else tuple(str(item) for item in y_names),
+            removed_algebraic=tuple(str(item) for item in removed_algebraic),
         )
         model.validate()
         return model
@@ -135,16 +151,8 @@ class LinearDAEModel:
         fold_zero_time_constants: bool = True,
         zero_time_constant_tol: float = 0.0,
         cleanup_dead_algebraic: bool = True,
-        dead_algebraic_tol: float = 1e-10,
+        dead_algebraic_tol: float = 0.0,
     ) -> "LinearDAEModel":
-        """Build from ANDES mass-matrix Jacobians plus selected inputs/outputs.
-
-        ANDES stores dynamics as ``Tf * xdot = f(x, y)``.  This adapter
-        converts those residual Jacobians to the standard form used in the
-        paper.  States with zero ``Tf`` are algebraic constraints and are
-        folded into the algebraic block by default.
-        """
-
         fx = _as_csc(jacobians.fx, "f_x")
         fy = _as_csc(jacobians.fy, "f_y")
         gx = _as_csc(jacobians.gx, "g_x")
@@ -182,25 +190,13 @@ class LinearDAEModel:
         _require_shape(dx_c, (n, dx_c.shape[1]), "D_x")
         _require_shape(dy_c, (m, dx_c.shape[1]), "D_y")
 
-        tf = np.asarray(jacobians.tf, dtype=float).reshape(-1)
-        if n == 0:
-            if tf.size not in {0, n}:
-                raise LinearizationError(f"Tf has length {tf.size}, expected {n}")
-            return cls.from_blocks(
-                ax=fx,
-                ay=fy,
-                gx=gx,
-                gy=gy,
-                cx=cx_c,
-                cy=cy_c,
-                bx=bx_c,
-                by=by_c,
-                dx=dx_c,
-                dy=dy_c,
-                mode_id=mode_id,
-            )
+        x_names = _names_or_none(getattr(jacobians, "x_names", None), n, "x_names")
+        y_names = _names_or_none(getattr(jacobians, "y_names", None), m, "y_names")
 
-        if tf.size != n:
+        tf = np.asarray(jacobians.tf, dtype=float).reshape(-1)
+        if n == 0 and tf.size not in {0, n}:
+            raise LinearizationError(f"Tf has length {tf.size}, expected {n}")
+        if n > 0 and tf.size != n:
             raise LinearizationError(f"Tf has length {tf.size}, expected {n}")
         if not np.all(np.isfinite(tf)):
             raise LinearizationError("Tf contains non-finite entries")
@@ -209,11 +205,18 @@ class LinearDAEModel:
         if dead_algebraic_tol < 0.0:
             raise LinearizationError("dead_algebraic_tol must be nonnegative")
 
-        zero_mask = np.abs(tf) <= zero_time_constant_tol
+        zero_mask = np.abs(tf) <= zero_time_constant_tol if n else np.zeros(0, dtype=bool)
         if np.any(zero_mask) and not fold_zero_time_constants:
             raise LinearizationError("ANDES Jacobians contain zero-Tf states")
+        zero_idx = np.flatnonzero(zero_mask)
+        dyn_idx = np.flatnonzero(~zero_mask)
 
         if np.any(zero_mask):
+            if y_names is not None or x_names is not None:
+                xn = x_names or tuple(f"x[{i}]" for i in range(n))
+                yn = y_names or tuple(f"y[{i}]" for i in range(m))
+                y_names = tuple(f"{xn[i]} (Tf=0 state)" for i in zero_idx) + tuple(yn)
+                x_names = tuple(xn[i] for i in dyn_idx)
             fx, fy, gx, gy, bx_c, by_c, dx_c, dy_c, cx_c, cy_c, tf = _fold_zero_tf_states(
                 fx=fx,
                 fy=fy,
@@ -231,31 +234,47 @@ class LinearDAEModel:
 
         if tf.size and np.any(tf <= 0.0):
             raise LinearizationError("nonzero ANDES time constants must be positive")
+        inv_tf_vec = 1.0 / tf if tf.size else np.zeros(0)
         if tf.size:
-            inv_tf = sparse.diags(1.0 / tf, format="csc")
+            inv_tf = sparse.diags(inv_tf_vec, format="csc")
             fx = _to_csc(inv_tf @ fx, "A_x")
             fy = _to_csc(inv_tf @ fy, "A_y")
             bx_c = _to_csc(inv_tf @ bx_c, "B_x")
             dx_c = _to_csc(inv_tf @ dx_c, "D_x")
 
+        m_aug = gy.shape[0]
+        kept_idx = np.arange(m_aug)
+        removed: tuple[str, ...] = ()
+        removed_zero_diag = np.zeros(0, dtype=bool)
         if cleanup_dead_algebraic:
-            fx, fy, gx, gy, bx_c, by_c, dx_c, dy_c, cx_c, cy_c = (
-                _cleanup_dead_algebraic_constraints(
-                    ax=fx,
+            fy, gx, gy_new, by_c, dy_c, cy_c, y_names_new, removed, kept_idx = (
+                _remove_decoupled_algebraic(
                     ay=fy,
                     gx=gx,
                     gy=gy,
-                    bx=bx_c,
                     by=by_c,
-                    dx=dx_c,
                     dy=dy_c,
-                    cx=cx_c,
                     cy=cy_c,
+                    names=y_names,
                     tol=dead_algebraic_tol,
                 )
             )
+            removed_idx = np.setdiff1d(np.arange(m_aug), kept_idx)
+            removed_zero_diag = np.abs(gy.diagonal()[removed_idx]) <= dead_algebraic_tol
+            gy, y_names = gy_new, y_names_new
 
-        return cls.from_blocks(
+        index_map = AndesIndexMap(
+            n_raw=n,
+            m_raw=m,
+            dynamic_idx=dyn_idx,
+            zero_idx=zero_idx,
+            kept_aug_idx=np.asarray(kept_idx, dtype=int),
+            removed_aug_idx=np.setdiff1d(np.arange(m_aug), kept_idx),
+            removed_zero_diagonal=np.asarray(removed_zero_diag, dtype=bool),
+            inv_tf=np.asarray(inv_tf_vec, dtype=float),
+        )
+
+        model = cls.from_blocks(
             ax=fx,
             ay=fy,
             gx=gx,
@@ -267,7 +286,12 @@ class LinearDAEModel:
             dx=dx_c,
             dy=dy_c,
             mode_id=mode_id,
+            x_names=x_names,
+            y_names=y_names,
+            removed_algebraic=removed,
         )
+        object.__setattr__(model, "index_map", index_map)
+        return model
 
     @property
     def n_states(self) -> int:
@@ -294,8 +318,6 @@ class LinearDAEModel:
         return self.n_states == 0
 
     def validate(self) -> None:
-        """Check dimensions and finite values."""
-
         n = self.n_states
         m = self.n_algebraic
         p = self.n_outputs
@@ -330,8 +352,6 @@ class LinearDAEModel:
 
 @dataclass(frozen=True, slots=True)
 class ReductionDiagnostics:
-    """Consistency and stability diagnostics for one reduced model."""
-
     mode_id: str
     n_states: int
     n_algebraic: int
@@ -344,12 +364,12 @@ class ReductionDiagnostics:
     max_real_eigenvalue: float | None
     stability: str
     warnings: tuple[str, ...]
+    gy_condition_estimate: float | None = None
+    removed_algebraic: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)
 class ReducedLinearModel:
-    """Reduced ODE/output model from the paper."""
-
     ar: sparse.csc_matrix
     br: sparse.csc_matrix
     dr: sparse.csc_matrix
@@ -364,8 +384,6 @@ class ReducedLinearModel:
 
 
 def selector_matrix(addresses: list[int] | tuple[int, ...], width: int) -> sparse.csc_matrix:
-    """Build a sparse row selector matrix for algebraic or state addresses."""
-
     rows = len(addresses)
     if width < 0:
         raise LinearizationError("selector width must be nonnegative")
@@ -385,11 +403,11 @@ def selector_matrix(addresses: list[int] | tuple[int, ...], width: int) -> spars
 def reduce_linear_dae(
     model: LinearDAEModel,
     *,
-    stability_tol: float = 1e-8,
-    eigen_dense_limit: int = 256,
+    stability_tol: float = 1e-6,
+    eigen_dense_limit: int = 2000,
+    max_condition: float = DEFAULT_MAX_CONDITION,
+    factor: "AlgebraicFactor | None" = None,
 ) -> ReducedLinearModel:
-    """Reduce an index-1 linear DAE using sparse solves against ``G_y``."""
-
     model.validate()
     n = model.n_states
     m = model.n_algebraic
@@ -397,6 +415,7 @@ def reduce_linear_dae(
     r = model.n_controls
     q = model.n_disturbances
     warnings: list[str] = []
+    gy_condition: float | None = None
 
     if m == 0:
         ar = model.ax.copy()
@@ -408,12 +427,14 @@ def reduce_linear_dae(
         gy_factorized = False
         gy_min_abs_u_diag = None
     else:
-        lu = _factor_gy(model.gy)
+        lu = factor if factor is not None else AlgebraicFactor(
+            model.gy, names=model.y_names, max_condition=max_condition
+        )
+        if lu.shape != model.gy.shape:
+            raise LinearizationError("supplied G_y factor has the wrong shape")
         gy_factorized = True
-        u_diag = np.asarray(lu.U.diagonal(), dtype=float)
-        gy_min_abs_u_diag = float(np.min(np.abs(u_diag))) if u_diag.size else None
-        if gy_min_abs_u_diag is not None and gy_min_abs_u_diag < 1e-10:
-            warnings.append("G_y LU factor has a very small U diagonal entry")
+        gy_min_abs_u_diag = lu.min_abs_pivot
+        gy_condition = lu.condition_estimate
 
         gy_inv_gx = _solve_block(lu, model.gx, "G_x")
         gy_inv_by = _solve_block(lu, model.by, "B_y")
@@ -451,6 +472,8 @@ def reduce_linear_dae(
         max_real_eigenvalue=max_real,
         stability=stability,
         warnings=tuple(warnings),
+        gy_condition_estimate=gy_condition,
+        removed_algebraic=tuple(model.removed_algebraic),
     )
     return ReducedLinearModel(ar=ar, br=br, dr=dr, cr=cr, fu=fu, fd=fd, diagnostics=diagnostics)
 
@@ -559,141 +582,6 @@ def _fold_zero_tf_states(
     return fx_new, fy_new, gx_new, gy_new, bx_new, by_new, dx_new, dy_new, cx_new, cy_new, tf_new
 
 
-def _cleanup_dead_algebraic_constraints(
-    *,
-    ax: sparse.csc_matrix,
-    ay: sparse.csc_matrix,
-    gx: sparse.csc_matrix,
-    gy: sparse.csc_matrix,
-    bx: sparse.csc_matrix,
-    by: sparse.csc_matrix,
-    dx: sparse.csc_matrix,
-    dy: sparse.csc_matrix,
-    cx: sparse.csc_matrix,
-    cy: sparse.csc_matrix,
-    tol: float,
-) -> tuple[
-    sparse.csc_matrix,
-    sparse.csc_matrix,
-    sparse.csc_matrix,
-    sparse.csc_matrix,
-    sparse.csc_matrix,
-    sparse.csc_matrix,
-    sparse.csc_matrix,
-    sparse.csc_matrix,
-    sparse.csc_matrix,
-    sparse.csc_matrix,
-]:
-    dead_rows = np.flatnonzero(_sparse_row_norms(gy) < tol)
-    if dead_rows.size == 0:
-        gy = _regularize_dead_algebraic_columns(gy, tol)
-        return ax, ay, gx, gy, bx, by, dx, dy, cx, cy
-
-    gx_dead_norms = _sparse_row_norms(gx[dead_rows, :])
-    by_dead_norms = _sparse_row_norms(by[dead_rows, :]) if by.shape[1] else np.zeros(dead_rows.size)
-    dy_dead_norms = _sparse_row_norms(dy[dead_rows, :]) if dy.shape[1] else np.zeros(dead_rows.size)
-
-    if np.any((by_dead_norms >= tol) | (dy_dead_norms >= tol)):
-        raise LinearizationError(
-            "dead algebraic state constraints with direct input/disturbance terms are unsupported"
-        )
-
-    constraint_rows = dead_rows[gx_dead_norms >= tol]
-    alive_mask = np.ones(gy.shape[0], dtype=bool)
-    alive_mask[dead_rows] = False
-    alive_idx = np.flatnonzero(alive_mask)
-
-    ay_alive = _to_csc(ay[:, alive_idx], "A_y")
-    gx_alive = _to_csc(gx[alive_idx, :], "G_x")
-    gy_alive = _to_csc(gy[alive_idx, :][:, alive_idx], "G_y")
-    by_alive = _to_csc(by[alive_idx, :], "B_y")
-    dy_alive = _to_csc(dy[alive_idx, :], "D_y")
-    cy_alive = _to_csc(cy[:, alive_idx], "C_y")
-
-    if constraint_rows.size:
-        substitution = _state_constraint_substitution(gx[constraint_rows, :], tol)
-        free = substitution.free_state_indices
-        transform = substitution.full_from_free
-
-        ax = _to_csc(ax[free, :] @ transform, "A_x")
-        ay_alive = _to_csc(ay_alive[free, :], "A_y")
-        bx = _to_csc(bx[free, :], "B_x")
-        dx = _to_csc(dx[free, :], "D_x")
-        gx_alive = _to_csc(gx_alive @ transform, "G_x")
-        cx = _to_csc(cx @ transform, "C_x")
-
-    gy_alive = _regularize_dead_algebraic_columns(gy_alive, tol)
-    return ax, ay_alive, gx_alive, gy_alive, bx, by_alive, dx, dy_alive, cx, cy_alive
-
-
-@dataclass(frozen=True, slots=True)
-class _StateConstraintSubstitution:
-    free_state_indices: np.ndarray
-    full_from_free: np.ndarray
-
-
-def _state_constraint_substitution(
-    constraints: sparse.csc_matrix,
-    tol: float,
-) -> _StateConstraintSubstitution:
-    c_dense = constraints.toarray()
-    n_constraints, n_states = c_dense.shape
-    if n_constraints > n_states:
-        raise LinearizationError("more independent state constraints than states")
-
-    dependent: list[int] = []
-    used: set[int] = set()
-    for row in range(n_constraints):
-        row_abs = np.abs(c_dense[row, :])
-        for pivot in np.argsort(-row_abs):
-            pivot_int = int(pivot)
-            if pivot_int not in used and row_abs[pivot_int] > tol:
-                dependent.append(pivot_int)
-                used.add(pivot_int)
-                break
-        else:
-            raise LinearizationError("state constraint row has no usable pivot")
-
-    dependent_idx = np.asarray(dependent, dtype=int)
-    free_mask = np.ones(n_states, dtype=bool)
-    free_mask[dependent_idx] = False
-    free_idx = np.flatnonzero(free_mask)
-
-    c_dep = c_dense[:, dependent_idx]
-    c_free = c_dense[:, free_idx]
-    try:
-        dependent_from_free = -np.linalg.solve(c_dep, c_free)
-    except np.linalg.LinAlgError as exc:
-        raise LinearizationError("state constraint pivot block is singular") from exc
-
-    transform = np.zeros((n_states, free_idx.size), dtype=float)
-    transform[free_idx, np.arange(free_idx.size)] = 1.0
-    transform[dependent_idx, :] = dependent_from_free
-    return _StateConstraintSubstitution(free_state_indices=free_idx, full_from_free=transform)
-
-
-def _regularize_dead_algebraic_columns(gy: sparse.csc_matrix, tol: float) -> sparse.csc_matrix:
-    dead_cols = np.flatnonzero(_sparse_col_norms(gy) < tol)
-    if dead_cols.size == 0:
-        return gy
-    gy_lil = gy.tolil(copy=True)
-    for col in dead_cols:
-        gy_lil[int(col), int(col)] = 1.0
-    return _to_csc(gy_lil, "G_y")
-
-
-def _sparse_row_norms(matrix: sparse.spmatrix) -> np.ndarray:
-    if matrix.shape[0] == 0:
-        return np.zeros(0, dtype=float)
-    return np.sqrt(np.asarray(matrix.multiply(matrix).sum(axis=1)).reshape(-1))
-
-
-def _sparse_col_norms(matrix: sparse.spmatrix) -> np.ndarray:
-    if matrix.shape[1] == 0:
-        return np.zeros(0, dtype=float)
-    return np.sqrt(np.asarray(matrix.multiply(matrix).sum(axis=0)).reshape(-1))
-
-
 def _to_csc(value: Any, name: str) -> sparse.csc_matrix:
     matrix = value if sparse.issparse(value) else sparse.csc_matrix(value)
     matrix = matrix.tocsc()
@@ -712,18 +600,7 @@ def _require_finite_sparse(matrix: sparse.spmatrix, name: str) -> None:
         raise LinearizationError(f"{name} contains non-finite entries")
 
 
-def _factor_gy(gy: sparse.csc_matrix) -> spla.SuperLU:
-    if gy.shape[0] != gy.shape[1]:
-        raise LinearizationError("G_y must be square")
-    if gy.shape[0] == 0:
-        raise LinearizationError("Cannot factor empty G_y")
-    try:
-        return spla.splu(gy.tocsc())
-    except (RuntimeError, ValueError) as exc:
-        raise LinearizationError("G_y is singular or numerically unsuited for sparse LU") from exc
-
-
-def _solve_block(lu: spla.SuperLU, rhs: sparse.csc_matrix, name: str) -> np.ndarray:
+def _solve_block(lu: "AlgebraicFactor", rhs: sparse.csc_matrix, name: str) -> np.ndarray:
     if rhs.shape[1] == 0:
         return np.zeros((rhs.shape[0], 0), dtype=float)
     dense_rhs = rhs.toarray()
@@ -761,7 +638,7 @@ def _stability_diagnostic(
         else:
             eigvals = spla.eigs(ar, k=1, which="LR", return_eigenvectors=False)
             max_real = float(np.max(np.real(eigvals)))
-    except Exception as exc:  # pragma: no cover - depends on sparse eigensolver behavior.
+    except Exception as exc:
         warnings.append(f"stability_eigenvalue_check_failed: {exc}")
         return None, "not_evaluated"
 
@@ -775,3 +652,242 @@ def _stability_diagnostic(
         warnings.append(f"reduced_state_matrix_marginal_max_real={max_real:.6g}")
         return max_real, "marginal"
     return max_real, "stable"
+
+
+def _names_or_none(names: Sequence[str] | None, count: int, label: str) -> tuple[str, ...] | None:
+    if names is None:
+        return None
+    result = tuple(str(item) for item in names)
+    if len(result) != count:
+        raise LinearizationError(f"{label} has length {len(result)}, expected {count}")
+    return result
+
+
+def _offdiag_abs_sums(matrix: sparse.csc_matrix) -> tuple[np.ndarray, np.ndarray]:
+    coo = matrix.tocoo()
+    off = coo.row != coo.col
+    vals = np.abs(coo.data[off])
+    rows = np.bincount(coo.row[off], weights=vals, minlength=matrix.shape[0])
+    cols = np.bincount(coo.col[off], weights=vals, minlength=matrix.shape[1])
+    return rows, cols
+
+
+def _abs_row_sums(matrix: sparse.spmatrix) -> np.ndarray:
+    if matrix.shape[0] == 0:
+        return np.zeros(0)
+    if matrix.shape[1] == 0 or matrix.nnz == 0:
+        return np.zeros(matrix.shape[0])
+    return np.asarray(abs(matrix).sum(axis=1)).reshape(-1)
+
+
+def _abs_col_sums(matrix: sparse.spmatrix) -> np.ndarray:
+    if matrix.shape[1] == 0:
+        return np.zeros(0)
+    if matrix.shape[0] == 0 or matrix.nnz == 0:
+        return np.zeros(matrix.shape[1])
+    return np.asarray(abs(matrix).sum(axis=0)).reshape(-1)
+
+
+def decoupled_algebraic_mask(
+    *,
+    ay: sparse.csc_matrix,
+    gx: sparse.csc_matrix,
+    gy: sparse.csc_matrix,
+    tol: float = 0.0,
+) -> np.ndarray:
+    gy_rows, gy_cols = _offdiag_abs_sums(gy)
+    row = gy_rows + _abs_row_sums(gx)
+    col = gy_cols + _abs_col_sums(ay)
+    return (row <= tol) & (col <= tol)
+
+
+def _remove_decoupled_algebraic(
+    *,
+    ay: sparse.csc_matrix,
+    gx: sparse.csc_matrix,
+    gy: sparse.csc_matrix,
+    by: sparse.csc_matrix,
+    dy: sparse.csc_matrix,
+    cy: sparse.csc_matrix,
+    names: tuple[str, ...] | None,
+    tol: float,
+) -> tuple[
+    sparse.csc_matrix,
+    sparse.csc_matrix,
+    sparse.csc_matrix,
+    sparse.csc_matrix,
+    sparse.csc_matrix,
+    sparse.csc_matrix,
+    tuple[str, ...] | None,
+    tuple[str, ...],
+    np.ndarray,
+]:
+    if tol < 0.0:
+        raise LinearizationError("dead_algebraic_tol must be nonnegative")
+    m = gy.shape[0]
+    if m == 0:
+        return ay, gx, gy, by, dy, cy, names, (), np.arange(0)
+    decoupled = decoupled_algebraic_mask(ay=ay, gx=gx, gy=gy, tol=tol)
+    if not np.any(decoupled):
+        return ay, gx, gy, by, dy, cy, names, (), np.arange(m)
+    label = names or tuple(f"y[{i}]" for i in range(m))
+    diag = np.abs(gy.diagonal())
+    forcing = _abs_row_sums(by) + _abs_row_sums(dy)
+    output_use = _abs_col_sums(cy)
+    keep = np.ones(m, dtype=bool)
+    bad: list[str] = []
+    for k in np.flatnonzero(decoupled):
+        is_output = output_use[k] > 0.0
+        has_diag = diag[k] > tol
+        if is_output:
+            if has_diag:
+                continue
+            bad.append(f"{label[k]} (selected output with an empty equation)")
+            continue
+        if not has_diag and forcing[k] > 0.0:
+            bad.append(f"{label[k]} (forcing enters an empty equation 0 = d)")
+            continue
+        keep[k] = False
+    if bad:
+        raise LinearizationError(
+            "G_y is singular or ill posed for decoupled algebraic variables: " + "; ".join(bad[:20])
+        )
+    keep_idx = np.flatnonzero(keep)
+    removed = tuple(label[k] for k in np.flatnonzero(~keep))
+    new_names = None if names is None else tuple(names[k] for k in keep_idx)
+    return (
+        _to_csc(ay[:, keep_idx], "A_y"),
+        _to_csc(gx[keep_idx, :], "G_x"),
+        _to_csc(gy[keep_idx, :][:, keep_idx], "G_y"),
+        _to_csc(by[keep_idx, :], "B_y"),
+        _to_csc(dy[keep_idx, :], "D_y"),
+        _to_csc(cy[:, keep_idx], "C_y"),
+        new_names,
+        removed,
+        keep_idx,
+    )
+
+
+def _pow2(values: np.ndarray) -> np.ndarray:
+    out = np.ones_like(values, dtype=float)
+    good = np.isfinite(values) & (values > 0.0)
+    out[good] = np.exp2(np.round(np.log2(values[good])))
+    return out
+
+
+class AlgebraicFactor:
+    def __init__(
+        self,
+        gy: Any,
+        *,
+        names: Sequence[str] | None = None,
+        max_condition: float = DEFAULT_MAX_CONDITION,
+        name_limit: int = 20,
+    ) -> None:
+        g = _as_csc(gy, "G_y")
+        if g.shape[0] != g.shape[1]:
+            raise LinearizationError("G_y must be square")
+        m = g.shape[0]
+        if m == 0:
+            raise LinearizationError("Cannot factor empty G_y")
+        self.shape = g.shape
+        self.names = tuple(str(item) for item in names) if names is not None else tuple(
+            f"y[{i}]" for i in range(m)
+        )
+        if len(self.names) != m:
+            raise LinearizationError("G_y names length does not match G_y")
+        self.name_limit = int(name_limit)
+
+        empty_rows = np.flatnonzero(_abs_row_sums(g) == 0.0)
+        empty_cols = np.flatnonzero(_abs_col_sums(g) == 0.0)
+        if empty_rows.size or empty_cols.size:
+            parts = []
+            if empty_rows.size:
+                parts.append("empty equations: " + ", ".join(self.names[i] for i in empty_rows[: self.name_limit]))
+            if empty_cols.size:
+                parts.append("variables absent from all equations: " + ", ".join(self.names[i] for i in empty_cols[: self.name_limit]))
+            raise LinearizationError("G_y is singular (structurally): " + "; ".join(parts))
+
+        row_scale = np.ones(m)
+        col_scale = np.ones(m)
+        work = g.copy().tocsc()
+        for _ in range(3):
+            r = _pow2(1.0 / np.asarray(abs(work).max(axis=1).toarray()).reshape(-1))
+            work = _to_csc(sparse.diags(r) @ work, "G_y")
+            row_scale *= r
+            c = _pow2(1.0 / np.asarray(abs(work).max(axis=0).toarray()).reshape(-1))
+            work = _to_csc(work @ sparse.diags(c), "G_y")
+            col_scale *= c
+        self.row_scale = row_scale
+        self.col_scale = col_scale
+        self._scaled = work
+        try:
+            self._lu = spla.splu(work)
+        except (RuntimeError, ValueError) as exc:
+            raise LinearizationError(
+                "G_y is singular (exactly singular LU after equilibration); "
+                + self._null_space_report(None)
+            ) from exc
+        u_diag = np.abs(np.asarray(self._lu.U.diagonal(), dtype=float))
+        self.min_abs_pivot = float(np.min(u_diag)) if u_diag.size else None
+        if not np.all(np.isfinite(u_diag)) or (u_diag.size and float(np.min(u_diag)) == 0.0):
+            raise LinearizationError("G_y is singular (zero pivot); " + self._null_space_report(self._lu))
+        norm1 = float(_abs_col_sums(work).max())
+        try:
+            inv_norm = float(
+                spla.onenormest(
+                    spla.LinearOperator(
+                        work.shape,
+                        matvec=lambda v: self._lu.solve(np.asarray(v, dtype=float).reshape(-1)),
+                        rmatvec=lambda v: self._lu.solve(np.asarray(v, dtype=float).reshape(-1), trans="T"),
+                        dtype=float,
+                    )
+                )
+            )
+        except Exception as exc:
+            raise LinearizationError(f"G_y condition estimate failed: {exc}") from exc
+        self.condition_estimate = norm1 * inv_norm
+        if not math.isfinite(self.condition_estimate) or self.condition_estimate > float(max_condition):
+            raise LinearizationError(
+                f"G_y is singular or rank-deficient (equilibrated cond1 ~ {self.condition_estimate:.3e} "
+                f"> {float(max_condition):.1e}); " + self._null_space_report(self._lu)
+            )
+
+    def solve(self, rhs: np.ndarray, trans: str = "N") -> np.ndarray:
+        b = np.asarray(rhs, dtype=float)
+        one_d = b.ndim == 1
+        b2 = b.reshape(b.shape[0], -1)
+        if trans == "N":
+            sol = self.col_scale[:, None] * self._lu.solve(self.row_scale[:, None] * b2)
+        else:
+            sol = self.row_scale[:, None] * self._lu.solve(self.col_scale[:, None] * b2, trans="T")
+        return sol.reshape(-1) if one_d else sol
+
+    def _null_space_report(self, lu: Any) -> str:
+        m = self.shape[0]
+        try:
+            if m <= 2500:
+                dense = self._scaled.toarray()
+                _, sv, vt = np.linalg.svd(dense)
+                tol = max(sv[0] * m * np.finfo(float).eps, 1e-12 * sv[0])
+                null = np.flatnonzero(sv <= max(tol, sv[0] / max(DEFAULT_MAX_CONDITION, 1.0)))
+                if null.size == 0:
+                    null = np.array([sv.size - 1])
+                weight = np.sum(vt[null] ** 2, axis=0)
+                rank_def = int(null.size)
+            else:
+                shift = 1e-10 * float(_abs_col_sums(self._scaled).max())
+                shifted = spla.splu(_to_csc(self._scaled + shift * sparse.eye(m, format="csc"), "G_y"))
+                rng = np.random.default_rng(0)
+                v = rng.standard_normal((m, 4))
+                for _ in range(6):
+                    v = shifted.solve(v)
+                    v /= np.linalg.norm(v, axis=0, keepdims=True)
+                weight = np.sum(v**2, axis=1)
+                rank_def = -1
+        except Exception as exc:
+            return f"null-space analysis unavailable ({exc})"
+        order = np.argsort(-weight)
+        top = [self.names[i] for i in order[: self.name_limit] if weight[i] > 1e-3 * weight[order[0]]]
+        prefix = f"rank deficiency {rank_def}; " if rank_def >= 0 else ""
+        return prefix + "variables in the near-null space: " + ", ".join(top)

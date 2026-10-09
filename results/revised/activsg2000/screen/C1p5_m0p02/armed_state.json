@@ -1,0 +1,608 @@
+{
+  "slug": "C1p5_m0p02",
+  "level": "C1.5",
+  "margin_pu": 0.02,
+  "tap": 0.92692,
+  "method": "dynamic_equilibrium",
+  "settle_s": 40.0,
+  "build_s": 110.70687079100753,
+  "disabled_exciters": [
+    "ESDC1A:ESDC1A_8",
+    "IEEET1:IEEET1_21"
+  ],
+  "polish": {
+    "iterations": 9,
+    "max_abs_f": 5.1537440981519467e-11,
+    "max_abs_g": 4.102584938436849e-12,
+    "final_h": 1000000.0,
+    "converged": true,
+    "frozen_variables": 6114,
+    "note": "residuals over variables of in-service devices (out-of-service devices are decoupled)",
+    "secondary_control_mw": 0.00031994557598034873
+  },
+  "plateau_max_abs_dv_pu": 0.00027912906696281325,
+  "equilibrium_omega_range_pu": [
+    1.0,
+    1.0
+  ],
+  "assets": [
+    {
+      "asset_id": "Granada355",
+      "collector_bus": "8161",
+      "hv_bus": "7042",
+      "z0_pu": 1.0415112673937896,
+      "p_mw": 329.5905024088093,
+      "q_mvar": -153.1899518238128,
+      "margin_fast_pu": 0.05848873260621046,
+      "margin_ov1_pu": 0.05848873260621046,
+      "margin_ov2_pu": 0.15848873260621033
+    },
+    {
+      "asset_id": "Badajoz582",
+      "collector_bus": "8162",
+      "hv_bus": "7186",
+      "z0_pu": 1.0979670613731007,
+      "p_mw": 540.3427391603578,
+      "q_mvar": -153.18995182381278,
+      "margin_fast_pu": 0.00203293862689935,
+      "margin_ov1_pu": 0.00203293862689935,
+      "margin_ov2_pu": 0.10203293862689922
+    },
+    {
+      "asset_id": "Badajoz145",
+      "collector_bus": "8163",
+      "hv_bus": "7341",
+      "z0_pu": 1.0886400701489676,
+      "p_mw": 134.62147281486577,
+      "q_mvar": -34.35168616655196,
+      "margin_fast_pu": 0.011359929851032513,
+      "margin_ov1_pu": 0.011359929851032513,
+      "margin_ov2_pu": 0.11135992985103238
+    },
+    {
+      "asset_id": "Segovia23",
+      "collector_bus": "8164",
+      "hv_bus": "7029",
+      "z0_pu": 1.0556928918836708,
+      "p_mw": 21.353750860289058,
+      "q_mvar": -7.018638493726489,
+      "margin_fast_pu": 0.04430710811632932,
+      "margin_ov1_pu": 0.04430710811632932,
+      "margin_ov2_pu": 0.14430710811632919
+    },
+    {
+      "asset_id": "Seville550",
+      "collector_bus": "8165",
+      "hv_bus": "7058",
+      "z0_pu": 1.0588293326133063,
+      "p_mw": 510.6331727460426,
+      "q_mvar": -167.83700745867688,
+      "margin_fast_pu": 0.04117066738669384,
+      "margin_ov1_pu": 0.04117066738669384,
+      "margin_ov2_pu": 0.1411706673866937
+    },
+    {
+      "asset_id": "Segovia94",
+      "collector_bus": "8166",
+      "hv_bus": "7305",
+      "z0_pu": 1.0818398388963737,
+      "p_mw": 87.27185134205092,
+      "q_mvar": -28.68487036566478,
+      "margin_fast_pu": 0.018160161103626393,
+      "margin_ov1_pu": 0.018160161103626393,
+      "margin_ov2_pu": 0.11816016110362626
+    },
+    {
+      "asset_id": "Badajoz118",
+      "collector_bus": "8167",
+      "hv_bus": "7043",
+      "z0_pu": 1.051811232515929,
+      "p_mw": 109.55402615278732,
+      "q_mvar": -36.008667054770676,
+      "margin_fast_pu": 0.04818876748407108,
+      "margin_ov1_pu": 0.04818876748407108,
+      "margin_ov2_pu": 0.14818876748407095
+    },
+    {
+      "asset_id": "Huelva34",
+      "collector_bus": "8168",
+      "hv_bus": "7019",
+      "z0_pu": 1.0520356054539337,
+      "p_mw": 31.56641431520991,
+      "q_mvar": -10.375378642900026,
+      "margin_fast_pu": 0.04796439454606638,
+      "margin_ov1_pu": 0.04796439454606638,
+      "margin_ov2_pu": 0.14796439454606625
+    },
+    {
+      "asset_id": "Caceres38",
+      "collector_bus": "8169",
+      "hv_bus": "7059",
+      "z0_pu": 1.0579612106124,
+      "p_mw": 35.28011011699931,
+      "q_mvar": -11.596011424417675,
+      "margin_fast_pu": 0.042038789387600195,
+      "margin_ov1_pu": 0.042038789387600195,
+      "margin_ov2_pu": 0.14203878938760006
+    },
+    {
+      "asset_id": "Badajoz72",
+      "collector_bus": "8170",
+      "hv_bus": "7274",
+      "z0_pu": 1.055897330744082,
+      "p_mw": 66.84652443220922,
+      "q_mvar": -21.971390067317706,
+      "margin_fast_pu": 0.0441026692559181,
+      "margin_ov1_pu": 0.0441026692559181,
+      "margin_ov2_pu": 0.14410266925591797
+    },
+    {
+      "asset_id": "Badajoz16",
+      "collector_bus": "8171",
+      "hv_bus": "7415",
+      "z0_pu": 1.055183036687737,
+      "p_mw": 14.8547832071576,
+      "q_mvar": -4.8825311260706,
+      "margin_fast_pu": 0.044816963312263036,
+      "margin_ov1_pu": 0.044816963312263036,
+      "margin_ov2_pu": 0.1448169633122629
+    },
+    {
+      "asset_id": "Caceres41",
+      "collector_bus": "8172",
+      "hv_bus": "7407",
+      "z0_pu": 1.057494806513397,
+      "p_mw": 38.06538196834136,
+      "q_mvar": -12.511486010555913,
+      "margin_fast_pu": 0.0425051934866032,
+      "margin_ov1_pu": 0.0425051934866032,
+      "margin_ov2_pu": 0.14250519348660307
+    },
+    {
+      "asset_id": "Cadiz26",
+      "collector_bus": "8173",
+      "hv_bus": "7096",
+      "z0_pu": 1.0688149361180557,
+      "p_mw": 24.139022711631107,
+      "q_mvar": -7.934113079864727,
+      "margin_fast_pu": 0.03118506388194442,
+      "margin_ov1_pu": 0.03118506388194442,
+      "margin_ov2_pu": 0.13118506388194429
+    },
+    {
+      "asset_id": "Cadiz128",
+      "collector_bus": "8174",
+      "hv_bus": "7304",
+      "z0_pu": 1.0738813015349307,
+      "p_mw": 118.83826565726083,
+      "q_mvar": -39.06024900856481,
+      "margin_fast_pu": 0.026118698465069423,
+      "margin_ov1_pu": 0.026118698465069423,
+      "margin_ov2_pu": 0.1261186984650693
+    },
+    {
+      "asset_id": "Malaga154",
+      "collector_bus": "8175",
+      "hv_bus": "7095",
+      "z0_pu": 1.0605726322001405,
+      "p_mw": 142.97728836889198,
+      "q_mvar": -46.99436208842953,
+      "margin_fast_pu": 0.03942736779985956,
+      "margin_ov1_pu": 0.03942736779985956,
+      "margin_ov2_pu": 0.13942736779985943
+    },
+    {
+      "asset_id": "Cuenca530",
+      "collector_bus": "8176",
+      "hv_bus": "7018",
+      "z0_pu": 1.0560848545611905,
+      "p_mw": 492.06469373709564,
+      "q_mvar": -161.73384355108865,
+      "margin_fast_pu": 0.04391514543880959,
+      "margin_ov1_pu": 0.04391514543880959,
+      "margin_ov2_pu": 0.14391514543880946
+    }
+  ],
+  "no_margin_assets": {
+    "fast": [],
+    "ov1": [],
+    "ov2": []
+  },
+  "n_events": 53,
+  "families": {
+    "capacitor_switching": 2,
+    "fixed_pf_ramp": 16,
+    "generation_redispatch": 3,
+    "generator_trip": 6,
+    "line_energization": 2,
+    "load_disconnection": 8,
+    "plant_trip": 16
+  },
+  "extra_events": [],
+  "library_corrections": [
+    {
+      "event_id": "generator_trip:GENROU_279",
+      "correction": "controllers ue = 0 (events.generator_trip_mutations)",
+      "old": [
+        [
+          "GENROU",
+          "GENROU_279",
+          "u",
+          0.0
+        ],
+        [
+          "IEEET1",
+          "IEEET1_30",
+          "u",
+          0.0
+        ],
+        [
+          "IEEET1",
+          "IEEET1_30",
+          "ue",
+          0.0
+        ]
+      ],
+      "new": [
+        [
+          "GENROU",
+          "GENROU_279",
+          "u",
+          0.0
+        ],
+        [
+          "IEEET1",
+          "IEEET1_30",
+          "u",
+          0.0
+        ],
+        [
+          "IEEET1",
+          "IEEET1_30",
+          "ue",
+          0.0
+        ]
+      ]
+    },
+    {
+      "event_id": "generator_trip:GENROU_321",
+      "correction": "controllers ue = 0 (events.generator_trip_mutations)",
+      "old": [
+        [
+          "GENROU",
+          "GENROU_321",
+          "u",
+          0.0
+        ],
+        [
+          "TGOV1",
+          "TGOV1_271",
+          "u",
+          0.0
+        ],
+        [
+          "TGOV1",
+          "TGOV1_271",
+          "ue",
+          0.0
+        ]
+      ],
+      "new": [
+        [
+          "GENROU",
+          "GENROU_321",
+          "u",
+          0.0
+        ],
+        [
+          "TGOV1",
+          "TGOV1_271",
+          "u",
+          0.0
+        ],
+        [
+          "TGOV1",
+          "TGOV1_271",
+          "ue",
+          0.0
+        ]
+      ]
+    },
+    {
+      "event_id": "generator_trip:GENROU_322",
+      "correction": "controllers ue = 0 (events.generator_trip_mutations)",
+      "old": [
+        [
+          "GENROU",
+          "GENROU_322",
+          "u",
+          0.0
+        ],
+        [
+          "TGOV1",
+          "TGOV1_272",
+          "u",
+          0.0
+        ],
+        [
+          "TGOV1",
+          "TGOV1_272",
+          "ue",
+          0.0
+        ]
+      ],
+      "new": [
+        [
+          "GENROU",
+          "GENROU_322",
+          "u",
+          0.0
+        ],
+        [
+          "TGOV1",
+          "TGOV1_272",
+          "u",
+          0.0
+        ],
+        [
+          "TGOV1",
+          "TGOV1_272",
+          "ue",
+          0.0
+        ]
+      ]
+    },
+    {
+      "event_id": "generator_trip:GENROU_352",
+      "correction": "controllers ue = 0 (events.generator_trip_mutations)",
+      "old": [
+        [
+          "GENROU",
+          "GENROU_352",
+          "u",
+          0.0
+        ],
+        [
+          "SEXS",
+          "SEXS_98",
+          "u",
+          0.0
+        ],
+        [
+          "SEXS",
+          "SEXS_98",
+          "ue",
+          0.0
+        ],
+        [
+          "TGOV1",
+          "TGOV1_300",
+          "u",
+          0.0
+        ],
+        [
+          "TGOV1",
+          "TGOV1_300",
+          "ue",
+          0.0
+        ],
+        [
+          "IEEEST",
+          "IEEEST_51",
+          "u",
+          0.0
+        ],
+        [
+          "IEEEST",
+          "IEEEST_51",
+          "ue",
+          0.0
+        ]
+      ],
+      "new": [
+        [
+          "GENROU",
+          "GENROU_352",
+          "u",
+          0.0
+        ],
+        [
+          "SEXS",
+          "SEXS_98",
+          "u",
+          0.0
+        ],
+        [
+          "SEXS",
+          "SEXS_98",
+          "ue",
+          0.0
+        ],
+        [
+          "TGOV1",
+          "TGOV1_300",
+          "u",
+          0.0
+        ],
+        [
+          "TGOV1",
+          "TGOV1_300",
+          "ue",
+          0.0
+        ],
+        [
+          "IEEEST",
+          "IEEEST_51",
+          "u",
+          0.0
+        ],
+        [
+          "IEEEST",
+          "IEEEST_51",
+          "ue",
+          0.0
+        ]
+      ]
+    },
+    {
+      "event_id": "generator_trip:GENROU_349",
+      "correction": "controllers ue = 0 (events.generator_trip_mutations)",
+      "old": [
+        [
+          "GENROU",
+          "GENROU_349",
+          "u",
+          0.0
+        ],
+        [
+          "TGOV1",
+          "TGOV1_297",
+          "u",
+          0.0
+        ],
+        [
+          "TGOV1",
+          "TGOV1_297",
+          "ue",
+          0.0
+        ]
+      ],
+      "new": [
+        [
+          "GENROU",
+          "GENROU_349",
+          "u",
+          0.0
+        ],
+        [
+          "TGOV1",
+          "TGOV1_297",
+          "u",
+          0.0
+        ],
+        [
+          "TGOV1",
+          "TGOV1_297",
+          "ue",
+          0.0
+        ]
+      ]
+    },
+    {
+      "event_id": "generator_trip:GENROU_351",
+      "correction": "controllers ue = 0 (events.generator_trip_mutations)",
+      "old": [
+        [
+          "GENROU",
+          "GENROU_351",
+          "u",
+          0.0
+        ],
+        [
+          "TGOV1",
+          "TGOV1_299",
+          "u",
+          0.0
+        ],
+        [
+          "TGOV1",
+          "TGOV1_299",
+          "ue",
+          0.0
+        ]
+      ],
+      "new": [
+        [
+          "GENROU",
+          "GENROU_351",
+          "u",
+          0.0
+        ],
+        [
+          "TGOV1",
+          "TGOV1_299",
+          "u",
+          0.0
+        ],
+        [
+          "TGOV1",
+          "TGOV1_299",
+          "ue",
+          0.0
+        ]
+      ]
+    },
+    {
+      "event_id": "line_energization:PAR_Line_1766",
+      "correction": "series admittance ghk/bhk set with u (ANDES yhk is a ConstService)",
+      "ghk_before": 0.0,
+      "bhk_before": 0.0,
+      "ghk": 10.692876368336593,
+      "bhk": -128.81389935882066
+    },
+    {
+      "event_id": "line_energization:PAR_Line_1723",
+      "correction": "series admittance ghk/bhk set with u (ANDES yhk is a ConstService)",
+      "ghk_before": 0.0,
+      "bhk_before": 0.0,
+      "ghk": 11.153377949951349,
+      "bhk": -135.88324252583098
+    }
+  ],
+  "fingerprint": "4458b56625331ed5a6a133445355f908b49d17c4",
+  "factory_verification": {
+    "factory_build_s": 1.4884869170055026,
+    "n_arrays": 6428,
+    "fingerprint": "4458b56625331ed5a6a133445355f908b49d17c4",
+    "factory_fingerprint": "4458b56625331ed5a6a133445355f908b49d17c4",
+    "arrays_identical": true,
+    "arrays_differing": {},
+    "arrays_identical_after_residual_evaluation": false,
+    "arrays_differing_after_residual_evaluation": {
+      "IEEEST.dv.v": 0.28076902644598595
+    },
+    "max_abs_df": 0.0,
+    "max_abs_dg": 0.0,
+    "residuals_bitwise_identical": true
+  },
+  "reuse_vs_factory_tds": {
+    "seed": "plant_trip:Badajoz582",
+    "status": [
+      "ok",
+      "ok"
+    ],
+    "trip_order": [
+      [],
+      []
+    ],
+    "n_samples": [
+      1002,
+      1002
+    ],
+    "max_abs_trace_diff_pu": 0.0,
+    "bitwise_identical": true,
+    "runtime_s": [
+      20.54711341598886,
+      22.074383166007465
+    ]
+  },
+  "oa1_finding": {
+    "oa1_lines": [
+      {
+        "line": "PAR_Line_2154",
+        "u": 1.0,
+        "ghk": 9.447415540837037,
+        "bhk": -114.96424662608611,
+        "b_charging": 0.57375
+      },
+      {
+        "line": "PAR_Line_1848",
+        "u": 1.0,
+        "ghk": 9.645985734451974,
+        "bhk": -116.15790550755867,
+        "b_charging": 0.56788
+      }
+    ],
+    "series_admittance_missing": false
+  }
+}

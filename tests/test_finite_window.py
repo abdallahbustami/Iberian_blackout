@@ -1,3 +1,5 @@
+"""Tests of the window responses."""
+
 from __future__ import annotations
 
 import math
@@ -161,11 +163,27 @@ class FiniteWindowTests(unittest.TestCase):
         )
 
         expected_peak = 1.0 - math.exp(-1.0)
-        self.assertAlmostEqual(result.pickup_excursion_pu[0][0], expected_peak, places=9)
-        self.assertAlmostEqual(result.trip_excursion_pu[0][0], expected_peak, places=9)
-        self.assertAlmostEqual(result.window_result.k_pickup_upper[0][0], expected_peak / 0.5)
-        self.assertEqual(result.channel_classes["p1:e1"], "monotone_proxy")
+        pk = result.pickup_excursion_pu[0][0]
+        self.assertGreaterEqual(pk, expected_peak - 1e-12)
+        self.assertLessEqual(pk, expected_peak + 1e-4)
+        self.assertGreaterEqual(result.trip_excursion_pu[0][0], expected_peak - 1e-12)
+        self.assertLessEqual(result.trip_excursion_pu[0][0], pk + 1e-15)
+        self.assertAlmostEqual(result.window_result.k_pickup_upper[0][0], pk / 0.5)
+        self.assertEqual(result.channel_classes["p1:e1"], "certified")
         self.assertEqual(result.window_result.status, AssessmentStatus.CERTIFIED)
+
+        empirical = compute_finite_window_maps(
+            reduced,
+            [_protected("p1", 0.5)],
+            event_ids=("e1",),
+            horizons_s=(1.0,),
+            dwell_times_s=(0.0,),
+            time_grid_s=(0.0, 0.5, 1.0),
+            bound_method="empirical",
+        )
+        self.assertAlmostEqual(empirical.pickup_excursion_pu[0][0], expected_peak, places=9)
+        self.assertEqual(empirical.channel_classes["p1:e1"], "empirical_monotone")
+        self.assertEqual(empirical.window_result.status, AssessmentStatus.EMPIRICAL)
 
     def test_dwell_trip_excursion_uses_moving_minimum(self) -> None:
         reduced = _reduced(
@@ -216,11 +234,25 @@ class FiniteWindowTests(unittest.TestCase):
             time_grid_s=(0.0, 0.5, 1.0),
             max_refinements=0,
             padding_tolerance_pu=1e-12,
+            bound_method="empirical",
         )
 
-        self.assertEqual(result.channel_classes["p1:pulse"], "empirical_sampled")
+        self.assertEqual(result.channel_classes["p1:pulse"], "empirical_sampled_unrefined")
         self.assertEqual(result.window_result.status, AssessmentStatus.EMPIRICAL)
         self.assertGreater(result.disturbance_padding_pu[0][0], 0.0)
+
+        rigorous = compute_finite_window_maps(
+            reduced,
+            [_protected("p1", 0.5)],
+            event_ids=("pulse",),
+            event_profiles=(pulse,),
+            horizons_s=(1.0,),
+            time_grid_s=(0.0, 0.5, 1.0),
+            padding_tolerance_pu=1e-12,
+        )
+        self.assertEqual(rigorous.channel_classes["p1:pulse"], "certified")
+        self.assertAlmostEqual(rigorous.pickup_excursion_pu[0][0], 1.0, places=12)
+        self.assertLessEqual(abs(rigorous.disturbance_padding_pu[0][0]), 1e-12)
 
     def test_control_authority_is_time_resolved_lower_bound(self) -> None:
         reduced = _reduced(

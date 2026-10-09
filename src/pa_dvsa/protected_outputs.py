@@ -1,14 +1,5 @@
-"""Protection-side voltage output evaluation.
-
-This module implements the paper's protection-side output equations:
-
-* direct protected-bus voltage where the relay-side bus exists in ANDES,
-* reconstructed output ``z_i = V_t / n_i + epsilon_i``,
-* fixed-tap and threshold uncertainty envelopes, and
-* worst-case margin validation ``h_i = V_i^trip - z_i^0``.
-
-The output is intentionally conservative: if the margin lower bound cannot be
-proven positive, the asset is marked ``data_limited`` rather than safe.
+"""Relay voltages and margins: measured, computed from the transmission voltage and the tap, or computed from the
+measured plant power, with their uncertainty intervals.
 """
 
 from __future__ import annotations
@@ -28,13 +19,11 @@ from .data_model import (
 
 
 class ProtectedOutputError(RuntimeError):
-    """Raised when a protected output cannot be evaluated."""
+    pass
 
 
 @dataclass(frozen=True, slots=True)
 class ScalarEnvelope:
-    """A scalar nominal value and conservative interval."""
-
     lower: float
     upper: float
     nominal: float
@@ -93,8 +82,6 @@ class ScalarEnvelope:
 
 @dataclass(frozen=True, slots=True)
 class ProtectedOutputEvaluation:
-    """Evaluation of one protected relay-side voltage and its margin."""
-
     asset_id: str
     output_id: str
     kind: ProtectedVoltageKind
@@ -144,8 +131,6 @@ def _dae_y_value(case: AndesCase, address: int) -> float:
 
 
 def bus_voltage_envelope(case: AndesCase, bus_id: str | int | float) -> tuple[ScalarEnvelope, VariableAddress]:
-    """Return the present bus-voltage envelope from ANDES DAE values."""
-
     case.setup()
     try:
         address = case.variable_address("Bus", "v", bus_id)
@@ -159,8 +144,6 @@ def direct_protected_voltage(
     case: AndesCase,
     asset: ProtectedAsset,
 ) -> tuple[ScalarEnvelope, str, VariableAddress]:
-    """Evaluate a direct protected-bus voltage."""
-
     spec = asset.protected_voltage
     if not spec.protected_bus_id:
         raise ProtectedOutputError(f"{asset.asset_id} direct output has no protected_bus_id")
@@ -173,8 +156,6 @@ def reconstructed_fixed_tap_voltage(
     case: AndesCase,
     asset: ProtectedAsset,
 ) -> tuple[ScalarEnvelope, str, VariableAddress]:
-    """Evaluate ``z_i = V_t / n_i + epsilon_i`` with interval tap bounds."""
-
     spec = asset.protected_voltage
     if not spec.transmission_bus_id:
         raise ProtectedOutputError(
@@ -196,8 +177,6 @@ def evaluate_protected_output(
     case: AndesCase,
     asset: ProtectedAsset,
 ) -> ProtectedOutputEvaluation:
-    """Evaluate one protected asset and certify positive worst-case margin if possible."""
-
     spec = asset.protected_voltage
     kind = ProtectedVoltageKind(spec.kind)
     if kind == ProtectedVoltageKind.DIRECT_BUS_VOLTAGE:
@@ -242,6 +221,89 @@ def evaluate_protected_outputs(
     case: AndesCase,
     assets: list[ProtectedAsset] | tuple[ProtectedAsset, ...],
 ) -> tuple[ProtectedOutputEvaluation, ...]:
-    """Evaluate a collection of protected assets."""
-
     return tuple(evaluate_protected_output(case, asset) for asset in assets)
+
+
+import math as _math
+from typing import Sequence as _Sequence
+
+
+@dataclass(frozen=True, slots=True)
+class ProtectedOutputModel:
+    asset_id: str
+    output_index: int
+    z0_pu: float
+    kind: str = "direct"
+    pickup_pu: float = 1.10
+    dwell_s: float = 0.05
+    tap_nominal: float = 1.0
+
+    def __post_init__(self) -> None:
+        if self.kind not in {"direct", "reconstructed"}:
+            raise ProtectedOutputError("ProtectedOutputModel.kind must be 'direct' or 'reconstructed'")
+        for name in ("z0_pu", "pickup_pu", "dwell_s", "tap_nominal"):
+            if not _math.isfinite(float(getattr(self, name))):
+                raise ProtectedOutputError(f"ProtectedOutputModel.{name} must be finite")
+        if self.kind == "reconstructed" and not float(self.tap_nominal) > 0.0:
+            raise ProtectedOutputError("reconstructed outputs need a positive tap ratio")
+        if float(self.dwell_s) < 0.0:
+            raise ProtectedOutputError("dwell_s must be nonnegative")
+
+    @property
+    def nominal_z0(self) -> float:
+        if self.kind == "direct":
+            return float(self.z0_pu)
+        return float(self.z0_pu) / float(self.tap_nominal)
+
+    @property
+    def nominal_margin_pu(self) -> float:
+        return float(self.pickup_pu) - self.nominal_z0
+
+    @property
+    def response_scale(self) -> float:
+        return 1.0 if self.kind == "direct" else 1.0 / float(self.tap_nominal)
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "asset_id": self.asset_id,
+            "output_index": self.output_index,
+            "z0_pu": self.z0_pu,
+            "kind": self.kind,
+            "pickup_pu": self.pickup_pu,
+            "dwell_s": self.dwell_s,
+            "tap_nominal": self.tap_nominal,
+            "nominal_margin_pu": self.nominal_margin_pu,
+        }
+
+
+def output_models_from_blocks(
+    blocks: _Sequence[Any],
+    output_ids: _Sequence[str],
+    z0_values: _Sequence[float],
+    *,
+    kind: str = "direct",
+    collector_output_id: Any = None,
+    hv_output_id: Any = None,
+) -> tuple[ProtectedOutputModel, ...]:
+    ids = [str(item) for item in output_ids]
+    z0 = [float(item) for item in z0_values]
+    col = collector_output_id or (lambda b: f"V_{b.collector_bus}")
+    hv = hv_output_id or (lambda b: f"V_{b.hv_bus}")
+    models = []
+    for block in blocks:
+        key = str(col(block) if kind == "direct" else hv(block))
+        if key not in ids:
+            raise ProtectedOutputError(f"engine has no output {key!r} for asset {block.asset_id}")
+        k = ids.index(key)
+        models.append(
+            ProtectedOutputModel(
+                asset_id=str(block.asset_id),
+                output_index=k,
+                z0_pu=z0[k],
+                kind=kind,
+                pickup_pu=float(block.pickup_pu),
+                dwell_s=float(block.dwell_s),
+                tap_nominal=float(block.tap) if kind == "reconstructed" else 1.0,
+            )
+        )
+    return tuple(models)

@@ -1,3 +1,5 @@
+"""Tests of the robust screening."""
+
 from __future__ import annotations
 
 import math
@@ -235,6 +237,46 @@ class RobustScreeningTests(unittest.TestCase):
         )
 
         self.assertAlmostEqual(result.k_bar_pk[1, 0], 0.6)
+
+
+class ControlLowerAuthorityVectorizationTests(unittest.TestCase):
+    def test_vectorized_equals_reference(self) -> None:
+        from types import SimpleNamespace
+
+        import numpy as np
+
+        from pa_dvsa.robust_screening import (
+            UncertaintyIntervals,
+            _control_lower_authority_reference,
+            control_lower_authority,
+        )
+
+        rng = np.random.default_rng(3)
+        times = np.round(np.arange(0.0, 1.0 + 1e-9, 0.005), 12)
+        nb = times.size - 1
+        assets = [
+            SimpleNamespace(data_limited=False, response_scale_lower=0.95, response_scale_upper=1.05, h_lower_pu=0.02),
+            SimpleNamespace(data_limited=True, response_scale_lower=1.0, response_scale_upper=1.0, h_lower_pu=-0.01),
+            SimpleNamespace(data_limited=False, response_scale_lower=1.0, response_scale_upper=1.0, h_lower_pu=0.008),
+        ]
+        bounds = SimpleNamespace(
+            asset_ids=("A", "B", "C"), assets=assets, uncertainty=None,
+            output_models=[SimpleNamespace(output_index=k) for k in (2, 0, 1)],
+        )
+        responses = []
+        for c in range(4):
+            envs = [SimpleNamespace(upper=rng.normal(0.0, 0.01, nb) - 0.005 * (c % 2)) for _ in range(3)]
+            responses.append(SimpleNamespace(event_id=f"ctrl{c}", times_s=times, envelopes=envs))
+        for unc in (
+            None,
+            UncertaintyIntervals(control_gain_scale={"*": (0.8, 1.1)}, control_delay_s={"ctrl1": (0.0, 0.0123), "ctrl2": (0.01, 0.04)}),
+            UncertaintyIntervals(control_delay_s={"*": (0.0, 1.5)}),
+        ):
+            new = control_lower_authority(bounds, responses, uncertainty=unc)
+            ref = _control_lower_authority_reference(bounds, responses, uncertainty=unc)
+            np.testing.assert_array_equal(np.isnan(new), np.isnan(ref))
+            np.testing.assert_allclose(new, ref, rtol=0.0, atol=0.0, equal_nan=True)
+            self.assertTrue(np.all(np.isnan(new[:, 1, :])))
 
 
 if __name__ == "__main__":

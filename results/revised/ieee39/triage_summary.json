@@ -1,0 +1,238 @@
+{
+ "system": "ieee39",
+ "n_seeds": 45,
+ "n_conclusive": 45,
+ "n_dangerous": 10,
+ "roc_auc": 1.0,
+ "fraction_sent_to_capture_all": 0.2222222222222222,
+ "excluded_inconclusive": [],
+ "scores": {
+  "plant_trip:RES01": [
+   0.36498743924535265,
+   0.36387554425884133
+  ],
+  "plant_trip:RES02": [
+   0.32612252083726023,
+   0.32494267552035216
+  ],
+  "plant_trip:RES03": [
+   0.7090698017958471,
+   0.7068712256912268
+  ],
+  "plant_trip:RES04": [
+   1.4813163254532435,
+   1.4778303602706713
+  ],
+  "plant_trip:RES05": [
+   0.13504402324194184,
+   0.134120041249572
+  ],
+  "plant_trip:RES06": [
+   0.4850445483631352,
+   0.4835478569497272
+  ],
+  "plant_trip:RES07": [
+   0.9066957143894003,
+   0.9046434790620305
+  ],
+  "plant_trip:RES08": [
+   1.6309863908663715,
+   1.627017615387481
+  ],
+  "plant_trip:RES09": [
+   0.4651696776154317,
+   0.4636885910859444
+  ],
+  "plant_trip:RES10": [
+   0.40447678723537694,
+   0.40363032386137326
+  ],
+  "plant_trip:RES11": [
+   1.4168338878445412,
+   1.4135497742930818
+  ],
+  "plant_trip:RES12": [
+   0.8178376724181361,
+   0.8156426406144163
+  ],
+  "fixed_pf_ramp:RES01": [
+   0.5835811557948237,
+   0.5823034266459008
+  ],
+  "fixed_pf_ramp:RES02": [
+   1.0095813071629114,
+   1.0074961282959642
+  ],
+  "fixed_pf_ramp:RES03": [
+   0.480746577481208,
+   0.47975947068818975
+  ],
+  "fixed_pf_ramp:RES04": [
+   0.8594045327192978,
+   0.8574215396934811
+  ],
+  "fixed_pf_ramp:RES05": [
+   0.3991971303771718,
+   0.39705739029957454
+  ],
+  "fixed_pf_ramp:RES06": [
+   0.6144827115050433,
+   0.6132286401870216
+  ],
+  "fixed_pf_ramp:RES07": [
+   1.404318985065719,
+   1.4011964725087567
+  ],
+  "fixed_pf_ramp:RES08": [
+   0.6301740638649332,
+   0.6236052363061075
+  ],
+  "fixed_pf_ramp:RES09": [
+   0.8744489424254297,
+   0.8720077338601773
+  ],
+  "fixed_pf_ramp:RES10": [
+   0.39245231802524955,
+   0.39160496540536766
+  ],
+  "fixed_pf_ramp:RES11": [
+   0.7710108084212745,
+   0.7693390942701379
+  ],
+  "fixed_pf_ramp:RES12": [
+   2.0350193414028572,
+   2.030156494809877
+  ],
+  "load_disconnection:PQ_1": [
+   2.284809097722718,
+   2.2586307024978836
+  ],
+  "load_disconnection:PQ_19": [
+   0.6514208634148817,
+   0.6237800107249235
+  ],
+  "load_disconnection:PQ_2": [
+   2.509298597596349,
+   2.4994171777161855
+  ],
+  "load_disconnection:PQ_4": [
+   2.771121420497476,
+   2.760945974894725
+  ],
+  "load_disconnection:PQ_6": [
+   1.564605913353642,
+   1.5442321938408141
+  ],
+  "load_disconnection:PQ_17": [
+   0.6594956521885856,
+   0.658998678035779
+  ],
+  "generator_trip:GENROU_9": [
+   0.0,
+   0.0
+  ],
+  "generator_trip:GENROU_4": [
+   0.11010775735875528,
+   0.0
+  ],
+  "generator_trip:GENROU_6": [
+   0.12702589831097771,
+   0.0
+  ],
+  "generator_trip:GENROU_5": [
+   0.27306049796269055,
+   0.0
+  ],
+  "generator_trip:GENROU_1": [
+   0.1344142637464664,
+   0.0
+  ],
+  "generator_trip:GENROU_7": [
+   0.2582887439040167,
+   0.04454310048835547
+  ],
+  "generation_redispatch:GENROU_3->GENROU_9": [
+   0.06679944902578737,
+   0.0615635996050132
+  ],
+  "generation_redispatch:GENROU_2->GENROU_6": [
+   0.05892834100500073,
+   0.05421977301578058
+  ],
+  "shunt_reactor_disconnection:SHR01": [
+   0.6054521138605851,
+   0.6028599439941335
+  ],
+  "shunt_reactor_disconnection:SHR02": [
+   0.8157619617635504,
+   0.8152641967780974
+  ],
+  "shunt_reactor_disconnection:SHR03": [
+   1.627693005395667,
+   1.6243290911585355
+  ],
+  "capacitor_switching:SHC01": [
+   0.7023049634051582,
+   0.7002260672291237
+  ],
+  "capacitor_switching:SHC02": [
+   0.9469649848738075,
+   0.9417418798423928
+  ],
+  "line_energization:LPAR01": [
+   0.07413346461539413,
+   0.0737347524688782
+  ],
+  "line_energization:LPAR02": [
+   0.6723311050913707,
+   0.6667614536843708
+  ]
+ },
+ "labels": {
+  "plant_trip:RES01": false,
+  "plant_trip:RES02": false,
+  "plant_trip:RES03": false,
+  "plant_trip:RES04": true,
+  "plant_trip:RES05": false,
+  "plant_trip:RES06": false,
+  "plant_trip:RES07": false,
+  "plant_trip:RES08": true,
+  "plant_trip:RES09": false,
+  "plant_trip:RES10": false,
+  "plant_trip:RES11": true,
+  "plant_trip:RES12": false,
+  "fixed_pf_ramp:RES01": false,
+  "fixed_pf_ramp:RES02": false,
+  "fixed_pf_ramp:RES03": false,
+  "fixed_pf_ramp:RES04": false,
+  "fixed_pf_ramp:RES05": false,
+  "fixed_pf_ramp:RES06": false,
+  "fixed_pf_ramp:RES07": true,
+  "fixed_pf_ramp:RES08": false,
+  "fixed_pf_ramp:RES09": false,
+  "fixed_pf_ramp:RES10": false,
+  "fixed_pf_ramp:RES11": false,
+  "fixed_pf_ramp:RES12": true,
+  "load_disconnection:PQ_1": true,
+  "load_disconnection:PQ_19": false,
+  "load_disconnection:PQ_2": true,
+  "load_disconnection:PQ_4": true,
+  "load_disconnection:PQ_6": true,
+  "load_disconnection:PQ_17": false,
+  "generator_trip:GENROU_9": false,
+  "generator_trip:GENROU_4": false,
+  "generator_trip:GENROU_6": false,
+  "generator_trip:GENROU_5": false,
+  "generator_trip:GENROU_1": false,
+  "generator_trip:GENROU_7": false,
+  "generation_redispatch:GENROU_3->GENROU_9": false,
+  "generation_redispatch:GENROU_2->GENROU_6": false,
+  "shunt_reactor_disconnection:SHR01": false,
+  "shunt_reactor_disconnection:SHR02": false,
+  "shunt_reactor_disconnection:SHR03": true,
+  "capacitor_switching:SHC01": false,
+  "capacitor_switching:SHC02": false,
+  "line_energization:LPAR01": false,
+  "line_energization:LPAR02": false
+ }
+}

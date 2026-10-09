@@ -1,0 +1,132 @@
+{
+ "system": "kundur",
+ "a_rerun": {
+  "seeds": [
+   "load_disconnection:PQ_1"
+  ],
+  "runs": [
+   {
+    "seed_id": "load_disconnection:PQ_1",
+    "rerun": "identical",
+    "tstep": 0.002,
+    "status": "ok",
+    "trip_order_ref": [
+     "RES04",
+     "RES02",
+     "RES01",
+     "RES03"
+    ],
+    "trip_order_rerun": [
+     "RES04",
+     "RES02",
+     "RES01",
+     "RES03"
+    ],
+    "same_trip_set_in_window": true,
+    "identical_trip_order": true,
+    "max_abs_trip_time_diff_s": 0.0,
+    "max_v_diff_pu": 0.0,
+    "runtime_s": 3.39867687500373
+   },
+   {
+    "seed_id": "load_disconnection:PQ_1",
+    "rerun": "finer_step",
+    "tstep": 0.001,
+    "status": "ok",
+    "trip_order_ref": [
+     "RES04",
+     "RES02",
+     "RES01",
+     "RES03"
+    ],
+    "trip_order_rerun": [
+     "RES04",
+     "RES02",
+     "RES01",
+     "RES03"
+    ],
+    "same_trip_set_in_window": true,
+    "identical_trip_order": true,
+    "max_abs_trip_time_diff_s": 0.0,
+    "max_v_diff_pu": 7.897787331190287e-05,
+    "runtime_s": 6.0029481669917
+   }
+  ],
+  "all_identical": true,
+  "finer_step_same_sets": true,
+  "note": "carried over from the original run (rescore)"
+ },
+ "b_no_noop": {
+  "threshold_pu": 0.0001,
+  "n_events": 18,
+  "noop_events": [],
+  "min_max_abs_dv_pu": 0.008920414932420018,
+  "min_event": "line_energization:LPAR02",
+  "passed": true
+ },
+ "c_self_terms": {
+  "violations": [],
+  "passed": true,
+  "n_self_entries": 4
+ },
+ "d_rigorous_K": {
+  "bound": "balanced_lognorm_interval_bound",
+  "max_abs_diff_K_vs_envelope": 0.0,
+  "n_entries_padding_negative": 0,
+  "n_entries_padding_above_tolerance": 0,
+  "max_k_trip_minus_k_pickup": 0.0,
+  "non_certified_entries": [],
+  "passed": true
+ },
+ "e_mitigation_spot_checks": {
+  "checks": [
+   {
+    "seed_id": "load_disconnection:PQ_1",
+    "tds_status": "ok",
+    "controls": [
+     [
+      "avr_vref:1",
+      0.2535170743599496
+     ],
+     [
+      "avr_vref:3",
+      0.1345091893967428
+     ]
+    ],
+    "late_trips_mitigated": [
+     "RES03"
+    ],
+    "max_v_window_mitigated": {
+     "RES01": 1.100946364925576,
+     "RES02": 1.1024642184900582,
+     "RES03": 1.0985656252021798,
+     "RES04": 1.1007319877628077
+    },
+    "assets_at_or_above_pickup_mitigated": {
+     "RES01": 1.100946364925576,
+     "RES02": 1.1024642184900582,
+     "RES04": 1.1007319877628077
+    },
+    "trips_mitigated": [
+     "RES04",
+     "RES02",
+     "RES01"
+    ],
+    "trips_unmitigated": [
+     "RES04",
+     "RES02",
+     "RES01",
+     "RES03"
+    ],
+    "plot": "results/revised/kundur/horizon_2s/sanity/mitigation_check_load_disconnection_PQ_1.png"
+   }
+  ]
+ },
+ "f_predicted_times_in_window": {
+  "n_predicted_trips_with_time": 1,
+  "outside_window": [],
+  "predicted_trips_without_time_estimate": [],
+  "passed": true
+ },
+ "anomalies": []
+}

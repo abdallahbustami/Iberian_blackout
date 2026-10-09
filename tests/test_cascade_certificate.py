@@ -1,3 +1,5 @@
+"""Tests of the threshold cascade map."""
+
 from __future__ import annotations
 
 import unittest

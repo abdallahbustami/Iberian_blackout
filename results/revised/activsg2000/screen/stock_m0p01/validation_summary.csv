@@ -1,0 +1,17 @@
+slug,relay,prediction,family,n_seeds,n_seeds_inconclusive,n_dangerous,n_predicted_dangerous,seed_TP,seed_FP,seed_FN,seed_TN,n_seeds_certified_no_secondary,n_seed_unsafe_FN,TP,FP,pickup_only_trip,pickup_only_clear,caught_risky,risky_clear,unsafe_FN,TN,data_limited_trip,data_limited_clear,late_trip,tds_inconclusive,TP_L1,FP_L1,TP_L2p,FP_L2p,n_both_empty,jaccard_mean_nonempty,jaccard_mean_all,n_timing,timing_error_median_s,timing_abs_error_median_s,timing_abs_error_max_s,first_asset_match_rate
+stock_m0p01,fast,paper,capacitor_switching,2,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,30,0,2,0,0,0,0,0,0,2,nan,1.0,0,nan,nan,nan,nan
+stock_m0p01,fast,paper,fixed_pf_ramp,16,0,4,5,4,1,0,11,0,0,5,1,0,0,0,0,0,234,0,16,0,0,4,1,1,0,11,0.8,0.9375,4,-0.01050000000000037,0.01050000000000037,0.024000000000000465,1.0
+stock_m0p01,fast,paper,generation_redispatch,3,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,45,0,3,0,0,0,0,0,0,3,nan,1.0,0,nan,nan,nan,nan
+stock_m0p01,fast,paper,generator_trip,6,0,1,1,1,0,0,5,0,0,5,10,0,0,0,0,0,75,0,6,0,0,4,0,1,10,5,0.3333333333333333,0.8888888888888888,1,-4.163336342344337e-17,4.163336342344337e-17,4.163336342344337e-17,1.0
+stock_m0p01,fast,paper,line_energization,2,0,0,0,0,0,0,2,0,0,0,0,0,0,0,1,0,29,0,2,0,0,0,0,0,0,2,nan,1.0,0,nan,nan,nan,nan
+stock_m0p01,fast,paper,load_disconnection,8,0,1,1,1,0,0,7,0,0,1,0,0,0,0,0,0,118,0,8,1,0,1,0,0,0,7,1.0,1.0,1,-0.033000000000000695,0.033000000000000695,0.033000000000000695,1.0
+stock_m0p01,fast,paper,plant_trip,16,0,6,6,6,0,0,10,0,0,10,0,0,0,0,0,0,215,0,15,0,0,7,0,3,0,10,1.0,1.0,6,0.0034999999999999233,0.0034999999999999233,0.00399999999999992,1.0
+stock_m0p01,fast,paper,ALL,53,0,12,13,12,1,0,40,0,0,21,11,0,0,0,1,0,746,0,52,1,0,16,1,5,10,40,0.8717948717948718,0.9685534591194969,12,-7.632783294297951e-17,0.0035000000000000864,0.033000000000000695,1.0
+stock_m0p01,fast,refined,capacitor_switching,2,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,30,0,2,0,0,0,0,0,0,2,nan,1.0,0,nan,nan,nan,nan
+stock_m0p01,fast,refined,fixed_pf_ramp,16,0,4,5,4,1,0,11,0,0,5,1,0,0,0,0,0,234,0,16,0,0,4,1,1,0,11,0.8,0.9375,4,-0.01050000000000037,0.01050000000000037,0.024000000000000465,1.0
+stock_m0p01,fast,refined,generation_redispatch,3,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,45,0,3,0,0,0,0,0,0,3,nan,1.0,0,nan,nan,nan,nan
+stock_m0p01,fast,refined,generator_trip,6,0,1,1,1,0,0,5,0,0,5,10,0,0,0,0,0,75,0,6,0,0,4,0,1,10,5,0.3333333333333333,0.8888888888888888,1,-4.163336342344337e-17,4.163336342344337e-17,4.163336342344337e-17,1.0
+stock_m0p01,fast,refined,line_energization,2,0,0,0,0,0,0,2,0,0,0,0,0,0,0,1,0,29,0,2,0,0,0,0,0,0,2,nan,1.0,0,nan,nan,nan,nan
+stock_m0p01,fast,refined,load_disconnection,8,0,1,1,1,0,0,7,0,0,1,0,0,0,0,0,0,118,0,8,1,0,1,0,0,0,7,1.0,1.0,1,-0.033000000000000695,0.033000000000000695,0.033000000000000695,1.0
+stock_m0p01,fast,refined,plant_trip,16,0,6,6,6,0,0,10,0,0,10,0,0,0,0,0,0,215,0,15,0,0,7,0,3,0,10,1.0,1.0,6,0.0034999999999999233,0.0034999999999999233,0.00399999999999992,1.0
+stock_m0p01,fast,refined,ALL,53,0,12,13,12,1,0,40,0,0,21,11,0,0,0,1,0,746,0,52,1,0,16,1,5,10,40,0.8717948717948718,0.9685534591194969,12,-7.632783294297951e-17,0.0035000000000000864,0.033000000000000695,1.0

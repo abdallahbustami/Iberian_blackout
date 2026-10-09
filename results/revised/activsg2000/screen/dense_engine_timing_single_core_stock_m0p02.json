@@ -1,0 +1,980 @@
+{
+ "slug": "stock_m0p02",
+ "kind": "exact",
+ "threads": "1",
+ "t_factory": 2.7115402090130374,
+ "t_pre": 8.540799834008794,
+ "pre_timing": {
+  "factor": 0.03394787502475083,
+  "reduce": 1.9161152089945972,
+  "eig": 5.410855749971233,
+  "balance": 1.169450791028794
+ },
+ "events": {
+  "plant_trip:Granada355": {
+   "kind": "switch",
+   "t": 11.138336458010599,
+   "timing": {
+    "jump_newton": 0.08841058297548443,
+    "post_mode": 4.748419584007934,
+    "restore": 0.008196333015803248,
+    "post_mode_factor": 0.03444362501613796,
+    "post_mode_reduce": 1.9806962909642607,
+    "post_mode_eig": 1.5935890839900821,
+    "post_mode_balance": 1.1369460000423715,
+    "propagate": 6.190228666993789,
+    "envelopes": 0.09707704099128023,
+    "total": 11.132332207984291,
+    "blocks": 5.222158542950638,
+    "matrix_products": 27.0
+   },
+   "stability": "marginal",
+   "max_real": 0.0
+  },
+  "plant_trip:Badajoz582": {
+   "kind": "switch",
+   "t": 11.088882624986582,
+   "timing": {
+    "jump_newton": 0.0869861250394024,
+    "post_mode": 4.801362874975894,
+    "restore": 0.007923124998342246,
+    "post_mode_factor": 0.034217124979477376,
+    "post_mode_reduce": 1.9236904999706894,
+    "post_mode_eig": 1.7000431670458056,
+    "post_mode_balance": 1.1407494999584742,
+    "propagate": 6.158609125006478,
+    "envelopes": 0.02829983300762251,
+    "total": 11.083181083027739,
+    "blocks": 5.221920584037434,
+    "matrix_products": 27.0
+   },
+   "stability": "marginal",
+   "max_real": 6.672201853519244e-14
+  },
+  "plant_trip:Badajoz145": {
+   "kind": "switch",
+   "t": 11.371962999983225,
+   "timing": {
+    "jump_newton": 0.08745491702575237,
+    "post_mode": 4.701656416000333,
+    "restore": 0.007800666964612901,
+    "post_mode_factor": 0.033620665955822915,
+    "post_mode_reduce": 1.9619466670555994,
+    "post_mode_eig": 1.5581037499941885,
+    "post_mode_balance": 1.145224541949574,
+    "propagate": 6.563759458949789,
+    "envelopes": 0.0060700830072164536,
+    "total": 11.366741541947704,
+    "blocks": 5.623463791969698,
+    "matrix_products": 27.0
+   },
+   "stability": "marginal",
+   "max_real": 4.2374957709423455e-15
+  },
+  "plant_trip:Segovia23": {
+   "kind": "switch",
+   "t": 11.557127416017465,
+   "timing": {
+    "jump_newton": 0.08890504197916016,
+    "post_mode": 4.873755500011612,
+    "restore": 0.007954333035741001,
+    "post_mode_factor": 0.0339881670079194,
+    "post_mode_reduce": 2.1302724999841303,
+    "post_mode_eig": 1.5222615000093356,
+    "post_mode_balance": 1.184614124998916,
+    "propagate": 6.575033417029772,
+    "envelopes": 0.005952458013780415,
+    "total": 11.551600750070065,
+    "blocks": 5.637809166975785,
+    "matrix_products": 27.0
+   },
+   "stability": "marginal",
+   "max_real": 1.188719261913107e-15
+  },
+  "plant_trip:Seville550": {
+   "kind": "switch",
+   "t": 11.33208583301166,
+   "timing": {
+    "jump_newton": 0.08758462499827147,
+    "post_mode": 4.630043833982199,
+    "restore": 0.007860790996346623,
+    "post_mode_factor": 0.03404970798874274,
+    "post_mode_reduce": 2.0001904579694383,
+    "post_mode_eig": 1.4599488750100136,
+    "post_mode_balance": 1.1330080840270966,
+    "propagate": 6.495316958986223,
+    "envelopes": 0.10541349998675287,
+    "total": 11.326219708949793,
+    "blocks": 5.551387085055467,
+    "matrix_products": 27.0
+   },
+   "stability": "marginal",
+   "max_real": 3.566678202782114e-14
+  },
+  "plant_trip:Segovia94": {
+   "kind": "switch",
+   "t": 11.327842750004493,
+   "timing": {
+    "jump_newton": 0.08781554194865748,
+    "post_mode": 4.66013929102337,
+    "restore": 0.007773583987727761,
+    "post_mode_factor": 0.033474374969955534,
+    "post_mode_reduce": 2.020155167032499,
+    "post_mode_eig": 1.4460590420057997,
+    "post_mode_balance": 1.1575364579912275,
+    "propagate": 6.560808249982074,
+    "envelopes": 0.005957957997452468,
+    "total": 11.322494624939281,
+    "blocks": 5.600401500007138,
+    "matrix_products": 27.0
+   },
+   "stability": "marginal",
+   "max_real": 1.136742609764152e-14
+  },
+  "plant_trip:Badajoz118": {
+   "kind": "switch",
+   "t": 11.63151395902969,
+   "timing": {
+    "jump_newton": 0.08837587496964261,
+    "post_mode": 4.947599333012477,
+    "restore": 0.008105167013127357,
+    "post_mode_factor": 0.03406804200494662,
+    "post_mode_reduce": 1.9786903749918565,
+    "post_mode_eig": 1.7838580830139108,
+    "post_mode_balance": 1.1481686669867486,
+    "propagate": 6.565090500051156,
+    "envelopes": 0.017090374953113496,
+    "total": 11.626261249999516,
+    "blocks": 5.612703041988425,
+    "matrix_products": 27.0
+   },
+   "stability": "marginal",
+   "max_real": 1.5109224635323493e-14
+  },
+  "plant_trip:Huelva34": {
+   "kind": "switch",
+   "t": 11.56525258300826,
+   "timing": {
+    "jump_newton": 0.0887234999681823,
+    "post_mode": 4.843161125027109,
+    "restore": 0.008155499992426485,
+    "post_mode_factor": 0.03458937502000481,
+    "post_mode_reduce": 2.023263124981895,
+    "post_mode_eig": 1.6145840000244789,
+    "post_mode_balance": 1.168027792009525,
+    "propagate": 6.613658333022613,
+    "envelopes": 0.006024917005561292,
+    "total": 11.559723375015892,
+    "blocks": 5.667106250009965,
+    "matrix_products": 27.0
+   },
+   "stability": "marginal",
+   "max_real": 3.7842342107130555e-14
+  },
+  "plant_trip:Caceres38": {
+   "kind": "switch",
+   "t": 11.731550958997104,
+   "timing": {
+    "jump_newton": 0.09031649999087676,
+    "post_mode": 5.065189874963835,
+    "restore": 0.008022374997381121,
+    "post_mode_factor": 0.03402104100678116,
+    "post_mode_reduce": 2.1230407090042718,
+    "post_mode_eig": 1.7312402909738012,
+    "post_mode_balance": 1.17382995900698,
+    "propagate": 6.5567450420348905,
+    "envelopes": 0.005968749988824129,
+    "total": 11.726242541975807,
+    "blocks": 5.601114792050794,
+    "matrix_products": 27.0
+   },
+   "stability": "marginal",
+   "max_real": 6.440464481172192e-14
+  },
+  "plant_trip:Badajoz72": {
+   "kind": "switch",
+   "t": 11.541634458000772,
+   "timing": {
+    "jump_newton": 0.09087741700932384,
+    "post_mode": 4.882578833028674,
+    "restore": 0.007936208974570036,
+    "post_mode_factor": 0.03440766700077802,
+    "post_mode_reduce": 2.0829336249735206,
+    "post_mode_eig": 1.6087288749986328,
+    "post_mode_balance": 1.1537576250266284,
+    "propagate": 6.548647208022885,
+    "envelopes": 0.006065958994440734,
+    "total": 11.536105626029894,
+    "blocks": 5.592383375042118,
+    "matrix_products": 27.0
+   },
+   "stability": "marginal",
+   "max_real": 0.0
+  },
+  "plant_trip:Badajoz16": {
+   "kind": "switch",
+   "t": 11.439695541979745,
+   "timing": {
+    "jump_newton": 0.09132541698636487,
+    "post_mode": 4.7301333749783225,
+    "restore": 0.007902332989033312,
+    "post_mode_factor": 0.035002415999770164,
+    "post_mode_reduce": 1.9853543339995667,
+    "post_mode_eig": 1.555820457986556,
+    "post_mode_balance": 1.1511886670487002,
+    "propagate": 6.599006334028672,
+    "envelopes": 0.005904874997213483,
+    "total": 11.434272333979607,
+    "blocks": 5.62912616704125,
+    "matrix_products": 27.0
+   },
+   "stability": "marginal",
+   "max_real": 0.0
+  },
+  "plant_trip:Caceres41": {
+   "kind": "switch",
+   "t": 11.785340500005987,
+   "timing": {
+    "jump_newton": 0.09332300000824034,
+    "post_mode": 4.846262999984901,
+    "restore": 0.009523166983854026,
+    "post_mode_factor": 0.0344524160027504,
+    "post_mode_reduce": 1.988677833986003,
+    "post_mode_eig": 1.6501706250128336,
+    "post_mode_balance": 1.1700290410080925,
+    "propagate": 6.824310875032097,
+    "envelopes": 0.0061652910080738366,
+    "total": 11.779585333017167,
+    "blocks": 5.877004042034969,
+    "matrix_products": 27.0
+   },
+   "stability": "marginal",
+   "max_real": 1.3581150093422423e-14
+  },
+  "plant_trip:Cadiz26": {
+   "kind": "switch",
+   "t": 11.804811375041027,
+   "timing": {
+    "jump_newton": 0.09534741705283523,
+    "post_mode": 4.993386666988954,
+    "restore": 0.008358207996934652,
+    "post_mode_factor": 0.03692670800955966,
+    "post_mode_reduce": 2.002876417012885,
+    "post_mode_eig": 1.7872257080161944,
+    "post_mode_balance": 1.1635592919774354,
+    "propagate": 6.694684625021182,
+    "envelopes": 0.006282874965108931,
+    "total": 11.798059792025015,
+    "blocks": 5.7539149160147645,
+    "matrix_products": 27.0
+   },
+   "stability": "marginal",
+   "max_real": 6.071033432919481e-14
+  },
+  "plant_trip:Cadiz128": {
+   "kind": "switch",
+   "t": 11.880059458024334,
+   "timing": {
+    "jump_newton": 0.08916933397995308,
+    "post_mode": 5.121210457989946,
+    "restore": 0.007748916978016496,
+    "post_mode_factor": 0.03386649995809421,
+    "post_mode_reduce": 2.079368584032636,
+    "post_mode_eig": 1.8370484579936601,
+    "post_mode_balance": 1.1682090829708613,
+    "propagate": 6.650309666991234,
+    "envelopes": 0.006220333045348525,
+    "total": 11.874658708984498,
+    "blocks": 5.693314416974317,
+    "matrix_products": 27.0
+   },
+   "stability": "marginal",
+   "max_real": 2.3274568036746324e-14
+  },
+  "plant_trip:Malaga154": {
+   "kind": "switch",
+   "t": 11.618161082966253,
+   "timing": {
+    "jump_newton": 0.08882741699926555,
+    "post_mode": 4.829361042007804,
+    "restore": 0.008083958004135638,
+    "post_mode_factor": 0.034395167022012174,
+    "post_mode_reduce": 2.002919957973063,
+    "post_mode_eig": 1.6197914580116048,
+    "post_mode_balance": 1.1694915840053,
+    "propagate": 6.66903666703729,
+    "envelopes": 0.01762941700872034,
+    "total": 11.612938501057215,
+    "blocks": 5.70542537397705,
+    "matrix_products": 27.0
+   },
+   "stability": "marginal",
+   "max_real": 2.5352333080097544e-14
+  },
+  "plant_trip:Cuenca530": {
+   "kind": "switch",
+   "t": 11.580525833996944,
+   "timing": {
+    "jump_newton": 0.09072808298515156,
+    "post_mode": 4.775256209017243,
+    "restore": 0.007739541004411876,
+    "post_mode_factor": 0.034438832954037935,
+    "post_mode_reduce": 1.960317125020083,
+    "post_mode_eig": 1.6026957919821143,
+    "post_mode_balance": 1.1750601670355536,
+    "propagate": 6.593230917002074,
+    "envelopes": 0.10828670801129192,
+    "total": 11.575241458020173,
+    "blocks": 5.642460165079683,
+    "matrix_products": 27.0
+   },
+   "stability": "marginal",
+   "max_real": 2.1372443745337755e-14
+  },
+  "fixed_pf_ramp:Granada355": {
+   "kind": "param",
+   "t": 17.342519750003703,
+   "timing": {
+    "residual_and_restore": 0.008440625038929284,
+    "reduce_forcing": 0.0011703339987434447,
+    "propagate": 17.171891209029127,
+    "envelopes": 0.16066254099132493,
+    "total": 17.342164709058125,
+    "blocks": 16.203866208088584,
+    "matrix_products": 0.0
+   },
+   "stability": "marginal",
+   "max_real": 2.2334775498562395e-11
+  },
+  "fixed_pf_ramp:Badajoz582": {
+   "kind": "param",
+   "t": 1.153905167011544,
+   "timing": {
+    "residual_and_restore": 0.008360166975762695,
+    "reduce_forcing": 0.0008808330167084932,
+    "propagate": 0.9585593749652617,
+    "envelopes": 0.18581574998097494,
+    "total": 1.1536161249387078,
+    "blocks": 8.916715160012245e-05,
+    "matrix_products": 0.0
+   },
+   "stability": "marginal",
+   "max_real": 2.2334775498562395e-11
+  },
+  "fixed_pf_ramp:Badajoz145": {
+   "kind": "param",
+   "t": 1.0020475420169532,
+   "timing": {
+    "residual_and_restore": 0.009375207999255508,
+    "reduce_forcing": 0.0007938750204630196,
+    "propagate": 0.9596811659866944,
+    "envelopes": 0.032045917003415525,
+    "total": 1.0018961660098284,
+    "blocks": 1.9209051970392466e-05,
+    "matrix_products": 0.0
+   },
+   "stability": "marginal",
+   "max_real": 2.2334775498562395e-11
+  },
+  "fixed_pf_ramp:Segovia23": {
+   "kind": "param",
+   "t": 0.9785315410117619,
+   "timing": {
+    "residual_and_restore": 0.008592457976192236,
+    "reduce_forcing": 0.0007229589973576367,
+    "propagate": 0.9629078750149347,
+    "envelopes": 0.0061373329954221845,
+    "total": 0.9783606249839067,
+    "blocks": 5.707959644496441e-06,
+    "matrix_products": 0.0
+   },
+   "stability": "marginal",
+   "max_real": 2.2334775498562395e-11
+  },
+  "fixed_pf_ramp:Seville550": {
+   "kind": "param",
+   "t": 1.159472708008252,
+   "timing": {
+    "residual_and_restore": 0.008630374970380217,
+    "reduce_forcing": 0.0007266250322572887,
+    "propagate": 0.962962833000347,
+    "envelopes": 0.18679104198236018,
+    "total": 1.1591108749853447,
+    "blocks": 8.47510527819395e-05,
+    "matrix_products": 0.0
+   },
+   "stability": "marginal",
+   "max_real": 2.2334775498562395e-11
+  },
+  "fixed_pf_ramp:Segovia94": {
+   "kind": "param",
+   "t": 0.9719315419788472,
+   "timing": {
+    "residual_and_restore": 0.009181458037346601,
+    "reduce_forcing": 0.0008049579919315875,
+    "propagate": 0.9556325000012293,
+    "envelopes": 0.006139333010651171,
+    "total": 0.9717582490411587,
+    "blocks": 4.874949809163809e-06,
+    "matrix_products": 0.0
+   },
+   "stability": "marginal",
+   "max_real": 2.2334775498562395e-11
+  },
+  "fixed_pf_ramp:Badajoz118": {
+   "kind": "param",
+   "t": 0.9861194170080125,
+   "timing": {
+    "residual_and_restore": 0.008458249969407916,
+    "reduce_forcing": 0.00072358304169029,
+    "propagate": 0.9446138750063255,
+    "envelopes": 0.031796875002328306,
+    "total": 0.985592583019752,
+    "blocks": 2.3083994165062904e-05,
+    "matrix_products": 0.0
+   },
+   "stability": "marginal",
+   "max_real": 2.2334775498562395e-11
+  },
+  "fixed_pf_ramp:Huelva34": {
+   "kind": "param",
+   "t": 1.0169780420255847,
+   "timing": {
+    "residual_and_restore": 0.009708708967082202,
+    "reduce_forcing": 0.0010887079988606274,
+    "propagate": 0.9988645000266843,
+    "envelopes": 0.00714312499621883,
+    "total": 1.016805041988846,
+    "blocks": 4.915986210107803e-06,
+    "matrix_products": 0.0
+   },
+   "stability": "marginal",
+   "max_real": 2.2334775498562395e-11
+  },
+  "fixed_pf_ramp:Caceres38": {
+   "kind": "param",
+   "t": 0.9932848330354318,
+   "timing": {
+    "residual_and_restore": 0.009489791991654783,
+    "reduce_forcing": 0.001131500001065433,
+    "propagate": 0.9763566660112701,
+    "envelopes": 0.006111374997999519,
+    "total": 0.9930893330019899,
+    "blocks": 6.207963451743126e-06,
+    "matrix_products": 0.0
+   },
+   "stability": "marginal",
+   "max_real": 2.2334775498562395e-11
+  },
+  "fixed_pf_ramp:Badajoz72": {
+   "kind": "param",
+   "t": 0.9832629159791395,
+   "timing": {
+    "residual_and_restore": 0.008743332989979535,
+    "reduce_forcing": 0.0007283330196514726,
+    "propagate": 0.9672644169768319,
+    "envelopes": 0.006299250002484769,
+    "total": 0.9830353329889476,
+    "blocks": 7.874972652643919e-06,
+    "matrix_products": 0.0
+   },
+   "stability": "marginal",
+   "max_real": 2.2334775498562395e-11
+  },
+  "fixed_pf_ramp:Badajoz16": {
+   "kind": "param",
+   "t": 0.9897836659802124,
+   "timing": {
+    "residual_and_restore": 0.009517083002720028,
+    "reduce_forcing": 0.0008113749790936708,
+    "propagate": 0.9725792499957606,
+    "envelopes": 0.006566583004314452,
+    "total": 0.9894742909818888,
+    "blocks": 5.582987796515226e-06,
+    "matrix_products": 0.0
+   },
+   "stability": "marginal",
+   "max_real": 2.2334775498562395e-11
+  },
+  "fixed_pf_ramp:Caceres41": {
+   "kind": "param",
+   "t": 1.0578292919672094,
+   "timing": {
+    "residual_and_restore": 0.009011083981022239,
+    "reduce_forcing": 0.0007845830405130982,
+    "propagate": 1.0414709169999696,
+    "envelopes": 0.006359125021845102,
+    "total": 1.05762570904335,
+    "blocks": 6.9160014390945435e-06,
+    "matrix_products": 0.0
+   },
+   "stability": "marginal",
+   "max_real": 2.2334775498562395e-11
+  },
+  "fixed_pf_ramp:Cadiz26": {
+   "kind": "param",
+   "t": 0.9780531250289641,
+   "timing": {
+    "residual_and_restore": 0.008375625009648502,
+    "reduce_forcing": 0.0007317090057767928,
+    "propagate": 0.9626823329599574,
+    "envelopes": 0.006098666985053569,
+    "total": 0.9778883339604363,
+    "blocks": 7.6249707490205765e-06,
+    "matrix_products": 0.0
+   },
+   "stability": "marginal",
+   "max_real": 2.2334775498562395e-11
+  },
+  "fixed_pf_ramp:Cadiz128": {
+   "kind": "param",
+   "t": 0.9968072919873521,
+   "timing": {
+    "residual_and_restore": 0.008534874999895692,
+    "reduce_forcing": 0.0007257090182974935,
+    "propagate": 0.9548987079760991,
+    "envelopes": 0.03229316702345386,
+    "total": 0.9964524590177462,
+    "blocks": 2.0125939045101404e-05,
+    "matrix_products": 0.0
+   },
+   "stability": "marginal",
+   "max_real": 2.2334775498562395e-11
+  },
+  "fixed_pf_ramp:Malaga154": {
+   "kind": "param",
+   "t": 1.016904833028093,
+   "timing": {
+    "residual_and_restore": 0.009497249964624643,
+    "reduce_forcing": 0.0007905420497991145,
+    "propagate": 0.948553082998842,
+    "envelopes": 0.057867374969646335,
+    "total": 1.016708249982912,
+    "blocks": 3.779097460210323e-05,
+    "matrix_products": 0.0
+   },
+   "stability": "marginal",
+   "max_real": 2.2334775498562395e-11
+  },
+  "fixed_pf_ramp:Cuenca530": {
+   "kind": "param",
+   "t": 1.1566517089959234,
+   "timing": {
+    "residual_and_restore": 0.008508999948389828,
+    "reduce_forcing": 0.0007469170377589762,
+    "propagate": 0.9591272920370102,
+    "envelopes": 0.18774633295834064,
+    "total": 1.1561295419814996,
+    "blocks": 8.471001638099551e-05,
+    "matrix_products": 0.0
+   },
+   "stability": "marginal",
+   "max_real": 2.2334775498562395e-11
+  },
+  "load_disconnection:PQ_1113": {
+   "kind": "switch",
+   "t": 12.135071083030198,
+   "timing": {
+    "jump_newton": 0.07256733300164342,
+    "post_mode": 4.951396792021114,
+    "restore": 0.009932040993589908,
+    "post_mode_factor": 0.03427591698709875,
+    "post_mode_reduce": 2.125348582980223,
+    "post_mode_eig": 1.6110823749913834,
+    "post_mode_balance": 1.1776832499890588,
+    "propagate": 7.087501832982525,
+    "envelopes": 0.006379458005540073,
+    "total": 12.127777457004413,
+    "blocks": 6.117106874997262,
+    "matrix_products": 27.0
+   },
+   "stability": "marginal",
+   "max_real": 0.0
+  },
+  "load_disconnection:PQ_1016": {
+   "kind": "switch",
+   "t": 12.110685124993324,
+   "timing": {
+    "jump_newton": 0.07301745802396908,
+    "post_mode": 5.1060424169991165,
+    "restore": 0.008198166964575648,
+    "post_mode_factor": 0.034106167033314705,
+    "post_mode_reduce": 2.3466808749944903,
+    "post_mode_eig": 1.5032501249806955,
+    "post_mode_balance": 1.219263790990226,
+    "propagate": 6.910770207992755,
+    "envelopes": 0.006539624999277294,
+    "total": 12.104567874979693,
+    "blocks": 5.883673332980834,
+    "matrix_products": 27.0
+   },
+   "stability": "marginal",
+   "max_real": 1.205849656238378e-14
+  },
+  "load_disconnection:PQ_1013": {
+   "kind": "switch",
+   "t": 11.77174312499119,
+   "timing": {
+    "jump_newton": 0.07380408397875726,
+    "post_mode": 5.189775250037201,
+    "restore": 0.008048832998611033,
+    "post_mode_factor": 0.03856570803327486,
+    "post_mode_reduce": 2.24564354197355,
+    "post_mode_eig": 1.6979636250180192,
+    "post_mode_balance": 1.2047448750236072,
+    "propagate": 6.488419166998938,
+    "envelopes": 0.006156250019557774,
+    "total": 11.766203584033065,
+    "blocks": 5.526884332997724,
+    "matrix_products": 27.0
+   },
+   "stability": "marginal",
+   "max_real": 0.0
+  },
+  "load_disconnection:PQ_1054": {
+   "kind": "switch",
+   "t": 11.313889624958392,
+   "timing": {
+    "jump_newton": 0.07560074998764321,
+    "post_mode": 4.936476584000047,
+    "restore": 0.008180416014511138,
+    "post_mode_factor": 0.03425641602370888,
+    "post_mode_reduce": 2.0740187499905005,
+    "post_mode_eig": 1.6445273749995977,
+    "post_mode_balance": 1.1807078340207227,
+    "propagate": 6.281611707992852,
+    "envelopes": 0.006290749995969236,
+    "total": 11.308160207991023,
+    "blocks": 5.324202542018611,
+    "matrix_products": 27.0
+   },
+   "stability": "marginal",
+   "max_real": 0.0
+  },
+  "load_disconnection:PQ_998": {
+   "kind": "switch",
+   "t": 11.116920125030447,
+   "timing": {
+    "jump_newton": 0.07530745898839086,
+    "post_mode": 4.927991208038293,
+    "restore": 0.00809941696934402,
+    "post_mode_factor": 0.03356479201465845,
+    "post_mode_reduce": 2.0292484579840675,
+    "post_mode_eig": 1.6878027089987881,
+    "post_mode_balance": 1.174624415987637,
+    "propagate": 6.09377062501153,
+    "envelopes": 0.006216291978489608,
+    "total": 11.111385000986047,
+    "blocks": 5.145774500037078,
+    "matrix_products": 27.0
+   },
+   "stability": "marginal",
+   "max_real": 0.0
+  },
+  "load_disconnection:PQ_1094": {
+   "kind": "switch",
+   "t": 11.73252262501046,
+   "timing": {
+    "jump_newton": 0.07324900000821799,
+    "post_mode": 4.891667041985784,
+    "restore": 0.00804204202722758,
+    "post_mode_factor": 0.03412008302984759,
+    "post_mode_reduce": 1.9780004170024768,
+    "post_mode_eig": 1.6961440409650095,
+    "post_mode_balance": 1.1807182499906048,
+    "propagate": 6.747569083003327,
+    "envelopes": 0.006205583980772644,
+    "total": 11.72673275100533,
+    "blocks": 5.783064540999476,
+    "matrix_products": 27.0
+   },
+   "stability": "marginal",
+   "max_real": 0.0
+  },
+  "load_disconnection:PQ_1090": {
+   "kind": "switch",
+   "t": 11.270812332979403,
+   "timing": {
+    "jump_newton": 0.07171241700416431,
+    "post_mode": 4.9184152919915505,
+    "restore": 0.00857458304380998,
+    "post_mode_factor": 0.03386649995809421,
+    "post_mode_reduce": 2.0658289170241915,
+    "post_mode_eig": 1.6339688749867491,
+    "post_mode_balance": 1.1819527079933323,
+    "propagate": 6.260085791989695,
+    "envelopes": 0.006230957980733365,
+    "total": 11.265019042009953,
+    "blocks": 5.290110667003319,
+    "matrix_products": 27.0
+   },
+   "stability": "marginal",
+   "max_real": 3.6751201040741144e-14
+  },
+  "load_disconnection:PQ_1224": {
+   "kind": "switch",
+   "t": 11.401998082990758,
+   "timing": {
+    "jump_newton": 0.07202379096997902,
+    "post_mode": 4.949629500042647,
+    "restore": 0.007973874977324158,
+    "post_mode_factor": 0.03337437502341345,
+    "post_mode_reduce": 2.0120138339698315,
+    "post_mode_eig": 1.7302448330447078,
+    "post_mode_balance": 1.1711487919674255,
+    "propagate": 6.360120958008338,
+    "envelopes": 0.0062939999625086784,
+    "total": 11.396042123960797,
+    "blocks": 5.407206540985499,
+    "matrix_products": 27.0
+   },
+   "stability": "marginal",
+   "max_real": 0.0
+  },
+  "generator_trip:GENROU_279": {
+   "kind": "switch",
+   "t": 11.632059332972858,
+   "timing": {
+    "jump_newton": 0.08863916603149846,
+    "post_mode": 5.008700874983333,
+    "restore": 0.007834333984646946,
+    "post_mode_factor": 0.03414949995931238,
+    "post_mode_reduce": 2.0447007920010947,
+    "post_mode_eig": 1.7424688750179484,
+    "post_mode_balance": 1.1846588749904186,
+    "propagate": 6.379148459003773,
+    "envelopes": 0.14196741598425433,
+    "total": 11.626290249987505,
+    "blocks": 5.445442541968077,
+    "matrix_products": 27.0
+   },
+   "stability": "marginal",
+   "max_real": 0.0
+  },
+  "generator_trip:GENROU_321": {
+   "kind": "switch",
+   "t": 11.202717374952044,
+   "timing": {
+    "jump_newton": 0.0729372079949826,
+    "post_mode": 4.931645291973837,
+    "restore": 0.008058583014644682,
+    "post_mode_factor": 0.03351145802298561,
+    "post_mode_reduce": 2.060293707996607,
+    "post_mode_eig": 1.6675503340084106,
+    "post_mode_balance": 1.1674404160003178,
+    "propagate": 6.178167457983363,
+    "envelopes": 0.006111833034083247,
+    "total": 11.19692037400091,
+    "blocks": 5.222166166990064,
+    "matrix_products": 27.0
+   },
+   "stability": "marginal",
+   "max_real": 3.767906125995424e-14
+  },
+  "generator_trip:GENROU_322": {
+   "kind": "switch",
+   "t": 11.341892707976513,
+   "timing": {
+    "jump_newton": 0.080925083020702,
+    "post_mode": 4.859950084006414,
+    "restore": 0.00832779100164771,
+    "post_mode_factor": 0.03320891596376896,
+    "post_mode_reduce": 2.002097958989907,
+    "post_mode_eig": 1.641375583014451,
+    "post_mode_balance": 1.1804800420068204,
+    "propagate": 6.380742375040427,
+    "envelopes": 0.00626387499505654,
+    "total": 11.336209208064247,
+    "blocks": 5.421594958053902,
+    "matrix_products": 27.0
+   },
+   "stability": "marginal",
+   "max_real": 7.085499721670718e-14
+  },
+  "generator_trip:GENROU_352": {
+   "kind": "switch",
+   "t": 11.115594958944712,
+   "timing": {
+    "jump_newton": 0.07468962500570342,
+    "post_mode": 4.855354792030994,
+    "restore": 0.007836791977752,
+    "post_mode_factor": 0.033780083002056926,
+    "post_mode_reduce": 1.975948375009466,
+    "post_mode_eig": 1.7020477500045672,
+    "post_mode_balance": 1.1407902499777265,
+    "propagate": 6.1662105830037035,
+    "envelopes": 0.005994458973873407,
+    "total": 11.110086250992026,
+    "blocks": 5.216662792023271,
+    "matrix_products": 27.0
+   },
+   "stability": "marginal",
+   "max_real": 0.0
+  },
+  "generator_trip:GENROU_349": {
+   "kind": "switch",
+   "t": 11.305453333014157,
+   "timing": {
+    "jump_newton": 0.07379916700301692,
+    "post_mode": 4.911737499991432,
+    "restore": 0.007960540999192744,
+    "post_mode_factor": 0.03448924998519942,
+    "post_mode_reduce": 1.9911618329933845,
+    "post_mode_eig": 1.6803681250312366,
+    "post_mode_balance": 1.2029293340165168,
+    "propagate": 6.300546500016935,
+    "envelopes": 0.006072665972169489,
+    "total": 11.300116373982746,
+    "blocks": 5.359334749984555,
+    "matrix_products": 27.0
+   },
+   "stability": "marginal",
+   "max_real": 8.163326785382008e-14
+  },
+  "generator_trip:GENROU_350": {
+   "kind": "switch",
+   "t": 11.303719625051599,
+   "timing": {
+    "jump_newton": 0.07073066697921604,
+    "post_mode": 5.004977833013982,
+    "restore": 0.010267667006701231,
+    "post_mode_factor": 0.03447145799873397,
+    "post_mode_reduce": 2.03569604200311,
+    "post_mode_eig": 1.7739169579581358,
+    "post_mode_balance": 1.1581366670434363,
+    "propagate": 6.20622045797063,
+    "envelopes": 0.006064374989364296,
+    "total": 11.298260999959894,
+    "blocks": 5.260173583053984,
+    "matrix_products": 27.0
+   },
+   "stability": "marginal",
+   "max_real": 0.0
+  },
+  "generation_redispatch:TGOV1_271->TGOV1_168": {
+   "kind": "param",
+   "t": 1.0484727500006557,
+   "timing": {
+    "residual_and_restore": 0.008337417035363615,
+    "reduce_forcing": 0.0012431659852154553,
+    "propagate": 1.0326384999789298,
+    "envelopes": 0.00608725001802668,
+    "total": 1.0483063330175355,
+    "blocks": 1.4999997802078724e-05,
+    "matrix_products": 0.0
+   },
+   "stability": "marginal",
+   "max_real": 2.2334775498562395e-11
+  },
+  "generation_redispatch:TGOV1_272->TGOV1_110": {
+   "kind": "param",
+   "t": 0.968762666976545,
+   "timing": {
+    "residual_and_restore": 0.008719166973605752,
+    "reduce_forcing": 0.0008350000134669244,
+    "propagate": 0.9529134159674868,
+    "envelopes": 0.00614779198076576,
+    "total": 0.9686153749353252,
+    "blocks": 5.374953616410494e-06,
+    "matrix_products": 0.0
+   },
+   "stability": "marginal",
+   "max_real": 2.2334775498562395e-11
+  },
+  "generation_redispatch:TGOV1_300->TGOV1_109": {
+   "kind": "param",
+   "t": 0.9933319590054452,
+   "timing": {
+    "residual_and_restore": 0.008480874996166676,
+    "reduce_forcing": 0.0007473749574273825,
+    "propagate": 0.9780077910399996,
+    "envelopes": 0.005946874967776239,
+    "total": 0.9931829159613699,
+    "blocks": 6.041023880243301e-06,
+    "matrix_products": 0.0
+   },
+   "stability": "marginal",
+   "max_real": 2.2334775498562395e-11
+  },
+  "line_energization:PAR_Line_1766": {
+   "kind": "switch",
+   "t": 11.454162042005919,
+   "timing": {
+    "jump_newton": 0.07176562503445894,
+    "post_mode": 4.976180416997522,
+    "restore": 0.008193041023332626,
+    "post_mode_factor": 0.03367612499278039,
+    "post_mode_reduce": 2.0046285000280477,
+    "post_mode_eig": 1.7384442079928704,
+    "post_mode_balance": 1.1966976670082659,
+    "propagate": 6.374483750027139,
+    "envelopes": 0.017609666974749416,
+    "total": 11.448232500057202,
+    "blocks": 5.422437500033993,
+    "matrix_products": 27.0
+   },
+   "stability": "marginal",
+   "max_real": 1.3742479376688266e-14
+  },
+  "line_energization:PAR_Line_1723": {
+   "kind": "switch",
+   "t": 11.29652208299376,
+   "timing": {
+    "jump_newton": 0.07523858401691541,
+    "post_mode": 4.866823582968209,
+    "restore": 0.007773916993755847,
+    "post_mode_factor": 0.03436179202981293,
+    "post_mode_reduce": 2.0127093329792842,
+    "post_mode_eig": 1.6409807919990271,
+    "post_mode_balance": 1.1758706250111572,
+    "propagate": 6.323615875036921,
+    "envelopes": 0.016897916968446225,
+    "total": 11.290349875984248,
+    "blocks": 5.386514667014126,
+    "matrix_products": 27.0
+   },
+   "stability": "marginal",
+   "max_real": 1.0990991103354553e-14
+  },
+  "capacitor_switching:CAPCAND_1_7415": {
+   "kind": "switch",
+   "t": 11.168694707972463,
+   "timing": {
+    "jump_newton": 0.07194075000006706,
+    "post_mode": 4.797608499997295,
+    "restore": 0.007772874960210174,
+    "post_mode_factor": 0.03400345897534862,
+    "post_mode_reduce": 1.9613577910349704,
+    "post_mode_eig": 1.6085645419661887,
+    "post_mode_balance": 1.1909281249972992,
+    "propagate": 6.279388999973889,
+    "envelopes": 0.006096499972045422,
+    "total": 11.162807624903508,
+    "blocks": 5.31632158299908,
+    "matrix_products": 27.0
+   },
+   "stability": "marginal",
+   "max_real": 7.652255565315791e-14
+  },
+  "capacitor_switching:CAPCAND_2_7029": {
+   "kind": "switch",
+   "t": 11.252694249968044,
+   "timing": {
+    "jump_newton": 0.07160758302779868,
+    "post_mode": 4.809809874976054,
+    "restore": 0.007796375022735447,
+    "post_mode_factor": 0.0336969590280205,
+    "post_mode_reduce": 1.9932544580078684,
+    "post_mode_eig": 1.604789582954254,
+    "post_mode_balance": 1.1752625420340337,
+    "propagate": 6.317723666958045,
+    "envelopes": 0.0401234159944579,
+    "total": 11.247060915979091,
+    "blocks": 5.360541375004686,
+    "matrix_products": 27.0
+   },
+   "stability": "marginal",
+   "max_real": 0.0
+  }
+ }
+}

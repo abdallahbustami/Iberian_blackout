@@ -1,0 +1,562 @@
+{
+ "label": "final_avr",
+ "kwargs": {
+  "tie_scale": 15.0,
+  "voltage_control": "avr",
+  "q_control_tc_s": 10.0,
+  "ehv_surplus_mvar": 1600.0,
+  "uel_tc_s": 1.0,
+  "load_model": "es",
+  "embedded_pv_share": 0.15,
+  "tap_margin_pu": 0.01,
+  "actions": {
+   "res_reduction_mw": 708.0,
+   "net_load_mw": 0.0
+  }
+ },
+ "record": {
+  "area_load_mw": 11444.966820000001,
+  "res_share": 0.45,
+  "fleet_blocks": 26,
+  "fleet_mw": 5446.0,
+  "commitment_c": 1.5,
+  "export_target_mw": 870.0,
+  "export_reduction_mw": 3300.5,
+  "export_base_case_mw": 860.3010227111514,
+  "tie_scale": 15.0,
+  "exciter_completion": "all",
+  "export_counterpart": "rest_load",
+  "pre_cascade_actions": [
+   "OA1a",
+   "OA1b",
+   "OA3"
+  ],
+  "initiating_block": null,
+  "initiating_time_s": 15.0,
+  "voltage_control": "avr",
+  "q_control_tc_s": null,
+  "tap_margin_pu": 0.01,
+  "initial_mesh_closed": 2,
+  "granada_instantaneous": true,
+  "documented_settings": false,
+  "actions": [
+   "RES500"
+  ],
+  "tf_s": 100.0,
+  "ehv_surplus_mvar": 1600.0,
+  "uel_tc_s": 1.0
+ },
+ "tds_ok": false,
+ "final_time_s": 22.934498834405044,
+ "stopped_reason": null,
+ "gsu_tap": 0.92732,
+ "block_trips": 26,
+ "lost_block_p_mw": 5136.059352126107,
+ "generator_trips": 10,
+ "ufls_stages_operated": 5,
+ "ufls_shed_mw": 6014.093492884831,
+ "separation": true,
+ "separation_time_s": 21.910836821,
+ "affected_area_collapse": false,
+ "blackout_emerged": false,
+ "max_collector_v_pu": 1.3151503866691379,
+ "area_net_export_t0_mw": 860.170371314133,
+ "timeline": [
+  [
+   0.0,
+   "operator_action",
+   "RES500"
+  ],
+  [
+   17.35,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   18.35,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   18.37,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   18.39,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   19.07,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   19.49,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   19.74,
+   "plant_trip",
+   "TRIP_Badajoz145"
+  ],
+  [
+   20.03,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   20.04,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   20.19,
+   "plant_trip",
+   "TRIP_Seville550"
+  ],
+  [
+   20.21,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   20.75,
+   "plant_trip",
+   "TRIP_Cadiz128"
+  ],
+  [
+   20.8,
+   "plant_trip",
+   "TRIP_RES05"
+  ],
+  [
+   20.94,
+   "plant_trip",
+   "TRIP_RES04"
+  ],
+  [
+   20.97,
+   "plant_trip",
+   "TRIP_Segovia94"
+  ],
+  [
+   20.97,
+   "plant_trip",
+   "TRIP_RES07"
+  ],
+  [
+   21.04,
+   "plant_trip",
+   "TRIP_Badajoz16"
+  ],
+  [
+   21.09,
+   "plant_trip",
+   "TRIP_Caceres38"
+  ],
+  [
+   21.11,
+   "plant_trip",
+   "TRIP_Badajoz582"
+  ],
+  [
+   21.12,
+   "plant_trip",
+   "TRIP_Cadiz26"
+  ],
+  [
+   21.14,
+   "plant_trip",
+   "TRIP_RES03"
+  ],
+  [
+   21.19,
+   "plant_trip",
+   "TRIP_Badajoz118"
+  ],
+  [
+   21.19,
+   "plant_trip",
+   "TRIP_RES06"
+  ],
+  [
+   21.2,
+   "plant_trip",
+   "TRIP_Granada355"
+  ],
+  [
+   21.22,
+   "plant_trip",
+   "TRIP_Cuenca530"
+  ],
+  [
+   21.22,
+   "plant_trip",
+   "TRIP_RES09"
+  ],
+  [
+   21.24,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   21.27,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   21.28,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   21.29,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   21.3,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   21.31,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   21.32,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   21.33,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   21.34,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   21.35,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   21.36,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   21.38,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   21.39,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   21.4,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   21.911,
+   "out_of_step_separation",
+   "SEPARATION"
+  ],
+  [
+   21.911,
+   "numerical",
+   "RETIRE_OTHER_ISLANDS"
+  ],
+  [
+   22.477,
+   "ufls",
+   "UFLS1"
+  ],
+  [
+   22.557,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   22.586,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   22.586,
+   "ufls",
+   "UFLS2"
+  ],
+  [
+   22.596,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   22.606,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   22.616,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   22.625,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   22.641,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   22.65,
+   "plant_trip",
+   "TRIP_Huelva34"
+  ],
+  [
+   22.65,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   22.659,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   22.668,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   22.668,
+   "ufls",
+   "UFLS3"
+  ],
+  [
+   22.677,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   22.687,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   22.706,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   22.716,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   22.726,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   22.735,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   22.743,
+   "plant_trip",
+   "TRIP_Segovia23"
+  ],
+  [
+   22.743,
+   "plant_trip",
+   "TRIP_Caceres41"
+  ],
+  [
+   22.743,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   22.751,
+   "plant_trip",
+   "TRIP_RES01"
+  ],
+  [
+   22.751,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   22.759,
+   "plant_trip",
+   "TRIP_Badajoz72"
+  ],
+  [
+   22.759,
+   "plant_trip",
+   "TRIP_Malaga154"
+  ],
+  [
+   22.759,
+   "plant_trip",
+   "TRIP_RES02"
+  ],
+  [
+   22.759,
+   "plant_trip",
+   "TRIP_RES08"
+  ],
+  [
+   22.759,
+   "plant_trip",
+   "TRIP_RES10"
+  ],
+  [
+   22.759,
+   "plant_trip_other",
+   "TRIP_GNET_363"
+  ],
+  [
+   22.759,
+   "plant_trip_other",
+   "TRIP_GNET_364"
+  ],
+  [
+   22.759,
+   "plant_trip_other",
+   "TRIP_GNET_365"
+  ],
+  [
+   22.759,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   22.759,
+   "ufls",
+   "UFLS4"
+  ],
+  [
+   22.768,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   22.777,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   22.787,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   22.787,
+   "generator_trip",
+   "GTRIP_GENROU_369"
+  ],
+  [
+   22.797,
+   "plant_trip_other",
+   "TRIP_GNET_435"
+  ],
+  [
+   22.797,
+   "plant_trip_other",
+   "TRIP_GNET_436"
+  ],
+  [
+   22.797,
+   "plant_trip_other",
+   "TRIP_GNET_437"
+  ],
+  [
+   22.797,
+   "plant_trip_other",
+   "TRIP_GNET_438"
+  ],
+  [
+   22.797,
+   "plant_trip_other",
+   "TRIP_GNET_439"
+  ],
+  [
+   22.797,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   22.835,
+   "generator_trip",
+   "GTRIP_GENROU_375"
+  ],
+  [
+   22.844,
+   "generator_trip",
+   "GTRIP_GENROU_296"
+  ],
+  [
+   22.844,
+   "generator_trip",
+   "GTRIP_GENROU_322"
+  ],
+  [
+   22.844,
+   "generator_trip",
+   "GTRIP_GENROU_344"
+  ],
+  [
+   22.852,
+   "generator_trip",
+   "GTRIP_GENROU_321"
+  ],
+  [
+   22.869,
+   "generator_trip",
+   "GTRIP_GENROU_351"
+  ],
+  [
+   22.869,
+   "ufls",
+   "UFLS5"
+  ],
+  [
+   22.921,
+   "generator_trip",
+   "GTRIP_GENROU_350"
+  ],
+  [
+   22.928,
+   "generator_trip",
+   "GTRIP_GENROU_349"
+  ],
+  [
+   22.928,
+   "generator_trip",
+   "GTRIP_GENROU_352"
+  ],
+  [
+   22.934,
+   "tds_nonconvergence",
+   "TDS_STOP"
+  ]
+ ],
+ "wall_s": 139.7614860534668
+}

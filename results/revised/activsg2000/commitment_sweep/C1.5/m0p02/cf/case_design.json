@@ -1,0 +1,2876 @@
+{
+  "config": {
+    "case_id": "activsg2000_stable",
+    "variant": "commitment:C1.5:m0.02:cf",
+    "mode": "physics",
+    "tf_s": 60.0,
+    "tstep_s": 0.01,
+    "tds_tol": 0.0001,
+    "tds_max_iter": 25,
+    "pflow_tol": 1e-08,
+    "affected_area": 7,
+    "load_scale": 0.63,
+    "blocks": [
+      {
+        "name": "Granada355",
+        "p_mw": 355.0,
+        "q_report_mvar": 165.0,
+        "report_cluster": "E3",
+        "source": "ENTSO-E final report p.14 (355 MW, 165 MVAr absorbed)"
+      },
+      {
+        "name": "Badajoz582",
+        "p_mw": 582.0,
+        "q_report_mvar": 165.0,
+        "report_cluster": "E4",
+        "source": "report event chronology (E4a)"
+      },
+      {
+        "name": "Badajoz145",
+        "p_mw": 145.0,
+        "q_report_mvar": 37.0,
+        "report_cluster": "E4",
+        "source": "report event chronology (E4b)"
+      },
+      {
+        "name": "Segovia23",
+        "p_mw": 23.0,
+        "q_report_mvar": null,
+        "report_cluster": "E5",
+        "source": "report table MW; PF assumption"
+      },
+      {
+        "name": "Seville550",
+        "p_mw": 550.0,
+        "q_report_mvar": null,
+        "report_cluster": "E5",
+        "source": "report table MW; PF assumption"
+      },
+      {
+        "name": "Segovia94",
+        "p_mw": 94.0,
+        "q_report_mvar": null,
+        "report_cluster": "E5",
+        "source": "report table MW; PF assumption"
+      },
+      {
+        "name": "Badajoz118",
+        "p_mw": 118.0,
+        "q_report_mvar": null,
+        "report_cluster": "E5",
+        "source": "report table MW; PF assumption"
+      },
+      {
+        "name": "Huelva34",
+        "p_mw": 34.0,
+        "q_report_mvar": null,
+        "report_cluster": "E5",
+        "source": "report table MW; PF assumption"
+      },
+      {
+        "name": "Caceres38",
+        "p_mw": 38.0,
+        "q_report_mvar": null,
+        "report_cluster": "E5",
+        "source": "report table MW; PF assumption"
+      },
+      {
+        "name": "Badajoz72",
+        "p_mw": 72.0,
+        "q_report_mvar": null,
+        "report_cluster": "E5",
+        "source": "report table MW; PF assumption"
+      },
+      {
+        "name": "Badajoz16",
+        "p_mw": 16.0,
+        "q_report_mvar": null,
+        "report_cluster": "E5",
+        "source": "report table MW; PF assumption"
+      },
+      {
+        "name": "Caceres41",
+        "p_mw": 41.0,
+        "q_report_mvar": null,
+        "report_cluster": "E5",
+        "source": "report table MW; PF assumption"
+      },
+      {
+        "name": "Cadiz26",
+        "p_mw": 26.0,
+        "q_report_mvar": null,
+        "report_cluster": "E5",
+        "source": "report table MW; PF assumption"
+      },
+      {
+        "name": "Cadiz128",
+        "p_mw": 128.0,
+        "q_report_mvar": null,
+        "report_cluster": "E5",
+        "source": "report table MW; PF assumption"
+      },
+      {
+        "name": "Malaga154",
+        "p_mw": 154.0,
+        "q_report_mvar": null,
+        "report_cluster": "E5",
+        "source": "report table MW; PF assumption"
+      },
+      {
+        "name": "Cuenca530",
+        "p_mw": 530.0,
+        "q_report_mvar": null,
+        "report_cluster": "E5",
+        "source": "report table MW; PF assumption"
+      }
+    ],
+    "fixed_pf": 0.95,
+    "zone_size": 16,
+    "zone_min_kv": 230.0,
+    "gsu_x_on_rating": 0.12,
+    "gsu_rating_factor": 1.15,
+    "gsu_x_over_r": 40.0,
+    "collector_kv": 34.5,
+    "tap_rule": "margin",
+    "tap_fixed": 0.95,
+    "tap_margin_pu": 0.02,
+    "tap_override": null,
+    "pvd1_ialim": 1.3,
+    "plant_ov_enabled": true,
+    "plant_ov1_delay_s": 1.0,
+    "generator_protection_enabled": true,
+    "pole_slip_deg": 180.0,
+    "ufls_stages": [
+      [
+        0.98,
+        0.075
+      ],
+      [
+        0.976,
+        0.075
+      ],
+      [
+        0.972,
+        0.075
+      ],
+      [
+        0.968,
+        0.075
+      ],
+      [
+        0.964,
+        0.075
+      ],
+      [
+        0.96,
+        0.075
+      ]
+    ],
+    "ufls_delay_s": 0.15,
+    "separation_enabled": true,
+    "separation_angle_deg": 120.0,
+    "separation_delay_s": 0.05,
+    "collapse_voltage_pu": 0.5,
+    "collapse_f_low_pu": 0.95,
+    "collapse_f_high_pu": 1.05,
+    "collapse_dwell_s": 0.5,
+    "pre_cascade_actions": [
+      {
+        "code": "OA1a",
+        "kind": "line_energization",
+        "start_s": 1.0,
+        "duration_s": 0.0,
+        "size": 1.0,
+        "unit": "circuit",
+        "description": "Energize a second circuit in parallel with the 500 kV line of the renewable zone with the largest charging susceptance.",
+        "justification": "Report: TSOs coupled (meshed) EHV lines before 12:32, which adds line-charging MVAr and raises voltage."
+      },
+      {
+        "code": "OA1b",
+        "kind": "line_energization",
+        "start_s": 3.0,
+        "duration_s": 0.0,
+        "size": 1.0,
+        "unit": "circuit",
+        "description": "Energize a second circuit in parallel with the zone 500 kV line with the second-largest charging susceptance.",
+        "justification": "As OA1a."
+      },
+      {
+        "code": "OA2",
+        "kind": "interchange_reduction",
+        "start_s": 5.0,
+        "duration_s": 10.0,
+        "size": 1000.0,
+        "unit": "MW",
+        "description": "Reduce the affected area's export by 1000 MW through governor set points (area governor units down pro rata; the voltage-regulated governor units of the directly tied areas up, pro rata to dispatch).",
+        "justification": "Report: exports to France were reduced (HVDC set-point change); lower EHV loading reduces I^2X absorption and raises voltage. No HVDC exists in ACTIVSg2000, so the exchange change is modeled as a governor redispatch."
+      },
+      {
+        "code": "OA3",
+        "kind": "fixed_pf_res_reduction",
+        "start_s": 5.0,
+        "duration_s": 10.0,
+        "size": 208.0,
+        "unit": "MW",
+        "description": "Reduce the 16 protected plants' output by 208 MW in total (pro rata) at constant power factor (P and Q scaled together).",
+        "justification": "Report event E2: 208 MW RES operating-point change; at fixed power factor the reactive absorption falls with P."
+      }
+    ],
+    "pre_cascade_enabled": true,
+    "preserved_absorption": true,
+    "voltage_mode_res": false,
+    "volt_var_slope": 7.33,
+    "candidate_capacitors_mvar": [
+      50.0,
+      100.0
+    ],
+    "record_every": 2,
+    "forced_separation_at_s": null,
+    "commitment_c": 1.5,
+    "dispatch_rule": "must_run",
+    "must_run_fraction": 0.2,
+    "plant_ov_mode": "standard",
+    "shadow_plant_ov": false,
+    "oa2_counterpart": "exciter_units",
+    "tie_impedance_scale": 1.0,
+    "export_reduction_mw": 0.0,
+    "exciter_completion": "none",
+    "completion_sexs": [],
+    "initiating_block": null,
+    "initiating_time_s": 15.0,
+    "freeze_other_islands_after_separation": true,
+    "load_model": "z"
+  },
+  "plant_protection": [
+    {
+      "name": "OV1",
+      "quantity": "voltage",
+      "direction": "over",
+      "pickup": 1.1,
+      "delay_s": 1.0,
+      "dropout_ratio": 0.98,
+      "basis": "NERC PRC-024-3 HVRT boundary (>=1.10 pu may trip after 1.0 s); IEEE 2800-2022 continuous limit 1.10 pu"
+    },
+    {
+      "name": "OV2",
+      "quantity": "voltage",
+      "direction": "over",
+      "pickup": 1.2,
+      "delay_s": 0.16,
+      "dropout_ratio": 0.98,
+      "basis": "IEEE 1547-2018 OV2 default (1.20 pu, 0.16 s); PRC-024-3 allows instantaneous trip at 1.20 pu"
+    },
+    {
+      "name": "UV1",
+      "quantity": "voltage",
+      "direction": "under",
+      "pickup": 0.75,
+      "delay_s": 2.0,
+      "dropout_ratio": 0.98,
+      "basis": "NERC PRC-024-3 LVRT boundary point (0.75 pu, 2.0 s)"
+    },
+    {
+      "name": "UV2",
+      "quantity": "voltage",
+      "direction": "under",
+      "pickup": 0.45,
+      "delay_s": 0.15,
+      "dropout_ratio": 0.98,
+      "basis": "NERC PRC-024-3 LVRT boundary point (0.45 pu, 0.15 s)"
+    },
+    {
+      "name": "UF",
+      "quantity": "frequency",
+      "direction": "under",
+      "pickup": 0.95,
+      "delay_s": 0.2,
+      "dropout_ratio": 0.999,
+      "basis": "ENTSO-E RfG: units may disconnect below 47.5 Hz (0.95 pu); 0.2 s relay+breaker"
+    },
+    {
+      "name": "OF",
+      "quantity": "frequency",
+      "direction": "over",
+      "pickup": 1.03,
+      "delay_s": 0.2,
+      "dropout_ratio": 0.999,
+      "basis": "ENTSO-E RfG: units may disconnect above 51.5 Hz (1.03 pu); 0.2 s relay+breaker"
+    }
+  ],
+  "generator_protection": [
+    {
+      "name": "OV1",
+      "quantity": "voltage",
+      "direction": "over",
+      "pickup": 1.1,
+      "delay_s": 1.0,
+      "dropout_ratio": 0.98,
+      "basis": "NERC PRC-024-3 HVRT boundary (1.10 pu, 1.0 s)"
+    },
+    {
+      "name": "OV2",
+      "quantity": "voltage",
+      "direction": "over",
+      "pickup": 1.2,
+      "delay_s": 0.16,
+      "dropout_ratio": 0.98,
+      "basis": "1.20 pu, 0.16 s (as plants)"
+    },
+    {
+      "name": "UV1",
+      "quantity": "voltage",
+      "direction": "under",
+      "pickup": 0.75,
+      "delay_s": 2.0,
+      "dropout_ratio": 0.98,
+      "basis": "NERC PRC-024-3 LVRT boundary point (0.75 pu, 2.0 s)"
+    },
+    {
+      "name": "UV2",
+      "quantity": "voltage",
+      "direction": "under",
+      "pickup": 0.45,
+      "delay_s": 0.15,
+      "dropout_ratio": 0.98,
+      "basis": "NERC PRC-024-3 LVRT boundary point (0.45 pu, 0.15 s)"
+    },
+    {
+      "name": "UF",
+      "quantity": "frequency",
+      "direction": "under",
+      "pickup": 0.95,
+      "delay_s": 0.2,
+      "dropout_ratio": 0.999,
+      "basis": "ENTSO-E RfG 47.5 Hz (0.95 pu)"
+    },
+    {
+      "name": "OF",
+      "quantity": "frequency",
+      "direction": "over",
+      "pickup": 1.03,
+      "delay_s": 0.2,
+      "dropout_ratio": 0.999,
+      "basis": "ENTSO-E RfG 51.5 Hz (1.03 pu)"
+    }
+  ],
+  "ufls": {
+    "stages_pu_fraction": [
+      [
+        0.98,
+        0.075
+      ],
+      [
+        0.976,
+        0.075
+      ],
+      [
+        0.972,
+        0.075
+      ],
+      [
+        0.968,
+        0.075
+      ],
+      [
+        0.964,
+        0.075
+      ],
+      [
+        0.96,
+        0.075
+      ]
+    ],
+    "delay_s": 0.15,
+    "basis": "ENTSO-E NC ER (CE): 49.0->48.0 Hz, 6 steps x 7.5% (45% total), no intentional delay (~150 ms operating time)"
+  },
+  "separation": {
+    "threshold_deg": 120.0,
+    "delay_s": 0.05,
+    "measured": "COI rotor-angle difference affected area vs rest, change from pre-disturbance value",
+    "cut_set_branches": [
+      "Line_403",
+      "Line_404",
+      "Line_405",
+      "Line_407",
+      "Line_573",
+      "Line_578",
+      "Line_1304",
+      "Line_1369",
+      "Line_1376",
+      "Line_1439",
+      "Line_1503",
+      "Line_1515",
+      "Line_1543",
+      "Line_1550",
+      "Line_1597",
+      "Line_1604",
+      "Line_1624",
+      "Line_1703",
+      "Line_1940",
+      "Line_2040",
+      "Line_2188"
+    ]
+  },
+  "collapse": {
+    "median_v_pu": 0.5,
+    "f_low_pu": 0.95,
+    "f_high_pu": 1.05,
+    "dwell_s": 0.5
+  },
+  "affected_area": {
+    "area_id": 7,
+    "bus_count": 431,
+    "fragments_moved_out": [
+      7432
+    ],
+    "cut_set_size": 21
+  },
+  "zone": {
+    "center": 7415,
+    "buses": [
+      7415,
+      7029,
+      7407,
+      7059,
+      7018,
+      7058,
+      7042,
+      7274,
+      7095,
+      7043,
+      7304,
+      7096,
+      7341,
+      7019,
+      7305,
+      7186
+    ]
+  },
+  "blocks": [
+    {
+      "name": "Granada355",
+      "cluster": "E3",
+      "p_mw": 355.0,
+      "q_mvar": -165.0,
+      "q_source": "report",
+      "p_source": "ENTSO-E final report p.14 (355 MW, 165 MVAr absorbed)",
+      "hv_bus": 7042,
+      "hv_kv": 500.0,
+      "collector_bus": 8161,
+      "gsu": "GSU_Granada355",
+      "tap": 0.92692,
+      "x_pu_sys": 0.0293937538273117,
+      "r_pu_sys": 0.0007348438456827925,
+      "sn_mva": 408.24999999999994,
+      "zth_pu": 0.004552162003373886,
+      "z0_pu": 1.0182952568965298,
+      "hv_v0_pu": 0.9903238449427504,
+      "pvd1": "PVD1_Granada355"
+    },
+    {
+      "name": "Badajoz582",
+      "cluster": "E4",
+      "p_mw": 582.0,
+      "q_mvar": -165.0,
+      "q_source": "report",
+      "p_source": "report event chronology (E4a)",
+      "hv_bus": 7186,
+      "hv_kv": 500.0,
+      "collector_bus": 8162,
+      "gsu": "GSU_Badajoz582",
+      "tap": 0.92692,
+      "x_pu_sys": 0.017929179740026894,
+      "r_pu_sys": 0.00044822949350067237,
+      "sn_mva": 669.3,
+      "zth_pu": 0.0030253065675193078,
+      "z0_pu": 1.079983612937884,
+      "hv_v0_pu": 1.0281734333780832,
+      "pvd1": "PVD1_Badajoz582"
+    },
+    {
+      "name": "Badajoz145",
+      "cluster": "E4",
+      "p_mw": 145.0,
+      "q_mvar": -37.0,
+      "q_source": "report",
+      "p_source": "report event chronology (E4b)",
+      "hv_bus": 7341,
+      "hv_kv": 500.0,
+      "collector_bus": 8163,
+      "gsu": "GSU_Badajoz145",
+      "tap": 0.92692,
+      "x_pu_sys": 0.07196401799100449,
+      "r_pu_sys": 0.0017991004497751122,
+      "sn_mva": 166.75,
+      "zth_pu": 0.004927818406271791,
+      "z0_pu": 1.0746646815819163,
+      "hv_v0_pu": 1.0208702893590513,
+      "pvd1": "PVD1_Badajoz145"
+    },
+    {
+      "name": "Segovia23",
+      "cluster": "E5",
+      "p_mw": 23.0,
+      "q_mvar": -7.559734419113854,
+      "q_source": "PF 0.95 absorbing (assumption)",
+      "p_source": "report table MW; PF assumption",
+      "hv_bus": 7029,
+      "hv_kv": 230.0,
+      "collector_bus": 8164,
+      "gsu": "GSU_Segovia23",
+      "tap": 0.92692,
+      "x_pu_sys": 0.45368620037807184,
+      "r_pu_sys": 0.011342155009451797,
+      "sn_mva": 26.45,
+      "zth_pu": 0.01617235565288693,
+      "z0_pu": 1.0349987351338272,
+      "hv_v0_pu": 0.9922242857775099,
+      "pvd1": "PVD1_Segovia23"
+    },
+    {
+      "name": "Seville550",
+      "cluster": "E5",
+      "p_mw": 550.0,
+      "q_mvar": -180.77625784837477,
+      "q_source": "PF 0.95 absorbing (assumption)",
+      "p_source": "report table MW; PF assumption",
+      "hv_bus": 7058,
+      "hv_kv": 500.0,
+      "collector_bus": 8165,
+      "gsu": "GSU_Seville550",
+      "tap": 0.92692,
+      "x_pu_sys": 0.018972332015810278,
+      "r_pu_sys": 0.00047430830039525695,
+      "sn_mva": 632.5,
+      "zth_pu": 0.0040044093273264815,
+      "z0_pu": 1.0341203872483373,
+      "hv_v0_pu": 0.9914453879773719,
+      "pvd1": "PVD1_Seville550"
+    },
+    {
+      "name": "Segovia94",
+      "cluster": "E5",
+      "p_mw": 94.0,
+      "q_mvar": -30.896305886813142,
+      "q_source": "PF 0.95 absorbing (assumption)",
+      "p_source": "report table MW; PF assumption",
+      "hv_bus": 7305,
+      "hv_kv": 230.0,
+      "collector_bus": 8166,
+      "gsu": "GSU_Segovia94",
+      "tap": 0.92692,
+      "x_pu_sys": 0.11100832562442184,
+      "r_pu_sys": 0.002775208140610546,
+      "sn_mva": 108.1,
+      "zth_pu": 0.009432685843091804,
+      "z0_pu": 1.0644431624684692,
+      "hv_v0_pu": 1.0183774398695966,
+      "pvd1": "PVD1_Segovia94"
+    },
+    {
+      "name": "Badajoz118",
+      "cluster": "E5",
+      "p_mw": 118.0,
+      "q_mvar": -38.784724411105856,
+      "q_source": "PF 0.95 absorbing (assumption)",
+      "p_source": "report table MW; PF assumption",
+      "hv_bus": 7043,
+      "hv_kv": 230.0,
+      "collector_bus": 8167,
+      "gsu": "GSU_Badajoz118",
+      "tap": 0.92692,
+      "x_pu_sys": 0.08843036109064113,
+      "r_pu_sys": 0.0022107590272660285,
+      "sn_mva": 135.7,
+      "zth_pu": 0.008953730631389925,
+      "z0_pu": 1.0337025775641926,
+      "hv_v0_pu": 0.9910749448829628,
+      "pvd1": "PVD1_Badajoz118"
+    },
+    {
+      "name": "Huelva34",
+      "cluster": "E5",
+      "p_mw": 34.0,
+      "q_mvar": -11.175259576081348,
+      "q_source": "PF 0.95 absorbing (assumption)",
+      "p_source": "report table MW; PF assumption",
+      "hv_bus": 7019,
+      "hv_kv": 230.0,
+      "collector_bus": 8168,
+      "gsu": "GSU_Huelva34",
+      "tap": 0.92692,
+      "x_pu_sys": 0.30690537084398983,
+      "r_pu_sys": 0.007672634271099746,
+      "sn_mva": 39.099999999999994,
+      "zth_pu": 0.013056674888860725,
+      "z0_pu": 1.0351500307447163,
+      "hv_v0_pu": 0.9923584539960004,
+      "pvd1": "PVD1_Huelva34"
+    },
+    {
+      "name": "Caceres38",
+      "cluster": "E5",
+      "p_mw": 38.0,
+      "q_mvar": -12.489995996796802,
+      "q_source": "PF 0.95 absorbing (assumption)",
+      "p_source": "report table MW; PF assumption",
+      "hv_bus": 7059,
+      "hv_kv": 230.0,
+      "collector_bus": 8169,
+      "gsu": "GSU_Caceres38",
+      "tap": 0.92692,
+      "x_pu_sys": 0.2745995423340961,
+      "r_pu_sys": 0.006864988558352403,
+      "sn_mva": 43.699999999999996,
+      "zth_pu": 0.010928970575106568,
+      "z0_pu": 1.0343866094217233,
+      "hv_v0_pu": 0.9916814762957608,
+      "pvd1": "PVD1_Caceres38"
+    },
+    {
+      "name": "Badajoz72",
+      "cluster": "E5",
+      "p_mw": 72.0,
+      "q_mvar": -23.665255572878152,
+      "q_source": "PF 0.95 absorbing (assumption)",
+      "p_source": "report table MW; PF assumption",
+      "hv_bus": 7274,
+      "hv_kv": 230.0,
+      "collector_bus": 8170,
+      "gsu": "GSU_Badajoz72",
+      "tap": 0.92692,
+      "x_pu_sys": 0.14492753623188406,
+      "r_pu_sys": 0.0036231884057971015,
+      "sn_mva": 82.8,
+      "zth_pu": 0.009797312113312374,
+      "z0_pu": 1.0422211519167572,
+      "hv_v0_pu": 0.9986316608622728,
+      "pvd1": "PVD1_Badajoz72"
+    },
+    {
+      "name": "Badajoz16",
+      "cluster": "E5",
+      "p_mw": 16.0,
+      "q_mvar": -5.258945682861811,
+      "q_source": "PF 0.95 absorbing (assumption)",
+      "p_source": "report table MW; PF assumption",
+      "hv_bus": 7415,
+      "hv_kv": 230.0,
+      "collector_bus": 8171,
+      "gsu": "GSU_Badajoz16",
+      "tap": 0.92692,
+      "x_pu_sys": 0.6521739130434783,
+      "r_pu_sys": 0.016304347826086956,
+      "sn_mva": 18.4,
+      "zth_pu": 0.02032352826580442,
+      "z0_pu": 1.0340886926936432,
+      "hv_v0_pu": 0.9914173103244455,
+      "pvd1": "PVD1_Badajoz16"
+    },
+    {
+      "name": "Caceres41",
+      "cluster": "E5",
+      "p_mw": 41.0,
+      "q_mvar": -13.476048312333392,
+      "q_source": "PF 0.95 absorbing (assumption)",
+      "p_source": "report table MW; PF assumption",
+      "hv_bus": 7407,
+      "hv_kv": 230.0,
+      "collector_bus": 8172,
+      "gsu": "GSU_Caceres41",
+      "tap": 0.92692,
+      "x_pu_sys": 0.25450689289501593,
+      "r_pu_sys": 0.006362672322375399,
+      "sn_mva": 47.15,
+      "zth_pu": 0.01019834858703931,
+      "z0_pu": 1.0340361278480998,
+      "hv_v0_pu": 0.9913707000370996,
+      "pvd1": "PVD1_Caceres41"
+    },
+    {
+      "name": "Cadiz26",
+      "cluster": "E5",
+      "p_mw": 26.0,
+      "q_mvar": -8.545786734650443,
+      "q_source": "PF 0.95 absorbing (assumption)",
+      "p_source": "report table MW; PF assumption",
+      "hv_bus": 7096,
+      "hv_kv": 230.0,
+      "collector_bus": 8173,
+      "gsu": "GSU_Cadiz26",
+      "tap": 0.92692,
+      "x_pu_sys": 0.4013377926421405,
+      "r_pu_sys": 0.010033444816053512,
+      "sn_mva": 29.9,
+      "zth_pu": 0.014254501211535939,
+      "z0_pu": 1.0478807363797262,
+      "hv_v0_pu": 1.0036561517383593,
+      "pvd1": "PVD1_Cadiz26"
+    },
+    {
+      "name": "Cadiz128",
+      "cluster": "E5",
+      "p_mw": 128.0,
+      "q_mvar": -42.07156546289449,
+      "q_source": "PF 0.95 absorbing (assumption)",
+      "p_source": "report table MW; PF assumption",
+      "hv_bus": 7304,
+      "hv_kv": 500.0,
+      "collector_bus": 8174,
+      "gsu": "GSU_Cadiz128",
+      "tap": 0.92692,
+      "x_pu_sys": 0.08152173913043478,
+      "r_pu_sys": 0.0020380434782608695,
+      "sn_mva": 147.2,
+      "zth_pu": 0.005207791194208659,
+      "z0_pu": 1.0564138126614975,
+      "hv_v0_pu": 1.0112374682268903,
+      "pvd1": "PVD1_Cadiz128"
+    },
+    {
+      "name": "Malaga154",
+      "cluster": "E5",
+      "p_mw": 154.0,
+      "q_mvar": -50.61735219754493,
+      "q_source": "PF 0.95 absorbing (assumption)",
+      "p_source": "report table MW; PF assumption",
+      "hv_bus": 7095,
+      "hv_kv": 500.0,
+      "collector_bus": 8175,
+      "gsu": "GSU_Malaga154",
+      "tap": 0.92692,
+      "x_pu_sys": 0.06775832862789384,
+      "r_pu_sys": 0.001693958215697346,
+      "sn_mva": 177.1,
+      "zth_pu": 0.004890396383351721,
+      "z0_pu": 1.0390743570119214,
+      "hv_v0_pu": 0.9958393365974275,
+      "pvd1": "PVD1_Malaga154"
+    },
+    {
+      "name": "Cuenca530",
+      "cluster": "E5",
+      "p_mw": 530.0,
+      "q_mvar": -174.20257574479749,
+      "q_source": "PF 0.95 absorbing (assumption)",
+      "p_source": "report table MW; PF assumption",
+      "hv_bus": 7018,
+      "hv_kv": 500.0,
+      "collector_bus": 8176,
+      "gsu": "GSU_Cuenca530",
+      "tap": 0.92692,
+      "x_pu_sys": 0.019688269073010665,
+      "r_pu_sys": 0.0004922067268252667,
+      "sn_mva": 609.5,
+      "zth_pu": 0.0041193345829819115,
+      "z0_pu": 1.034395973371604,
+      "hv_v0_pu": 0.9916897556957254,
+      "pvd1": "PVD1_Cuenca530"
+    }
+  ],
+  "gnet_pvd1": [
+    "GNET_363",
+    "GNET_364",
+    "GNET_365",
+    "GNET_435",
+    "GNET_436",
+    "GNET_437",
+    "GNET_438",
+    "GNET_439"
+  ],
+  "meshing_lines": {
+    "energized_circuits": [
+      "PAR_Line_2154",
+      "PAR_Line_1848"
+    ],
+    "parallel_to": [
+      "Line_2154",
+      "Line_1848"
+    ]
+  },
+  "candidate_lines": [
+    "PAR_Line_1766",
+    "PAR_Line_1723"
+  ],
+  "candidate_capacitors": [
+    "CAPCAND_1_7415",
+    "CAPCAND_2_7029"
+  ],
+  "regularization_and_corrections": [
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_1",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_2",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_3",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_4",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_5",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_6",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_7",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_8",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_9",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_10",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_11",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_12",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_13",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_14",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_15",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_16",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_17",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_18",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_19",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_20",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_21",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_22",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_23",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_24",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_25",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_26",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_27",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_28",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_29",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_30",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_31",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_32",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_33",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_34",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_35",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_36",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_37",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_38",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_39",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_40",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_41",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_42",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_43",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_44",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_45",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_46",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_47",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_48",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_49",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_50",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_51",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_52",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_53",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_54",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_55",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_56",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_57",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_58",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_59",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_60",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_61",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_1",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_2",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_3",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_4",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_5",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_6",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_7",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_8",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_9",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_10",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_11",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_12",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_13",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_14",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_15",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_16",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_17",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_18",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_19",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_20",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_21",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_22",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_23",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_24",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_25",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_26",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_27",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_28",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_29",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_30",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_31",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_32",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_33",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_34",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_35",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_36",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_37",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_38",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_39",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_40",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_41",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_42",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_43",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_44",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_45",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_46",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_47",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_48",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_49",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_50",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_51",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_52",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_53",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_54",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_55",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_56",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_57",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_58",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_59",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_60",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_61",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "ESDC1A",
+      "idx": "ESDC1A_8",
+      "reason": "exciter not in equilibrium at TDS init (regulator limits); disabled -> constant field"
+    },
+    {
+      "model": "IEEET1",
+      "idx": "IEEET1_21",
+      "reason": "exciter not in equilibrium at TDS init (regulator limits); disabled -> constant field"
+    }
+  ],
+  "gsu_tap": 0.92692,
+  "notes": {
+    "load_scale": 0.63,
+    "area_load_mw_before_scaling": 18166.614,
+    "area_load_reduction_mw": 6721.647180000001,
+    "area_sync_dispatch_mw_before": 21322.529999999995,
+    "sync_dispatch_factor": 0.5484753835497006,
+    "block_total_mw": 2906.0,
+    "armed_res_reduction_fraction": 0.0,
+    "interchange_reduction_mw": 0.0,
+    "interchange_counterpart_areas": [
+      4,
+      6,
+      8
+    ],
+    "interchange_area_governors": 40,
+    "interchange_counterpart_governors": 16,
+    "commitment": {
+      "commitment_c": 1.5,
+      "dispatch_rule": "must_run",
+      "rule": "ascending MVA rating, then bus id, then idx; slack unit kept; stop at capacity <= C x dispatch",
+      "c_ratio": 1.5,
+      "dispatch_mw_for_rule": 12935.548819999995,
+      "capacity_limit_mva": 19403.32322999999,
+      "before": {
+        "units": 137,
+        "mva": 31278.500000000015
+      },
+      "decommitted": [
+        {
+          "genrou": "GENROU_381",
+          "bus": 7422,
+          "sn_mva": 8.16,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_311",
+          "bus": 7189,
+          "sn_mva": 8.28,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_315",
+          "bus": 7193,
+          "sn_mva": 9.0,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_301",
+          "bus": 7146,
+          "sn_mva": 12.24,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_402",
+          "bus": 7428,
+          "sn_mva": 14.04,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_291",
+          "bus": 7133,
+          "sn_mva": 19.56,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_353",
+          "bus": 7357,
+          "sn_mva": 19.56,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_261",
+          "bus": 7021,
+          "sn_mva": 26.88,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_314",
+          "bus": 7192,
+          "sn_mva": 42.0,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_262",
+          "bus": 7022,
+          "sn_mva": 56.88,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_263",
+          "bus": 7023,
+          "sn_mva": 56.88,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_312",
+          "bus": 7190,
+          "sn_mva": 57.6,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_281",
+          "bus": 7108,
+          "sn_mva": 61.2,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_282",
+          "bus": 7109,
+          "sn_mva": 61.2,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_297",
+          "bus": 7139,
+          "sn_mva": 70.8,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_298",
+          "bus": 7140,
+          "sn_mva": 70.8,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_299",
+          "bus": 7141,
+          "sn_mva": 70.8,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_300",
+          "bus": 7142,
+          "sn_mva": 70.8,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_376",
+          "bus": 7406,
+          "sn_mva": 75.72,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_370",
+          "bus": 7400,
+          "sn_mva": 86.4,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_371",
+          "bus": 7400,
+          "sn_mva": 86.4,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_372",
+          "bus": 7400,
+          "sn_mva": 86.4,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_373",
+          "bus": 7400,
+          "sn_mva": 86.4,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_400",
+          "bus": 7428,
+          "sn_mva": 90.0,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_308",
+          "bus": 7168,
+          "sn_mva": 105.26,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_309",
+          "bus": 7169,
+          "sn_mva": 105.26,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_379",
+          "bus": 7419,
+          "sn_mva": 105.84,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_380",
+          "bus": 7419,
+          "sn_mva": 105.84,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_327",
+          "bus": 7267,
+          "sn_mva": 108.768,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_328",
+          "bus": 7268,
+          "sn_mva": 108.768,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_329",
+          "bus": 7269,
+          "sn_mva": 108.768,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_264",
+          "bus": 7024,
+          "sn_mva": 113.76,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_333",
+          "bus": 7307,
+          "sn_mva": 116.02,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_334",
+          "bus": 7308,
+          "sn_mva": 116.02,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_336",
+          "bus": 7310,
+          "sn_mva": 116.02,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_392",
+          "bus": 7428,
+          "sn_mva": 120.62,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_395",
+          "bus": 7428,
+          "sn_mva": 120.62,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_396",
+          "bus": 7428,
+          "sn_mva": 120.62,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_397",
+          "bus": 7428,
+          "sn_mva": 120.62,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_398",
+          "bus": 7428,
+          "sn_mva": 120.62,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_399",
+          "bus": 7428,
+          "sn_mva": 120.62,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_342",
+          "bus": 7329,
+          "sn_mva": 122.28,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_378",
+          "bus": 7414,
+          "sn_mva": 122.88,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_357",
+          "bus": 7361,
+          "sn_mva": 123.24,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_358",
+          "bus": 7369,
+          "sn_mva": 128.72,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_359",
+          "bus": 7370,
+          "sn_mva": 128.72,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_360",
+          "bus": 7371,
+          "sn_mva": 128.72,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_361",
+          "bus": 7372,
+          "sn_mva": 128.72,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_362",
+          "bus": 7373,
+          "sn_mva": 128.72,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_363",
+          "bus": 7374,
+          "sn_mva": 128.72,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_302",
+          "bus": 7162,
+          "sn_mva": 132.72,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_303",
+          "bus": 7163,
+          "sn_mva": 132.72,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_304",
+          "bus": 7164,
+          "sn_mva": 132.72,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_305",
+          "bus": 7165,
+          "sn_mva": 132.72,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_306",
+          "bus": 7166,
+          "sn_mva": 132.72,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_307",
+          "bus": 7167,
+          "sn_mva": 132.72,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_384",
+          "bus": 7422,
+          "sn_mva": 135.0,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_385",
+          "bus": 7422,
+          "sn_mva": 135.0,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_386",
+          "bus": 7422,
+          "sn_mva": 135.0,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_387",
+          "bus": 7422,
+          "sn_mva": 135.0,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_268",
+          "bus": 7061,
+          "sn_mva": 137.88,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_269",
+          "bus": 7062,
+          "sn_mva": 137.88,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_270",
+          "bus": 7063,
+          "sn_mva": 137.88,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_271",
+          "bus": 7064,
+          "sn_mva": 137.88,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_272",
+          "bus": 7065,
+          "sn_mva": 137.88,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_273",
+          "bus": 7066,
+          "sn_mva": 137.88,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_338",
+          "bus": 7323,
+          "sn_mva": 149.37,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_339",
+          "bus": 7324,
+          "sn_mva": 149.37,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_340",
+          "bus": 7325,
+          "sn_mva": 149.37,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_341",
+          "bus": 7326,
+          "sn_mva": 149.37,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_393",
+          "bus": 7428,
+          "sn_mva": 156.0,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_394",
+          "bus": 7428,
+          "sn_mva": 156.0,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_374",
+          "bus": 7400,
+          "sn_mva": 172.8,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_280",
+          "bus": 7107,
+          "sn_mva": 180.0,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_255",
+          "bus": 7005,
+          "sn_mva": 195.6,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_256",
+          "bus": 7006,
+          "sn_mva": 195.6,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_257",
+          "bus": 7007,
+          "sn_mva": 195.6,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_258",
+          "bus": 7008,
+          "sn_mva": 195.6,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_259",
+          "bus": 7009,
+          "sn_mva": 195.6,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_382",
+          "bus": 7422,
+          "sn_mva": 206.64,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_383",
+          "bus": 7422,
+          "sn_mva": 206.64,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_389",
+          "bus": 7422,
+          "sn_mva": 206.64,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_390",
+          "bus": 7422,
+          "sn_mva": 206.64,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_391",
+          "bus": 7422,
+          "sn_mva": 206.64,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_323",
+          "bus": 7210,
+          "sn_mva": 214.2,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_324",
+          "bus": 7211,
+          "sn_mva": 214.2,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_325",
+          "bus": 7212,
+          "sn_mva": 214.2,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_330",
+          "bus": 7270,
+          "sn_mva": 217.536,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_364",
+          "bus": 7375,
+          "sn_mva": 220.392,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_365",
+          "bus": 7376,
+          "sn_mva": 220.392,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_366",
+          "bus": 7377,
+          "sn_mva": 220.392,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_367",
+          "bus": 7378,
+          "sn_mva": 220.392,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_368",
+          "bus": 7379,
+          "sn_mva": 220.392,
+          "had_exciter": false
+        },
+        {
+          "genrou": "GENROU_266",
+          "bus": 7045,
+          "sn_mva": 226.14,
+          "had_exciter": false
+        }
+      ],
+      "decommitted_count": 94,
+      "decommitted_mva": 11948.08,
+      "dispatch": {
+        "rule": "must_run",
+        "k": 0.8578130586934849,
+        "units": 42,
+        "target_mw": 11694.882819999995,
+        "units_at_must_run": 0,
+        "units_at_capability": 0,
+        "must_run_fraction": 0.2
+      },
+      "area_online_sync_units": 43,
+      "area_online_sync_mva": 19330.420000000006,
+      "area_online_units_with_exciter": 11,
+      "area_online_units_with_governor": 40
+    },
+    "exciter_completion": {
+      "mode": "none",
+      "added": 0
+    },
+    "tie_impedance_scale": 1.0,
+    "ties_scaled": 0,
+    "export_reduction_mw": 0.0,
+    "candidate_count": 74,
+    "zone_center": 7415,
+    "zone_center_distance_to_regulation_pu_x": 0.06005,
+    "zone_distance_from_center_pu_x": {
+      "7415": 0.0,
+      "7029": 0.01579,
+      "7407": 0.04248,
+      "7059": 0.046919999999999996,
+      "7018": 0.0484,
+      "7058": 0.04855,
+      "7042": 0.05105,
+      "7274": 0.05135,
+      "7095": 0.056260000000000004,
+      "7043": 0.060129999999999996,
+      "7304": 0.06481,
+      "7096": 0.06952,
+      "7341": 0.07345,
+      "7019": 0.07503,
+      "7305": 0.07722000000000001,
+      "7186": 0.07984
+    },
+    "zone_zth_pu": {
+      "7415": 0.02032352826580442,
+      "7029": 0.01617235565288693,
+      "7407": 0.01019834858703931,
+      "7059": 0.010928970575106568,
+      "7018": 0.0041193345829819115,
+      "7058": 0.0040044093273264815,
+      "7042": 0.004552162003373886,
+      "7274": 0.009797312113312374,
+      "7095": 0.004890396383351721,
+      "7043": 0.008953730631389925,
+      "7304": 0.005207791194208659,
+      "7096": 0.014254501211535939,
+      "7341": 0.004927818406271791,
+      "7019": 0.013056674888860725,
+      "7305": 0.009432685843091804,
+      "7186": 0.0030253065675193078
+    },
+    "zone_500kv_lines_by_charging": [
+      "Line_2154",
+      "Line_1848",
+      "Line_1766",
+      "Line_1723",
+      "Line_2002",
+      "Line_1678"
+    ],
+    "pflow": {
+      "outer": 12,
+      "switch_operations": 112,
+      "n_pq": 112,
+      "back_switching_frozen": false,
+      "complementarity_residual_units": 0
+    },
+    "init_algebraic_settle": {
+      "max_abs_g_before": 22.55461787977503,
+      "variable": "Se ESDC1A 8",
+      "iterations": 2,
+      "variables_solved": 17,
+      "max_abs_g_after": 4.189174007684926e-11
+    },
+    "init_max_abs_dxdt": 3.94545507376165e-14,
+    "init_max_abs_dxdt_state": "INT_y IEEET1 24"
+  },
+  "pre_cascade_actions": [
+    {
+      "code": "OA1a",
+      "kind": "line_energization",
+      "start_s": 1.0,
+      "duration_s": 0.0,
+      "size": 1.0,
+      "unit": "circuit",
+      "description": "Energize a second circuit in parallel with the 500 kV line of the renewable zone with the largest charging susceptance.",
+      "justification": "Report: TSOs coupled (meshed) EHV lines before 12:32, which adds line-charging MVAr and raises voltage."
+    },
+    {
+      "code": "OA1b",
+      "kind": "line_energization",
+      "start_s": 3.0,
+      "duration_s": 0.0,
+      "size": 1.0,
+      "unit": "circuit",
+      "description": "Energize a second circuit in parallel with the zone 500 kV line with the second-largest charging susceptance.",
+      "justification": "As OA1a."
+    },
+    {
+      "code": "OA2",
+      "kind": "interchange_reduction",
+      "start_s": 5.0,
+      "duration_s": 10.0,
+      "size": 1000.0,
+      "unit": "MW",
+      "description": "Reduce the affected area's export by 1000 MW through governor set points (area governor units down pro rata; the voltage-regulated governor units of the directly tied areas up, pro rata to dispatch).",
+      "justification": "Report: exports to France were reduced (HVDC set-point change); lower EHV loading reduces I^2X absorption and raises voltage. No HVDC exists in ACTIVSg2000, so the exchange change is modeled as a governor redispatch."
+    },
+    {
+      "code": "OA3",
+      "kind": "fixed_pf_res_reduction",
+      "start_s": 5.0,
+      "duration_s": 10.0,
+      "size": 208.0,
+      "unit": "MW",
+      "description": "Reduce the 16 protected plants' output by 208 MW in total (pro rata) at constant power factor (P and Q scaled together).",
+      "justification": "Report event E2: 208 MW RES operating-point change; at fixed power factor the reactive absorption falls with P."
+    }
+  ]
+}

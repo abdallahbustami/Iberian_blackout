@@ -1,0 +1,7149 @@
+{
+  "schema": "pa_dvsa.benchmarks/case_design/v1",
+  "slug": "npcc",
+  "label": "NPCC 140-bus",
+  "case": "npcc/npcc.raw",
+  "addfile": "npcc/npcc_full.dyr",
+  "variant": {
+    "name": "baseline",
+    "relays_disabled": false,
+    "relay_pickup_pu": 1.1,
+    "relay_dwell_s": 0.05,
+    "plant_control": "fixed power factor",
+    "plant_trip_preserves_absorption": false,
+    "description": "light-load high-voltage scenario, fixed-PF plants, relay 1.10 pu / 50 ms"
+  },
+  "system_mva": 100.0,
+  "system_freq_hz": 60.0,
+  "preparation": {
+    "regularization": [],
+    "disabled_timed_events": [],
+    "load_scale": 1.0,
+    "rating_corrections": []
+  },
+  "constants": {
+    "res_share_of_load": 0.5,
+    "load_scale": 0.6,
+    "block_p_spread": 0.3,
+    "plant_pf": 0.95,
+    "must_run_fraction": 0.2,
+    "kappa_q_over_p": -0.3286841051788632,
+    "plant_sn_over_p": 1.15,
+    "gsu_x_device_pu": 0.12,
+    "gsu_x_over_r": 40.0,
+    "collector_kv": 34.5,
+    "z0_range_pu": [
+      1.06,
+      1.092
+    ],
+    "tap_range": [
+      0.9,
+      1.1
+    ],
+    "q_design_rel_tol": 0.01,
+    "scr_min": 3.0,
+    "plant_spacing_pu": 0.005,
+    "strong_quantile": 0.5,
+    "relay_pickup_pu": 1.1,
+    "hv_min_kv": 200.0,
+    "n_clusters": 4,
+    "pvd1_ialim": 1.3,
+    "pvd1_qlim_device": 0.6,
+    "pvd1_fixed_pf": {
+      "dqdv": -1.0,
+      "v0": 0.01,
+      "v1": 5.0
+    },
+    "pvd1_trip_disabled": {
+      "vt0": 0.005,
+      "vt1": 0.01,
+      "vt2": 5.0,
+      "vt3": 6.0,
+      "ft0": 0.05,
+      "ft1": 0.1,
+      "ft2": 999.0,
+      "ft3": 1000.0,
+      "recflag": 0
+    },
+    "voltage_mode_breakpoint_offset_pu": 0.0001,
+    "voltage_mode_saturation_dv_pu": 0.05,
+    "p_permutation_alpha": 0.6180339887498949,
+    "z0_permutation_alpha": 0.41421356237309515,
+    "tds_defaults": {
+      "tf": 2.0,
+      "tstep": 0.005,
+      "no_tqdm": 1,
+      "criteria": 0
+    }
+  },
+  "scenario": {
+    "name": "light_load",
+    "load_scale": 0.6,
+    "res_share": 0.5,
+    "tap_range": [
+      0.9,
+      1.1
+    ],
+    "dispatch_rule": "proportional_must_run",
+    "must_run_fraction": 0.2,
+    "description": "light load (every PQ load at 60 % of the stock P and Q), RES = 50 % of the scaled load, all synchronous units online with one common dispatch factor and a must-run minimum, stock voltage set points, taps within +/-10 %",
+    "res_share_requested": 0.5,
+    "res_share_capped": false,
+    "res_share_reason": "requested share feasible",
+    "res_share_search": [
+      {
+        "res_share": 0.5,
+        "feasible": true
+      }
+    ]
+  },
+  "uel": {
+    "applied": false
+  },
+  "dispatch": {
+    "rule": "proportional_must_run",
+    "load_stock_mw": 27689.000000000004,
+    "load_scale": 0.6,
+    "load_p_mw": 16613.4,
+    "load_p_gross_mw": 16816.800000000003,
+    "res_p_total_mw": 8306.7,
+    "res_share_of_load": 0.5,
+    "dispatch_scale": 0.2570296296649569,
+    "target_sync_mw": 8567.530957357481,
+    "stock_losses_mw": 358.03755688612,
+    "sync_pv_p0_total_stock_mw": 27581.0,
+    "sync_pv_p0_total_new_mw": 8447.745496701078,
+    "slack_scheduled_mw": 119.78546065640224,
+    "slack_pf_mw": 119.7854606922117,
+    "loss_corrected": true,
+    "feasible": true,
+    "n_units": 48,
+    "n_at_must_run": 29,
+    "n_must_run_governor_basis": 27,
+    "n_fixed_nonpositive": 0,
+    "must_run_total_mw": 7889.30751137723,
+    "units": [
+      {
+        "idx": 1,
+        "kind": "PV",
+        "bus": 21,
+        "p0_pu": 650.0,
+        "pmax_pu": 9999.0,
+        "rating_pu": 750.0,
+        "capability_pu": 750.0,
+        "governor_min_pu": 225.0,
+        "must_run_pu": 225.1,
+        "must_run_basis": "governor VMIN",
+        "p_new_pu": 225.1,
+        "at_must_run": true
+      },
+      {
+        "idx": 2,
+        "kind": "PV",
+        "bus": 22,
+        "p0_pu": 632.0,
+        "pmax_pu": 9999.0,
+        "rating_pu": 700.0,
+        "capability_pu": 700.0,
+        "governor_min_pu": 210.0,
+        "must_run_pu": 210.1,
+        "must_run_basis": "governor VMIN",
+        "p_new_pu": 210.1,
+        "at_must_run": true
+      },
+      {
+        "idx": 3,
+        "kind": "PV",
+        "bus": 23,
+        "p0_pu": 276.65,
+        "pmax_pu": 9999.0,
+        "rating_pu": 300.0,
+        "capability_pu": 300.0,
+        "governor_min_pu": 89.99999999999999,
+        "must_run_pu": 90.1,
+        "must_run_basis": "governor VMIN",
+        "p_new_pu": 90.1,
+        "at_must_run": true
+      },
+      {
+        "idx": 4,
+        "kind": "PV",
+        "bus": 23,
+        "p0_pu": 226.35,
+        "pmax_pu": 9999.0,
+        "rating_pu": 300.0,
+        "capability_pu": 300.0,
+        "governor_min_pu": 89.99999999999999,
+        "must_run_pu": 90.1,
+        "must_run_basis": "governor VMIN",
+        "p_new_pu": 90.1,
+        "at_must_run": true
+      },
+      {
+        "idx": 5,
+        "kind": "PV",
+        "bus": 24,
+        "p0_pu": 700.0,
+        "pmax_pu": 9999.0,
+        "rating_pu": 800.0,
+        "capability_pu": 800.0,
+        "governor_min_pu": 240.0,
+        "must_run_pu": 240.09999999999997,
+        "must_run_basis": "governor VMIN",
+        "p_new_pu": 240.09999999999997,
+        "at_must_run": true
+      },
+      {
+        "idx": 6,
+        "kind": "PV",
+        "bus": 25,
+        "p0_pu": 560.0,
+        "pmax_pu": 9999.0,
+        "rating_pu": 650.0,
+        "capability_pu": 650.0,
+        "governor_min_pu": 195.0,
+        "must_run_pu": 195.1,
+        "must_run_basis": "governor VMIN",
+        "p_new_pu": 195.1,
+        "at_must_run": true
+      },
+      {
+        "idx": 7,
+        "kind": "PV",
+        "bus": 26,
+        "p0_pu": 800.0,
+        "pmax_pu": 9999.0,
+        "rating_pu": 900.0,
+        "capability_pu": 900.0,
+        "governor_min_pu": 270.0,
+        "must_run_pu": 270.09999999999997,
+        "must_run_basis": "governor VMIN",
+        "p_new_pu": 270.09999999999997,
+        "at_must_run": true
+      },
+      {
+        "idx": 8,
+        "kind": "PV",
+        "bus": 27,
+        "p0_pu": 540.0,
+        "pmax_pu": 9999.0,
+        "rating_pu": 600.0,
+        "capability_pu": 600.0,
+        "governor_min_pu": 179.99999999999997,
+        "must_run_pu": 180.09999999999997,
+        "must_run_basis": "governor VMIN",
+        "p_new_pu": 180.09999999999997,
+        "at_must_run": true
+      },
+      {
+        "idx": 9,
+        "kind": "PV",
+        "bus": 36,
+        "p0_pu": 554.0,
+        "pmax_pu": 9999.0,
+        "rating_pu": 650.0,
+        "capability_pu": 650.0,
+        "governor_min_pu": 195.0,
+        "must_run_pu": 195.1,
+        "must_run_basis": "governor VMIN",
+        "p_new_pu": 195.1,
+        "at_must_run": true
+      },
+      {
+        "idx": 10,
+        "kind": "PV",
+        "bus": 42,
+        "p0_pu": 370.0,
+        "pmax_pu": 9999.0,
+        "rating_pu": 400.0,
+        "capability_pu": 400.0,
+        "governor_min_pu": 120.0,
+        "must_run_pu": 120.09999999999998,
+        "must_run_basis": "governor VMIN",
+        "p_new_pu": 120.09999999999998,
+        "at_must_run": true
+      },
+      {
+        "idx": 11,
+        "kind": "PV",
+        "bus": 47,
+        "p0_pu": 400.0,
+        "pmax_pu": 9999.0,
+        "rating_pu": 450.0,
+        "capability_pu": 450.0,
+        "governor_min_pu": 135.0,
+        "must_run_pu": 135.09999999999997,
+        "must_run_basis": "governor VMIN",
+        "p_new_pu": 135.09999999999997,
+        "at_must_run": true
+      },
+      {
+        "idx": 12,
+        "kind": "PV",
+        "bus": 48,
+        "p0_pu": 400.0,
+        "pmax_pu": 9999.0,
+        "rating_pu": 500.0,
+        "capability_pu": 500.0,
+        "governor_min_pu": 150.0,
+        "must_run_pu": 150.1,
+        "must_run_basis": "governor VMIN",
+        "p_new_pu": 150.1,
+        "at_must_run": true
+      },
+      {
+        "idx": 13,
+        "kind": "PV",
+        "bus": 50,
+        "p0_pu": 600.0,
+        "pmax_pu": 9999.0,
+        "rating_pu": 700.0,
+        "capability_pu": 700.0,
+        "governor_min_pu": 210.0,
+        "must_run_pu": 210.1,
+        "must_run_basis": "governor VMIN",
+        "p_new_pu": 210.1,
+        "at_must_run": true
+      },
+      {
+        "idx": 14,
+        "kind": "PV",
+        "bus": 51,
+        "p0_pu": 141.0,
+        "pmax_pu": 9999.0,
+        "rating_pu": 150.0,
+        "capability_pu": 150.0,
+        "governor_min_pu": 44.99999999999999,
+        "must_run_pu": 45.099999999999994,
+        "must_run_basis": "governor VMIN",
+        "p_new_pu": 45.099999999999994,
+        "at_must_run": true
+      },
+      {
+        "idx": 15,
+        "kind": "PV",
+        "bus": 53,
+        "p0_pu": 833.0,
+        "pmax_pu": 9999.0,
+        "rating_pu": 100.0,
+        "capability_pu": 833.0,
+        "governor_min_pu": null,
+        "must_run_pu": 166.60000000000002,
+        "must_run_basis": "20 % capability",
+        "p_new_pu": 214.1056815109091,
+        "at_must_run": false
+      },
+      {
+        "idx": 16,
+        "kind": "PV",
+        "bus": 54,
+        "p0_pu": 557.5,
+        "pmax_pu": 9999.0,
+        "rating_pu": 650.0,
+        "capability_pu": 650.0,
+        "governor_min_pu": 195.0,
+        "must_run_pu": 195.1,
+        "must_run_basis": "governor VMIN",
+        "p_new_pu": 195.1,
+        "at_must_run": true
+      },
+      {
+        "idx": 17,
+        "kind": "PV",
+        "bus": 54,
+        "p0_pu": 557.5,
+        "pmax_pu": 9999.0,
+        "rating_pu": 650.0,
+        "capability_pu": 650.0,
+        "governor_min_pu": 195.0,
+        "must_run_pu": 195.1,
+        "must_run_basis": "governor VMIN",
+        "p_new_pu": 195.1,
+        "at_must_run": true
+      },
+      {
+        "idx": 18,
+        "kind": "PV",
+        "bus": 55,
+        "p0_pu": 1095.0,
+        "pmax_pu": 9999.0,
+        "rating_pu": 1200.0,
+        "capability_pu": 1200.0,
+        "governor_min_pu": 359.99999999999994,
+        "must_run_pu": 360.09999999999997,
+        "must_run_basis": "governor VMIN",
+        "p_new_pu": 360.09999999999997,
+        "at_must_run": true
+      },
+      {
+        "idx": 19,
+        "kind": "PV",
+        "bus": 56,
+        "p0_pu": 409.99999999999994,
+        "pmax_pu": 9999.0,
+        "rating_pu": 500.0,
+        "capability_pu": 500.0,
+        "governor_min_pu": 150.0,
+        "must_run_pu": 150.1,
+        "must_run_basis": "governor VMIN",
+        "p_new_pu": 150.1,
+        "at_must_run": true
+      },
+      {
+        "idx": 20,
+        "kind": "PV",
+        "bus": 57,
+        "p0_pu": 298.0,
+        "pmax_pu": 9999.0,
+        "rating_pu": 350.0,
+        "capability_pu": 350.0,
+        "governor_min_pu": 105.0,
+        "must_run_pu": 105.1,
+        "must_run_basis": "governor VMIN",
+        "p_new_pu": 105.1,
+        "at_must_run": true
+      },
+      {
+        "idx": 21,
+        "kind": "PV",
+        "bus": 60,
+        "p0_pu": 409.99999999999994,
+        "pmax_pu": 9999.0,
+        "rating_pu": 450.0,
+        "capability_pu": 450.0,
+        "governor_min_pu": 135.0,
+        "must_run_pu": 135.09999999999997,
+        "must_run_basis": "governor VMIN",
+        "p_new_pu": 135.09999999999997,
+        "at_must_run": true
+      },
+      {
+        "idx": 22,
+        "kind": "PV",
+        "bus": 61,
+        "p0_pu": 194.0,
+        "pmax_pu": 9999.0,
+        "rating_pu": 200.0,
+        "capability_pu": 200.0,
+        "governor_min_pu": 60.0,
+        "must_run_pu": 60.099999999999994,
+        "must_run_basis": "governor VMIN",
+        "p_new_pu": 60.099999999999994,
+        "at_must_run": true
+      },
+      {
+        "idx": 23,
+        "kind": "PV",
+        "bus": 65,
+        "p0_pu": 91.0,
+        "pmax_pu": 9999.0,
+        "rating_pu": 100.0,
+        "capability_pu": 100.0,
+        "governor_min_pu": null,
+        "must_run_pu": 20.0,
+        "must_run_basis": "20 % capability",
+        "p_new_pu": 23.38969629951108,
+        "at_must_run": false
+      },
+      {
+        "idx": 24,
+        "kind": "PV",
+        "bus": 68,
+        "p0_pu": 66.0,
+        "pmax_pu": 9999.0,
+        "rating_pu": 100.0,
+        "capability_pu": 100.0,
+        "governor_min_pu": null,
+        "must_run_pu": 20.0,
+        "must_run_basis": "20 % capability",
+        "p_new_pu": 20.0,
+        "at_must_run": true
+      },
+      {
+        "idx": 25,
+        "kind": "PV",
+        "bus": 71,
+        "p0_pu": 134.0,
+        "pmax_pu": 9999.0,
+        "rating_pu": 100.0,
+        "capability_pu": 134.0,
+        "governor_min_pu": null,
+        "must_run_pu": 26.8,
+        "must_run_basis": "20 % capability",
+        "p_new_pu": 34.441970375104226,
+        "at_must_run": false
+      },
+      {
+        "idx": 26,
+        "kind": "PV",
+        "bus": 72,
+        "p0_pu": 150.0,
+        "pmax_pu": 9999.0,
+        "rating_pu": 100.0,
+        "capability_pu": 150.0,
+        "governor_min_pu": null,
+        "must_run_pu": 30.000000000000004,
+        "must_run_basis": "20 % capability",
+        "p_new_pu": 38.554444449743535,
+        "at_must_run": false
+      },
+      {
+        "idx": 28,
+        "kind": "PV",
+        "bus": 79,
+        "p0_pu": 1000.0,
+        "pmax_pu": 9999.0,
+        "rating_pu": 1150.0,
+        "capability_pu": 1150.0,
+        "governor_min_pu": 345.0,
+        "must_run_pu": 345.09999999999997,
+        "must_run_basis": "governor VMIN",
+        "p_new_pu": 345.09999999999997,
+        "at_must_run": true
+      },
+      {
+        "idx": 29,
+        "kind": "PV",
+        "bus": 80,
+        "p0_pu": 720.0,
+        "pmax_pu": 9999.0,
+        "rating_pu": 800.0,
+        "capability_pu": 800.0,
+        "governor_min_pu": 240.0,
+        "must_run_pu": 240.09999999999997,
+        "must_run_basis": "governor VMIN",
+        "p_new_pu": 240.09999999999997,
+        "at_must_run": true
+      },
+      {
+        "idx": 30,
+        "kind": "PV",
+        "bus": 82,
+        "p0_pu": 459.99999999999994,
+        "pmax_pu": 9999.0,
+        "rating_pu": 500.0,
+        "capability_pu": 500.0,
+        "governor_min_pu": 150.0,
+        "must_run_pu": 150.1,
+        "must_run_basis": "governor VMIN",
+        "p_new_pu": 150.1,
+        "at_must_run": true
+      },
+      {
+        "idx": 31,
+        "kind": "PV",
+        "bus": 86,
+        "p0_pu": 1650.0,
+        "pmax_pu": 9999.0,
+        "rating_pu": 1900.0,
+        "capability_pu": 1900.0,
+        "governor_min_pu": 570.0,
+        "must_run_pu": 570.1,
+        "must_run_basis": "governor VMIN",
+        "p_new_pu": 570.1,
+        "at_must_run": true
+      },
+      {
+        "idx": 32,
+        "kind": "PV",
+        "bus": 91,
+        "p0_pu": 930.0000000000001,
+        "pmax_pu": 9999.0,
+        "rating_pu": 100.0,
+        "capability_pu": 930.0000000000001,
+        "governor_min_pu": null,
+        "must_run_pu": 186.00000000000003,
+        "must_run_basis": "20 % capability",
+        "p_new_pu": 239.03755558840993,
+        "at_must_run": false
+      },
+      {
+        "idx": 33,
+        "kind": "PV",
+        "bus": 92,
+        "p0_pu": 450.0,
+        "pmax_pu": 9999.0,
+        "rating_pu": 100.0,
+        "capability_pu": 450.0,
+        "governor_min_pu": null,
+        "must_run_pu": 90.0,
+        "must_run_basis": "20 % capability",
+        "p_new_pu": 115.6633333492306,
+        "at_must_run": false
+      },
+      {
+        "idx": 34,
+        "kind": "PV",
+        "bus": 97,
+        "p0_pu": 600.0,
+        "pmax_pu": 9999.0,
+        "rating_pu": 100.0,
+        "capability_pu": 600.0,
+        "governor_min_pu": null,
+        "must_run_pu": 120.00000000000001,
+        "must_run_basis": "20 % capability",
+        "p_new_pu": 154.21777779897414,
+        "at_must_run": false
+      },
+      {
+        "idx": 35,
+        "kind": "PV",
+        "bus": 98,
+        "p0_pu": 585.0,
+        "pmax_pu": 9999.0,
+        "rating_pu": 650.0,
+        "capability_pu": 650.0,
+        "governor_min_pu": 195.0,
+        "must_run_pu": 195.1,
+        "must_run_basis": "governor VMIN",
+        "p_new_pu": 195.1,
+        "at_must_run": true
+      },
+      {
+        "idx": 36,
+        "kind": "PV",
+        "bus": 101,
+        "p0_pu": 1200.0,
+        "pmax_pu": 9999.0,
+        "rating_pu": 1350.0,
+        "capability_pu": 1350.0,
+        "governor_min_pu": 405.0,
+        "must_run_pu": 405.1,
+        "must_run_basis": "governor VMIN",
+        "p_new_pu": 405.1,
+        "at_must_run": true
+      },
+      {
+        "idx": 37,
+        "kind": "PV",
+        "bus": 115,
+        "p0_pu": 550.0,
+        "pmax_pu": 9999.0,
+        "rating_pu": 100.0,
+        "capability_pu": 550.0,
+        "governor_min_pu": null,
+        "must_run_pu": 110.00000000000001,
+        "must_run_basis": "20 % capability",
+        "p_new_pu": 141.36629631572632,
+        "at_must_run": false
+      },
+      {
+        "idx": 38,
+        "kind": "PV",
+        "bus": 119,
+        "p0_pu": 550.0,
+        "pmax_pu": 9999.0,
+        "rating_pu": 100.0,
+        "capability_pu": 550.0,
+        "governor_min_pu": 30.0,
+        "must_run_pu": 110.00000000000001,
+        "must_run_basis": "20 % capability",
+        "p_new_pu": 141.36629631572632,
+        "at_must_run": false
+      },
+      {
+        "idx": 39,
+        "kind": "PV",
+        "bus": 120,
+        "p0_pu": 700.0,
+        "pmax_pu": 9999.0,
+        "rating_pu": 100.0,
+        "capability_pu": 700.0,
+        "governor_min_pu": null,
+        "must_run_pu": 140.0,
+        "must_run_basis": "20 % capability",
+        "p_new_pu": 179.92074076546984,
+        "at_must_run": false
+      },
+      {
+        "idx": 40,
+        "kind": "PV",
+        "bus": 121,
+        "p0_pu": 145.0,
+        "pmax_pu": 9999.0,
+        "rating_pu": 100.0,
+        "capability_pu": 145.0,
+        "governor_min_pu": null,
+        "must_run_pu": 28.999999999999996,
+        "must_run_basis": "20 % capability",
+        "p_new_pu": 37.26929630141875,
+        "at_must_run": false
+      },
+      {
+        "idx": 41,
+        "kind": "PV",
+        "bus": 122,
+        "p0_pu": 155.0,
+        "pmax_pu": 9999.0,
+        "rating_pu": 100.0,
+        "capability_pu": 155.0,
+        "governor_min_pu": null,
+        "must_run_pu": 31.000000000000007,
+        "must_run_basis": "20 % capability",
+        "p_new_pu": 39.83959259806832,
+        "at_must_run": false
+      },
+      {
+        "idx": 42,
+        "kind": "PV",
+        "bus": 123,
+        "p0_pu": 655.0,
+        "pmax_pu": 9999.0,
+        "rating_pu": 100.0,
+        "capability_pu": 655.0,
+        "governor_min_pu": null,
+        "must_run_pu": 131.0,
+        "must_run_basis": "20 % capability",
+        "p_new_pu": 168.35440743054676,
+        "at_must_run": false
+      },
+      {
+        "idx": 43,
+        "kind": "PV",
+        "bus": 130,
+        "p0_pu": 490.00000000000006,
+        "pmax_pu": 9999.0,
+        "rating_pu": 100.0,
+        "capability_pu": 490.00000000000006,
+        "governor_min_pu": null,
+        "must_run_pu": 98.00000000000001,
+        "must_run_basis": "20 % capability",
+        "p_new_pu": 125.94451853582889,
+        "at_must_run": false
+      },
+      {
+        "idx": 44,
+        "kind": "PV",
+        "bus": 133,
+        "p0_pu": 1700.0,
+        "pmax_pu": 9999.0,
+        "rating_pu": 100.0,
+        "capability_pu": 1700.0,
+        "governor_min_pu": 30.0,
+        "must_run_pu": 340.00000000000006,
+        "must_run_basis": "20 % capability",
+        "p_new_pu": 436.95037043042674,
+        "at_must_run": false
+      },
+      {
+        "idx": 45,
+        "kind": "PV",
+        "bus": 134,
+        "p0_pu": 880.0000000000001,
+        "pmax_pu": 9999.0,
+        "rating_pu": 100.0,
+        "capability_pu": 880.0000000000001,
+        "governor_min_pu": null,
+        "must_run_pu": 176.00000000000003,
+        "must_run_basis": "20 % capability",
+        "p_new_pu": 226.1860741051621,
+        "at_must_run": false
+      },
+      {
+        "idx": 46,
+        "kind": "PV",
+        "bus": 135,
+        "p0_pu": 2330.0,
+        "pmax_pu": 9999.0,
+        "rating_pu": 100.0,
+        "capability_pu": 2330.0,
+        "governor_min_pu": null,
+        "must_run_pu": 466.0,
+        "must_run_basis": "20 % capability",
+        "p_new_pu": 598.8790371193496,
+        "at_must_run": false
+      },
+      {
+        "idx": 47,
+        "kind": "PV",
+        "bus": 137,
+        "p0_pu": 70.0,
+        "pmax_pu": 9999.0,
+        "rating_pu": 100.0,
+        "capability_pu": 100.0,
+        "governor_min_pu": null,
+        "must_run_pu": 20.0,
+        "must_run_basis": "20 % capability",
+        "p_new_pu": 20.0,
+        "at_must_run": true
+      },
+      {
+        "idx": 48,
+        "kind": "PV",
+        "bus": 139,
+        "p0_pu": 114.99999999999999,
+        "pmax_pu": 9999.0,
+        "rating_pu": 100.0,
+        "capability_pu": 114.99999999999999,
+        "governor_min_pu": null,
+        "must_run_pu": 23.0,
+        "must_run_basis": "20 % capability",
+        "p_new_pu": 29.55840741147004,
+        "at_must_run": false
+      },
+      {
+        "idx": 27,
+        "kind": "Slack",
+        "bus": 78,
+        "p0_pu": 466.03755688612597,
+        "pmax_pu": 9999.0,
+        "rating_pu": 100.0,
+        "capability_pu": 466.03755688612597,
+        "governor_min_pu": null,
+        "must_run_pu": 93.20751137722519,
+        "must_run_basis": "20 % capability",
+        "p_new_pu": 119.78546065640224,
+        "at_must_run": false
+      }
+    ],
+    "units_unit_note": "all *_pu fields of 'units' are converted to MW (system base 100 MVA)",
+    "rule_text": "one common factor k for every synchronous unit (PV and slack): P_i = max(k P_i,stock, must-run_i); must-run_i = max(20 % of capability_i, governor VMIN_i), capped at the stock output; capability = min(PV.pmax if < 99 pu, MVA rating if >= stock output); units with stock output <= 0 unchanged; k solved so that the slack produces exactly its own share (loss-corrected on the final power flow); voltage set points unchanged, all units online"
+  },
+  "voltage_profile": {
+    "bus_v_min_pu": 0.9524721006908633,
+    "bus_v_max_pu": 1.07625,
+    "bus_v_min_bus": "88",
+    "bus_v_max_bus": "24",
+    "hv_v_min_pu": 0.9524721006908633,
+    "hv_v_max_pu": 1.0635792350237387,
+    "hv_v_mean_pu": 1.0157541677604571,
+    "n_bus_over_1p10": 0,
+    "n_hv_bus_over_1p10": 0,
+    "kv_levels_over_1p10": [],
+    "block_hv_v_pu": {
+      "RES01": 1.0145050545913525,
+      "RES02": 1.00912608916991,
+      "RES03": 1.0116177403962612,
+      "RES04": 1.0142920064525223,
+      "RES05": 0.9524721006908633,
+      "RES06": 0.978669581758987,
+      "RES07": 1.0143419575980352,
+      "RES08": 0.9991604315868213,
+      "RES09": 1.015545409657229,
+      "RES10": 0.987653858440753,
+      "RES11": 0.9820489860265359,
+      "RES12": 0.9892016436367979,
+      "RES13": 1.0039720716542848,
+      "RES14": 1.027157969441989,
+      "RES15": 1.0298581633220476,
+      "RES16": 1.0147569544413388
+    },
+    "collector_v_pu": {
+      "RES01": 1.0728,
+      "RES02": 1.0877333333333334,
+      "RES03": 1.0664,
+      "RES04": 1.0813333333333335,
+      "RES05": 1.022288942246042,
+      "RES06": 1.0527063704160036,
+      "RES07": 1.0898666666666668,
+      "RES08": 1.0685333333333333,
+      "RES09": 1.0834666666666668,
+      "RES10": 1.0621333333333334,
+      "RES11": 1.0566227483136217,
+      "RES12": 1.0649066663616902,
+      "RES13": 1.0706666666666667,
+      "RES14": 1.0856000000000001,
+      "RES15": 1.0642666666666667,
+      "RES16": 1.0792000000000002
+    },
+    "n_machines": 48,
+    "n_machines_absorbing_q": 11,
+    "machine_q_total_mvar": 4963.679335172359,
+    "machine_q_min_mvar": -868.9497042339848,
+    "machine_q_max_mvar": 826.7139654240057,
+    "machine_q_over_sn_min": -0.497475305995636,
+    "machine_q_over_sn_max": 0.575809940255704,
+    "n_machines_rated": 27,
+    "machines_q_below_minus_half_sn": [
+      {
+        "model": "GENCLS",
+        "idx": "GENCLS_4",
+        "bus": 71,
+        "sn_mva": 100.0,
+        "sn_is_default_100": true,
+        "p_mw": 34.441970375104205,
+        "q_mvar": -400.8752154592565,
+        "q_over_sn": -4.008752154592565,
+        "vf_pu": 0.919850749482768
+      },
+      {
+        "model": "GENCLS",
+        "idx": "GENCLS_16",
+        "bus": 130,
+        "sn_mva": 100.0,
+        "sn_is_default_100": true,
+        "p_mw": 125.94451853582886,
+        "q_mvar": -868.9497042339848,
+        "q_over_sn": -8.689497042339848,
+        "vf_pu": 0.8499765219949347
+      },
+      {
+        "model": "GENCLS",
+        "idx": "GENCLS_17",
+        "bus": 133,
+        "sn_mva": 100.0,
+        "sn_is_default_100": true,
+        "p_mw": 436.9503704304266,
+        "q_mvar": -421.05233139451457,
+        "q_over_sn": -4.210523313945146,
+        "vf_pu": 0.94134774250785
+      },
+      {
+        "model": "GENCLS",
+        "idx": "GENCLS_18",
+        "bus": 134,
+        "sn_mva": 100.0,
+        "sn_is_default_100": true,
+        "p_mw": 226.18607410516213,
+        "q_mvar": -125.93977525562158,
+        "q_over_sn": -1.2593977525562159,
+        "vf_pu": 1.0065043653530445
+      },
+      {
+        "model": "GENCLS",
+        "idx": "GENCLS_19",
+        "bus": 135,
+        "sn_mva": 100.0,
+        "sn_is_default_100": true,
+        "p_mw": 598.8790371193494,
+        "q_mvar": -253.72760438289905,
+        "q_over_sn": -2.5372760438289905,
+        "vf_pu": 0.9773296442149154
+      }
+    ],
+    "internal_angle_max_deg": 30.316791511768532,
+    "internal_angle_p50_deg": 8.26560816859632,
+    "internal_angle_p90_deg": 21.21361920569905,
+    "internal_angle_p99_deg": 29.213224437878733,
+    "n_internal_angle_over_60_deg": 0,
+    "n_internal_angle_over_90_deg": 0,
+    "internal_angle_top": [
+      {
+        "model": "GENROU",
+        "idx": "GENROU_25",
+        "angle_deg": 30.316791511768532
+      },
+      {
+        "model": "GENROU",
+        "idx": "GENROU_28",
+        "angle_deg": 27.968776460939164
+      },
+      {
+        "model": "GENROU",
+        "idx": "GENROU_24",
+        "angle_deg": 25.54057115338495
+      },
+      {
+        "model": "GENROU",
+        "idx": "GENROU_44",
+        "angle_deg": 22.174838004767064
+      },
+      {
+        "model": "GENROU",
+        "idx": "GENROU_43",
+        "angle_deg": 21.958032015316917
+      }
+    ],
+    "min_machine_vf_pu": 0.8283126842230925,
+    "machines_absorbing": [
+      "GENCLS_3",
+      "GENCLS_4",
+      "GENCLS_16",
+      "GENCLS_17",
+      "GENCLS_18",
+      "GENCLS_19",
+      "GENCLS_21",
+      "GENROU_28",
+      "GENROU_32",
+      "GENROU_35",
+      "GENROU_47"
+    ]
+  },
+  "slack": {
+    "idx": 27,
+    "bus": 78,
+    "p_mw": 119.7854606922117,
+    "q_mvar": 382.02020112928557,
+    "pmax_mw": 9999.0,
+    "pmin_mw": -9999.0,
+    "qmax_mvar": 999.0,
+    "qmin_mvar": -999.0,
+    "base_case_p_mw": 466.03755688612597,
+    "base_case_q_mvar": 74.00367083760648,
+    "p_within_limits": true,
+    "q_within_limits": true
+  },
+  "base_case": {
+    "v_range_pu": [
+      0.9523006392983113,
+      1.0762500000000002
+    ],
+    "device_counts": {
+      "buses": 140,
+      "lines": 137,
+      "lines_in_service": 137,
+      "transformers": 96,
+      "transformers_in_service": 96,
+      "machines": 48,
+      "machines_in_service": 48,
+      "machines_models": {
+        "GENCLS": 21,
+        "GENROU": 27
+      },
+      "exciters": 24,
+      "exciters_in_service": 24,
+      "exciters_models": {
+        "IEEEX1": 24
+      },
+      "governors": 29,
+      "governors_in_service": 29,
+      "governors_models": {
+        "TGOV1": 29
+      },
+      "pss": 0,
+      "pss_in_service": 0,
+      "pss_models": {},
+      "loads": 92,
+      "loads_in_service": 92,
+      "loads_models": {
+        "PQ": 92
+      },
+      "shunts": 0,
+      "shunts_in_service": 0,
+      "shunts_models": {},
+      "static_gens": 48,
+      "static_gens_in_service": 48,
+      "static_gens_models": {
+        "PV": 47,
+        "Slack": 1
+      },
+      "der": 0,
+      "der_in_service": 0,
+      "der_models": {},
+      "freq_measurement": 0,
+      "freq_measurement_in_service": 0,
+      "freq_measurement_models": {},
+      "pvd1": 0
+    }
+  },
+  "operating_point": {
+    "v_min_pu": 0.9524721006908633,
+    "v_max_pu": 1.0898666666666668,
+    "v_max_bus": 900007,
+    "v_max_non_collector_pu": 1.07625,
+    "pflow_converged": true,
+    "tds_initialized": true,
+    "tds_init_test_ok": true,
+    "max_abs_fg_at_init": 1.4921397450962104e-13,
+    "controllers_at_limit": []
+  },
+  "placement": {
+    "rule": "candidates: in-service buses with Vn >= 200 kV, no static or synchronous generator, in the slack's island, short-circuit ratio S_sc/P_max >= 3 (S_sc: reactance network, machines through x''d; P_max = largest block). Strong set S: S_sc >= median over candidates. Hubs: strongest bus of S, then farthest-point (max-min effective reactance) sampling within S. Members: clusters take turns adding the nearest unassigned bus to their hub, first from S then from all candidates, skipping buses within 0.005 pu effective reactance of a placed plant (one plant per substation). Ties by bus order.",
+    "strong_quantile": 0.5,
+    "plant_spacing_pu": 0.005,
+    "repairs": [],
+    "n_candidates": 69,
+    "scr_min": 3.0,
+    "p_max_block_mw": 674.9193750000001,
+    "excluded": [
+      {
+        "bus": 83,
+        "reason": "SCR 2.83 < 3",
+        "s_sc_mva": 1906.857654273466
+      },
+      {
+        "bus": 93,
+        "reason": "SCR 2.61 < 3",
+        "s_sc_mva": 1761.6407347628876
+      },
+      {
+        "bus": 95,
+        "reason": "SCR 2.24 < 3",
+        "s_sc_mva": 1510.405573491254
+      },
+      {
+        "bus": 100,
+        "reason": "SCR 2.38 < 3",
+        "s_sc_mva": 1603.1185634278331
+      },
+      {
+        "bus": 138,
+        "reason": "SCR 2.92 < 3",
+        "s_sc_mva": 1972.0866116183904
+      },
+      {
+        "bus": 140,
+        "reason": "SCR 2.55 < 3",
+        "s_sc_mva": 1718.1295691524006
+      }
+    ],
+    "candidates": [
+      1,
+      2,
+      4,
+      5,
+      6,
+      7,
+      13,
+      14,
+      15,
+      16,
+      17,
+      19,
+      20,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      37,
+      38,
+      39,
+      40,
+      43,
+      44,
+      52,
+      58,
+      62,
+      63,
+      66,
+      67,
+      69,
+      70,
+      73,
+      74,
+      76,
+      77,
+      81,
+      85,
+      87,
+      88,
+      89,
+      90,
+      94,
+      99,
+      102,
+      103,
+      104,
+      105,
+      106,
+      107,
+      108,
+      109,
+      110,
+      111,
+      112,
+      114,
+      116,
+      117,
+      124,
+      125,
+      126,
+      127,
+      128,
+      129,
+      131,
+      132,
+      136
+    ],
+    "cluster_seeds": [
+      {
+        "cluster": 0,
+        "seed_bus": "74"
+      },
+      {
+        "cluster": 1,
+        "seed_bus": "88"
+      },
+      {
+        "cluster": 2,
+        "seed_bus": "13"
+      },
+      {
+        "cluster": 3,
+        "seed_bus": "58"
+      }
+    ]
+  },
+  "tap_solve": {
+    "iterations": 10,
+    "converged": true,
+    "history": [
+      {
+        "iteration": 0,
+        "max_abs_v_col_error_pu": 0.041815452969965916,
+        "n_at_limit": 6,
+        "slack_p_pu": 0.27712738889396515,
+        "slack_deviation_pu": -0.9587193205474709
+      },
+      {
+        "iteration": 1,
+        "max_abs_v_col_error_pu": 0.0037286240457599096,
+        "n_at_limit": 4,
+        "slack_p_pu": 1.1843849710445264,
+        "slack_deviation_pu": -0.013991275245823553
+      },
+      {
+        "iteration": 2,
+        "max_abs_v_col_error_pu": 0.0003298663608060082,
+        "n_at_limit": 4,
+        "slack_p_pu": 1.19853184467609,
+        "slack_deviation_pu": 0.0007024315957311345
+      },
+      {
+        "iteration": 3,
+        "max_abs_v_col_error_pu": 2.988048781737973e-05,
+        "n_at_limit": 4,
+        "slack_p_pu": 1.1977938598276894,
+        "slack_deviation_pu": -6.300699920358532e-05
+      },
+      {
+        "iteration": 4,
+        "max_abs_v_col_error_pu": 2.705095752064679e-06,
+        "n_at_limit": 4,
+        "slack_p_pu": 1.197860045308985,
+        "slack_deviation_pu": 5.641039581449903e-06
+      },
+      {
+        "iteration": 5,
+        "max_abs_v_col_error_pu": 2.4489934391525026e-07,
+        "n_at_limit": 4,
+        "slack_p_pu": 1.197854118101713,
+        "slack_deviation_pu": -5.066413606424902e-07
+      },
+      {
+        "iteration": 6,
+        "max_abs_v_col_error_pu": 2.3139864913090946e-08,
+        "n_at_limit": 4,
+        "slack_p_pu": 1.1978546505746102,
+        "slack_deviation_pu": 4.563304245586153e-08
+      },
+      {
+        "iteration": 7,
+        "max_abs_v_col_error_pu": 2.219554762206144e-09,
+        "n_at_limit": 4,
+        "slack_p_pu": 1.19785460260419,
+        "slack_deviation_pu": -4.120892516112917e-09
+      },
+      {
+        "iteration": 8,
+        "max_abs_v_col_error_pu": 2.1226398416729353e-10,
+        "n_at_limit": 4,
+        "slack_p_pu": 1.197854606937016,
+        "slack_deviation_pu": 3.7299363597753654e-10
+      },
+      {
+        "iteration": 9,
+        "max_abs_v_col_error_pu": 1.9597878875288188e-11,
+        "n_at_limit": 4,
+        "slack_p_pu": 1.1978546069034048,
+        "slack_deviation_pu": 3.3938252208542963e-10
+      }
+    ],
+    "tap_at_limit": [
+      false,
+      false,
+      false,
+      false,
+      true,
+      true,
+      false,
+      false,
+      false,
+      false,
+      true,
+      true,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "blocks": [
+    {
+      "asset_id": "RES01",
+      "cluster": 0,
+      "rank_in_cluster": 0,
+      "seed_bus": 74,
+      "hv_bus": 74,
+      "hv_vn_kv": 345.0,
+      "hv_area": 3,
+      "collector_bus": 900001,
+      "gsu_idx": "GSU_RES01",
+      "pv_idx": "PV_RES01",
+      "pvd1_idx": "RES01",
+      "p_mw": 550.318875,
+      "sn_mva": 632.86670625,
+      "q_target_mvar": -180.88106699241368,
+      "gsu_x_device_pu": 0.12,
+      "gsu_r_device_pu": 0.003,
+      "gsu_x_pu_sysbase": 0.018961338748731182,
+      "gsu_r_pu_sysbase": 0.0004740334687182796,
+      "d_to_seed_pu": 0.0,
+      "d_to_slack_pu": 0.0021949682556626085,
+      "tap_initial_guess": 0.9317271116685412,
+      "s_sc_mva": 13138.831574939763,
+      "scr": 23.874942641100148,
+      "tap": 0.9167005946326477,
+      "tap_within_range": true,
+      "z0_design_pu": 1.0728,
+      "z0_op_pu": 1.0728,
+      "tap_at_limit": false,
+      "margin_pu": 0.027200000000000113,
+      "v_hv_op_pu": 1.0145050545913525,
+      "p_op_mw": 550.318875,
+      "q_op_mvar": -180.8810670087185,
+      "q_rel_error": 9.014113211843702e-11,
+      "pf_op": 0.9499999999916506,
+      "drop_op_pu": -0.03389182558771897,
+      "drop_bound_op_pu": 0.10241809891480139,
+      "drop_bound_ilim_pu": 0.15604874238519198
+    },
+    {
+      "asset_id": "RES02",
+      "cluster": 0,
+      "rank_in_cluster": 1,
+      "seed_bus": 74,
+      "hv_bus": 73,
+      "hv_vn_kv": 345.0,
+      "hv_area": 3,
+      "collector_bus": 900002,
+      "gsu_idx": "GSU_RES02",
+      "pv_idx": "PV_RES02",
+      "pvd1_idx": "RES02",
+      "p_mw": 425.71837500000004,
+      "sn_mva": 489.57613125000006,
+      "q_target_mvar": -139.92686314507475,
+      "gsu_x_device_pu": 0.12,
+      "gsu_r_device_pu": 0.003,
+      "gsu_x_pu_sysbase": 0.024510998870311038,
+      "gsu_r_pu_sysbase": 0.000612774971757776,
+      "d_to_seed_pu": 0.009055840534484473,
+      "d_to_slack_pu": 0.01112227299353116,
+      "tap_initial_guess": 0.9248358681735809,
+      "s_sc_mva": 9572.358743588917,
+      "scr": 22.48519045857233,
+      "tap": 0.9001645318008468,
+      "tap_within_range": true,
+      "z0_design_pu": 1.0877333333333334,
+      "z0_op_pu": 1.0877333333333334,
+      "tap_at_limit": false,
+      "margin_pu": 0.012266666666666648,
+      "v_hv_op_pu": 1.00912608916991,
+      "p_op_mw": 425.71837500000004,
+      "q_op_mvar": -139.92686315749197,
+      "q_rel_error": 8.874080735065529e-11,
+      "pf_op": 0.9499999999917803,
+      "drop_op_pu": -0.03331293489840581,
+      "drop_bound_op_pu": 0.10101201567398618,
+      "drop_bound_ilim_pu": 0.15604874238519192
+    },
+    {
+      "asset_id": "RES03",
+      "cluster": 0,
+      "rank_in_cluster": 2,
+      "seed_bus": 74,
+      "hv_bus": 76,
+      "hv_vn_kv": 345.0,
+      "hv_area": 3,
+      "collector_bus": 900003,
+      "gsu_idx": "GSU_RES03",
+      "pv_idx": "PV_RES03",
+      "pvd1_idx": "RES03",
+      "p_mw": 633.385875,
+      "sn_mva": 728.3937562499999,
+      "q_target_mvar": -208.1838695573063,
+      "gsu_x_device_pu": 0.12,
+      "gsu_r_device_pu": 0.003,
+      "gsu_x_pu_sysbase": 0.016474605798077916,
+      "gsu_r_pu_sysbase": 0.0004118651449519479,
+      "d_to_seed_pu": 0.009524191810063873,
+      "d_to_slack_pu": 0.011321766651778177,
+      "tap_initial_guess": 0.9546385585600546,
+      "s_sc_mva": 7115.095539183332,
+      "scr": 11.233429446438684,
+      "tap": 0.9191959729754643,
+      "tap_within_range": true,
+      "z0_design_pu": 1.0664,
+      "z0_op_pu": 1.0664,
+      "tap_at_limit": false,
+      "margin_pu": 0.033600000000000074,
+      "v_hv_op_pu": 1.0116177403962612,
+      "p_op_mw": 633.385875,
+      "q_op_mvar": -208.183869622151,
+      "q_rel_error": 3.1147805792700906e-10,
+      "pf_op": 0.9499999999711494,
+      "drop_op_pu": -0.03414631453793793,
+      "drop_bound_op_pu": 0.10303276117607846,
+      "drop_bound_ilim_pu": 0.15604874238519198
+    },
+    {
+      "asset_id": "RES04",
+      "cluster": 0,
+      "rank_in_cluster": 3,
+      "seed_bus": 74,
+      "hv_bus": 39,
+      "hv_vn_kv": 345.0,
+      "hv_area": 2,
+      "collector_bus": 900004,
+      "gsu_idx": "GSU_RES04",
+      "pv_idx": "PV_RES04",
+      "pvd1_idx": "RES04",
+      "p_mw": 508.78537500000004,
+      "sn_mva": 585.10318125,
+      "q_target_mvar": -167.22966570996738,
+      "gsu_x_device_pu": 0.12,
+      "gsu_r_device_pu": 0.003,
+      "gsu_x_pu_sysbase": 0.020509203136382707,
+      "gsu_r_pu_sysbase": 0.0005127300784095677,
+      "d_to_seed_pu": 0.015868354350501466,
+      "d_to_slack_pu": 0.01782942514770902,
+      "tap_initial_guess": 0.937302585765845,
+      "s_sc_mva": 8256.588032674937,
+      "scr": 16.228037279324184,
+      "tap": 0.9097671728469362,
+      "tap_within_range": true,
+      "z0_design_pu": 1.0813333333333335,
+      "z0_op_pu": 1.0813333333333335,
+      "tap_at_limit": false,
+      "margin_pu": 0.01866666666666661,
+      "v_hv_op_pu": 1.0142920064525223,
+      "p_op_mw": 508.78537500000004,
+      "q_op_mvar": -167.22966574415835,
+      "q_rel_error": 2.0445525160091706e-10,
+      "pf_op": 0.9499999999810622,
+      "drop_op_pu": -0.033558516719352394,
+      "drop_bound_op_pu": 0.10160986730920796,
+      "drop_bound_ilim_pu": 0.15604874238519195
+    },
+    {
+      "asset_id": "RES05",
+      "cluster": 1,
+      "rank_in_cluster": 0,
+      "seed_bus": 88,
+      "hv_bus": 88,
+      "hv_vn_kv": 220.0,
+      "hv_area": 4,
+      "collector_bus": 900005,
+      "gsu_idx": "GSU_RES05",
+      "pv_idx": "PV_RES05",
+      "pvd1_idx": "RES05",
+      "p_mw": 384.18487500000003,
+      "sn_mva": 441.81260625,
+      "q_target_mvar": -126.27546186262843,
+      "gsu_x_device_pu": 0.12,
+      "gsu_r_device_pu": 0.003,
+      "gsu_x_pu_sysbase": 0.027160836586020344,
+      "gsu_r_pu_sysbase": 0.0006790209146505086,
+      "d_to_seed_pu": 0.0,
+      "d_to_slack_pu": 0.07936283797375107,
+      "tap_initial_guess": 0.8930640107438085,
+      "s_sc_mva": 6842.905909438037,
+      "scr": 17.811492213060276,
+      "tap": 0.9,
+      "tap_within_range": true,
+      "z0_design_pu": 1.06,
+      "z0_op_pu": 1.022288942246042,
+      "tap_at_limit": true,
+      "margin_pu": 0.07771105775395815,
+      "v_hv_op_pu": 0.9524721006908633,
+      "p_op_mw": 384.18487500000003,
+      "q_op_mvar": -126.27546186258323,
+      "q_rel_error": 3.580131950886642e-13,
+      "pf_op": 0.9500000000000332,
+      "drop_op_pu": -0.036013391854917254,
+      "drop_bound_op_pu": 0.10747855324877924,
+      "drop_bound_ilim_pu": 0.15604874238519192
+    },
+    {
+      "asset_id": "RES06",
+      "cluster": 1,
+      "rank_in_cluster": 1,
+      "seed_bus": 88,
+      "hv_bus": 85,
+      "hv_vn_kv": 220.0,
+      "hv_area": 4,
+      "collector_bus": 900006,
+      "gsu_idx": "GSU_RES06",
+      "pv_idx": "PV_RES06",
+      "pvd1_idx": "RES06",
+      "p_mw": 591.852375,
+      "sn_mva": 680.63023125,
+      "q_target_mvar": -194.53246827485998,
+      "gsu_x_device_pu": 0.12,
+      "gsu_r_device_pu": 0.003,
+      "gsu_x_pu_sysbase": 0.01763071848566233,
+      "gsu_r_pu_sysbase": 0.00044076796214155827,
+      "d_to_seed_pu": 0.008335544766366554,
+      "d_to_slack_pu": 0.07627213768364573,
+      "tap_initial_guess": 0.8975595399205611,
+      "s_sc_mva": 11359.048571809055,
+      "scr": 19.19236798164247,
+      "tap": 0.9,
+      "tap_within_range": true,
+      "z0_design_pu": 1.0749333333333333,
+      "z0_op_pu": 1.0527063704160036,
+      "tap_at_limit": true,
+      "margin_pu": 0.04729362958399652,
+      "v_hv_op_pu": 0.978669581758987,
+      "p_op_mw": 591.852375,
+      "q_op_mvar": -194.5324682748046,
+      "q_rel_error": 2.847860278548413e-13,
+      "pf_op": 0.9500000000000264,
+      "drop_op_pu": -0.03470427598287085,
+      "drop_bound_op_pu": 0.10437301378865095,
+      "drop_bound_ilim_pu": 0.15604874238519192
+    },
+    {
+      "asset_id": "RES07",
+      "cluster": 1,
+      "rank_in_cluster": 2,
+      "seed_bus": 88,
+      "hv_bus": 87,
+      "hv_vn_kv": 220.0,
+      "hv_area": 4,
+      "collector_bus": 900007,
+      "gsu_idx": "GSU_RES07",
+      "pv_idx": "PV_RES07",
+      "pvd1_idx": "RES07",
+      "p_mw": 467.2518750000001,
+      "sn_mva": 537.3396562500001,
+      "q_target_mvar": -153.57826442752108,
+      "gsu_x_device_pu": 0.12,
+      "gsu_r_device_pu": 0.003,
+      "gsu_x_pu_sysbase": 0.02233224341517228,
+      "gsu_r_pu_sysbase": 0.000558306085379307,
+      "d_to_seed_pu": 0.023453382516703924,
+      "d_to_slack_pu": 0.07539392668988215,
+      "tap_initial_guess": 0.9099017844311585,
+      "s_sc_mva": 12283.372609393577,
+      "scr": 26.28854642775607,
+      "tap": 0.9031637963833324,
+      "tap_within_range": true,
+      "z0_design_pu": 1.0898666666666668,
+      "z0_op_pu": 1.0898666666666668,
+      "tap_at_limit": false,
+      "margin_pu": 0.010133333333333328,
+      "v_hv_op_pu": 1.0143419575980352,
+      "p_op_mw": 467.2518750000001,
+      "q_op_mvar": -153.57826442967988,
+      "q_rel_error": 1.4056718735364666e-11,
+      "pf_op": 0.949999999998698,
+      "drop_op_pu": -0.03323189160140094,
+      "drop_bound_op_pu": 0.10081429212899178,
+      "drop_bound_ilim_pu": 0.15604874238519192
+    },
+    {
+      "asset_id": "RES08",
+      "cluster": 1,
+      "rank_in_cluster": 3,
+      "seed_bus": 88,
+      "hv_bus": 117,
+      "hv_vn_kv": 230.0,
+      "hv_area": 5,
+      "collector_bus": 900008,
+      "gsu_idx": "GSU_RES08",
+      "pv_idx": "PV_RES08",
+      "pvd1_idx": "RES08",
+      "p_mw": 674.9193750000001,
+      "sn_mva": 776.15728125,
+      "q_target_mvar": -221.83527083975264,
+      "gsu_x_device_pu": 0.12,
+      "gsu_r_device_pu": 0.003,
+      "gsu_x_pu_sysbase": 0.01546078390281158,
+      "gsu_r_pu_sysbase": 0.00038651959757028947,
+      "d_to_seed_pu": 0.028056869227750886,
+      "d_to_slack_pu": 0.07822329419676652,
+      "tap_initial_guess": 0.9152015997836935,
+      "s_sc_mva": 12256.896593782225,
+      "scr": 18.16053449907587,
+      "tap": 0.9061903915255033,
+      "tap_within_range": true,
+      "z0_design_pu": 1.0685333333333333,
+      "z0_op_pu": 1.0685333333333333,
+      "tap_at_limit": false,
+      "margin_pu": 0.031466666666666754,
+      "v_hv_op_pu": 0.9991604315868213,
+      "p_op_mw": 674.9193750000001,
+      "q_op_mvar": -221.83527084932936,
+      "q_rel_error": 4.317049928644383e-11,
+      "pf_op": 0.9499999999960013,
+      "drop_op_pu": -0.034061045210903806,
+      "drop_bound_op_pu": 0.10282705563572724,
+      "drop_bound_ilim_pu": 0.15604874238519192
+    },
+    {
+      "asset_id": "RES09",
+      "cluster": 2,
+      "rank_in_cluster": 0,
+      "seed_bus": 13,
+      "hv_bus": 13,
+      "hv_vn_kv": 345.0,
+      "hv_area": 1,
+      "collector_bus": 900009,
+      "gsu_idx": "GSU_RES09",
+      "pv_idx": "PV_RES09",
+      "pvd1_idx": "RES09",
+      "p_mw": 529.552125,
+      "sn_mva": 608.98494375,
+      "q_target_mvar": -174.05536635119051,
+      "gsu_x_device_pu": 0.12,
+      "gsu_r_device_pu": 0.003,
+      "gsu_x_pu_sysbase": 0.019704920660446133,
+      "gsu_r_pu_sysbase": 0.0004926230165111533,
+      "d_to_seed_pu": 0.0,
+      "d_to_slack_pu": 0.07068133669776475,
+      "tap_initial_guess": 0.939725485469685,
+      "s_sc_mva": 6374.6834153291775,
+      "scr": 12.037877131225141,
+      "tap": 0.9092187286229678,
+      "tap_within_range": true,
+      "z0_design_pu": 1.0834666666666668,
+      "z0_op_pu": 1.0834666666666668,
+      "tap_at_limit": false,
+      "margin_pu": 0.01653333333333329,
+      "v_hv_op_pu": 1.015545409657229,
+      "p_op_mw": 529.552125,
+      "q_op_mvar": -174.05536638221713,
+      "q_rel_error": 1.782570923209533e-10,
+      "pf_op": 0.9499999999834889,
+      "drop_op_pu": -0.03347624012463446,
+      "drop_bound_op_pu": 0.10140979865562043,
+      "drop_bound_ilim_pu": 0.15604874238519195
+    },
+    {
+      "asset_id": "RES10",
+      "cluster": 2,
+      "rank_in_cluster": 1,
+      "seed_bus": 13,
+      "hv_bus": 7,
+      "hv_vn_kv": 345.0,
+      "hv_area": 1,
+      "collector_bus": 900010,
+      "gsu_idx": "GSU_RES10",
+      "pv_idx": "PV_RES10",
+      "pvd1_idx": "RES10",
+      "p_mw": 404.9516250000001,
+      "sn_mva": 465.6943687500001,
+      "q_target_mvar": -133.1011625038516,
+      "gsu_x_device_pu": 0.12,
+      "gsu_r_device_pu": 0.003,
+      "gsu_x_pu_sysbase": 0.02576797317135263,
+      "gsu_r_pu_sysbase": 0.0006441993292838157,
+      "d_to_seed_pu": 0.017804487179487155,
+      "d_to_slack_pu": 0.05287684951827769,
+      "tap_initial_guess": 0.9347481813324433,
+      "s_sc_mva": 8382.987243006308,
+      "scr": 20.70120657746788,
+      "tap": 0.9007729399261014,
+      "tap_within_range": true,
+      "z0_design_pu": 1.0621333333333334,
+      "z0_op_pu": 1.0621333333333334,
+      "tap_at_limit": false,
+      "margin_pu": 0.037866666666666715,
+      "v_hv_op_pu": 0.987653858440753,
+      "p_op_mw": 404.9516250000001,
+      "q_op_mvar": -133.10116252472346,
+      "q_rel_error": 1.5681200226513106e-10,
+      "pf_op": 0.9499999999854752,
+      "drop_op_pu": -0.03431818587169433,
+      "drop_bound_op_pu": 0.1034466512520523,
+      "drop_bound_ilim_pu": 0.15604874238519192
+    },
+    {
+      "asset_id": "RES11",
+      "cluster": 2,
+      "rank_in_cluster": 2,
+      "seed_bus": 13,
+      "hv_bus": 15,
+      "hv_vn_kv": 345.0,
+      "hv_area": 1,
+      "collector_bus": 900011,
+      "gsu_idx": "GSU_RES11",
+      "pv_idx": "PV_RES11",
+      "pvd1_idx": "RES11",
+      "p_mw": 612.619125,
+      "sn_mva": 704.51199375,
+      "q_target_mvar": -201.35816891608317,
+      "gsu_x_device_pu": 0.12,
+      "gsu_r_device_pu": 0.003,
+      "gsu_x_pu_sysbase": 0.01703306701157208,
+      "gsu_r_pu_sysbase": 0.000425826675289302,
+      "d_to_seed_pu": 0.019097948717948704,
+      "d_to_slack_pu": 0.05833056746699563,
+      "tap_initial_guess": 0.928132890084092,
+      "s_sc_mva": 6283.298107788841,
+      "scr": 10.256451115183257,
+      "tap": 0.9,
+      "tap_within_range": true,
+      "z0_design_pu": 1.0770666666666668,
+      "z0_op_pu": 1.0566227483136217,
+      "tap_at_limit": true,
+      "margin_pu": 0.043377251686378404,
+      "v_hv_op_pu": 0.9820489860265359,
+      "p_op_mw": 612.619125,
+      "q_op_mvar": -201.3581689042415,
+      "q_rel_error": 5.880905281030824e-11,
+      "pf_op": 0.9500000000054472,
+      "drop_op_pu": -0.03454279171586272,
+      "drop_bound_op_pu": 0.10398615465128237,
+      "drop_bound_ilim_pu": 0.15604874238519192
+    },
+    {
+      "asset_id": "RES12",
+      "cluster": 2,
+      "rank_in_cluster": 3,
+      "seed_bus": 13,
+      "hv_bus": 30,
+      "hv_vn_kv": 345.0,
+      "hv_area": 1,
+      "collector_bus": 900012,
+      "gsu_idx": "GSU_RES12",
+      "pv_idx": "PV_RES12",
+      "pvd1_idx": "RES12",
+      "p_mw": 488.01862500000004,
+      "sn_mva": 561.22141875,
+      "q_target_mvar": -160.4039650687442,
+      "gsu_x_device_pu": 0.12,
+      "gsu_r_device_pu": 0.003,
+      "gsu_x_pu_sysbase": 0.02138193518473942,
+      "gsu_r_pu_sysbase": 0.0005345483796184854,
+      "d_to_seed_pu": 0.0360288879899677,
+      "d_to_slack_pu": 0.04398921475949588,
+      "tap_initial_guess": 0.9065192327481266,
+      "s_sc_mva": 6417.080602127518,
+      "scr": 13.149253478035838,
+      "tap": 0.9,
+      "tap_within_range": true,
+      "z0_design_pu": 1.092,
+      "z0_op_pu": 1.0649066663616902,
+      "tap_at_limit": true,
+      "margin_pu": 0.03509333363830991,
+      "v_hv_op_pu": 0.9892016436367979,
+      "p_op_mw": 488.01862500000004,
+      "q_op_mvar": -160.40396506266447,
+      "q_rel_error": 3.7902796953464956e-11,
+      "pf_op": 0.9500000000035106,
+      "drop_op_pu": -0.03420627101252971,
+      "drop_bound_op_pu": 0.10317724546679571,
+      "drop_bound_ilim_pu": 0.15604874238519192
+    },
+    {
+      "asset_id": "RES13",
+      "cluster": 3,
+      "rank_in_cluster": 0,
+      "seed_bus": 58,
+      "hv_bus": 58,
+      "hv_vn_kv": 230.0,
+      "hv_area": 2,
+      "collector_bus": 900013,
+      "gsu_idx": "GSU_RES13",
+      "pv_idx": "PV_RES13",
+      "pvd1_idx": "RES13",
+      "p_mw": 363.41812500000003,
+      "sn_mva": 417.93084374999995,
+      "q_target_mvar": -119.44976122140527,
+      "gsu_x_device_pu": 0.12,
+      "gsu_r_device_pu": 0.003,
+      "gsu_x_pu_sysbase": 0.028712884390935795,
+      "gsu_r_pu_sysbase": 0.0007178221097733949,
+      "d_to_seed_pu": 0.0,
+      "d_to_slack_pu": 0.06382663066623595,
+      "tap_initial_guess": 0.9180554957241247,
+      "s_sc_mva": 7635.024451700516,
+      "scr": 21.0089258803493,
+      "tap": 0.908865728036594,
+      "tap_within_range": true,
+      "z0_design_pu": 1.0706666666666667,
+      "z0_op_pu": 1.0706666666666667,
+      "tap_at_limit": false,
+      "margin_pu": 0.029333333333333433,
+      "v_hv_op_pu": 1.0039720716542848,
+      "p_op_mw": 363.41812500000003,
+      "q_op_mvar": -119.44976122596651,
+      "q_rel_error": 3.8185428147617124e-11,
+      "pf_op": 0.949999999996463,
+      "drop_op_pu": -0.03397623127068572,
+      "drop_bound_op_pu": 0.10262216984611676,
+      "drop_bound_ilim_pu": 0.15604874238519195
+    },
+    {
+      "asset_id": "RES14",
+      "cluster": 3,
+      "rank_in_cluster": 1,
+      "seed_bus": 58,
+      "hv_bus": 52,
+      "hv_vn_kv": 345.0,
+      "hv_area": 2,
+      "collector_bus": 900014,
+      "gsu_idx": "GSU_RES14",
+      "pv_idx": "PV_RES14",
+      "pvd1_idx": "RES14",
+      "p_mw": 571.085625,
+      "sn_mva": 656.74846875,
+      "q_target_mvar": -187.70676763363684,
+      "gsu_x_device_pu": 0.12,
+      "gsu_r_device_pu": 0.003,
+      "gsu_x_pu_sysbase": 0.018271835521504593,
+      "gsu_r_pu_sysbase": 0.0004567958880376148,
+      "d_to_seed_pu": 0.02911110735294603,
+      "d_to_slack_pu": 0.04777698561347557,
+      "tap_initial_guess": 0.9346379771891122,
+      "s_sc_mva": 7893.883536594276,
+      "scr": 13.822591903962344,
+      "tap": 0.9179295182633473,
+      "tap_within_range": true,
+      "z0_design_pu": 1.0856000000000001,
+      "z0_op_pu": 1.0856000000000001,
+      "tap_at_limit": false,
+      "margin_pu": 0.014399999999999968,
+      "v_hv_op_pu": 1.027157969441989,
+      "p_op_mw": 571.085625,
+      "q_op_mvar": -187.70676764789798,
+      "q_rel_error": 7.597555375089978e-11,
+      "pf_op": 0.9499999999929627,
+      "drop_op_pu": -0.033394377025039335,
+      "drop_bound_op_pu": 0.10121051631876123,
+      "drop_bound_ilim_pu": 0.15604874238519198
+    },
+    {
+      "asset_id": "RES15",
+      "cluster": 3,
+      "rank_in_cluster": 2,
+      "seed_bus": 58,
+      "hv_bus": 103,
+      "hv_vn_kv": 220.0,
+      "hv_area": 4,
+      "collector_bus": 900015,
+      "gsu_idx": "GSU_RES15",
+      "pv_idx": "PV_RES15",
+      "pvd1_idx": "RES15",
+      "p_mw": 446.48512500000004,
+      "sn_mva": 513.45789375,
+      "q_target_mvar": -146.7525637862979,
+      "gsu_x_device_pu": 0.12,
+      "gsu_r_device_pu": 0.003,
+      "gsu_x_pu_sysbase": 0.023370952411226806,
+      "gsu_r_pu_sysbase": 0.0005842738102806702,
+      "d_to_seed_pu": 0.030119559440747387,
+      "d_to_slack_pu": 0.06444044354783404,
+      "tap_initial_guess": 0.956355144035748,
+      "s_sc_mva": 6902.34318538103,
+      "scr": 15.459290352351667,
+      "tap": 0.9375142315805121,
+      "tap_within_range": true,
+      "z0_design_pu": 1.0642666666666667,
+      "z0_op_pu": 1.0642666666666667,
+      "tap_at_limit": false,
+      "margin_pu": 0.035733333333333395,
+      "v_hv_op_pu": 1.0298581633220476,
+      "p_op_mw": 446.48512500000004,
+      "q_op_mvar": -146.7525638023623,
+      "q_rel_error": 1.0946569954448464e-10,
+      "pf_op": 0.9499999999898607,
+      "drop_op_pu": -0.034232031946000996,
+      "drop_bound_op_pu": 0.10323929138938166,
+      "drop_bound_ilim_pu": 0.15604874238519192
+    },
+    {
+      "asset_id": "RES16",
+      "cluster": 3,
+      "rank_in_cluster": 3,
+      "seed_bus": 58,
+      "hv_bus": 102,
+      "hv_vn_kv": 220.0,
+      "hv_area": 4,
+      "collector_bus": 900016,
+      "gsu_idx": "GSU_RES16",
+      "pv_idx": "PV_RES16",
+      "pvd1_idx": "RES16",
+      "p_mw": 654.1526250000001,
+      "sn_mva": 752.27551875,
+      "q_target_mvar": -215.00957019852947,
+      "gsu_x_device_pu": 0.12,
+      "gsu_r_device_pu": 0.003,
+      "gsu_x_pu_sysbase": 0.015951602439408775,
+      "gsu_r_pu_sysbase": 0.00039879006098521937,
+      "d_to_seed_pu": 0.030382418422351537,
+      "d_to_slack_pu": 0.06549037935996546,
+      "tap_initial_guess": 0.943114743714327,
+      "s_sc_mva": 6160.208132628565,
+      "scr": 9.417080811421592,
+      "tap": 0.9118614157627238,
+      "tap_within_range": true,
+      "z0_design_pu": 1.0792000000000002,
+      "z0_op_pu": 1.0792000000000002,
+      "tap_at_limit": false,
+      "margin_pu": 0.02079999999999993,
+      "v_hv_op_pu": 1.0147569544413388,
+      "p_op_mw": 654.1526250000001,
+      "q_op_mvar": -215.0095702533707,
+      "q_rel_error": 2.550641936894309e-10,
+      "pf_op": 0.9499999999763746,
+      "drop_op_pu": -0.03364120251162084,
+      "drop_bound_op_pu": 0.10181072694363016,
+      "drop_bound_ilim_pu": 0.15604874238519195
+    }
+  ],
+  "hidden_outputs": [
+    {
+      "asset_id": "RES01",
+      "collector_bus": 900001,
+      "hv_bus": 74,
+      "collector_v_address": 296,
+      "hv_v_address": 229,
+      "hv_a_address": 73,
+      "tap": 0.9167005946326477,
+      "gsu_r_pu_sysbase": 0.0004740334687182796,
+      "gsu_x_pu_sysbase": 0.018961338748731182,
+      "gsu_z_abs_pu_sysbase": 0.018967263241532757,
+      "v_hv_op_pu": 1.0145050545913525,
+      "z0_pu": 1.0728,
+      "drop_op_pu": -0.03389182558771897,
+      "drop_bound_op_pu": 0.10241809891480139,
+      "current_limit_pu_sysbase": 8.227267181250001,
+      "drop_bound_ilim_pu": 0.15604874238519198
+    },
+    {
+      "asset_id": "RES02",
+      "collector_bus": 900002,
+      "hv_bus": 73,
+      "collector_v_address": 297,
+      "hv_v_address": 228,
+      "hv_a_address": 72,
+      "tap": 0.9001645318008468,
+      "gsu_r_pu_sysbase": 0.000612774971757776,
+      "gsu_x_pu_sysbase": 0.024510998870311038,
+      "gsu_z_abs_pu_sysbase": 0.024518657361005756,
+      "v_hv_op_pu": 1.00912608916991,
+      "z0_pu": 1.0877333333333334,
+      "drop_op_pu": -0.03331293489840581,
+      "drop_bound_op_pu": 0.10101201567398618,
+      "current_limit_pu_sysbase": 6.3644897062500005,
+      "drop_bound_ilim_pu": 0.15604874238519192
+    },
+    {
+      "asset_id": "RES03",
+      "collector_bus": 900003,
+      "hv_bus": 76,
+      "collector_v_address": 298,
+      "hv_v_address": 231,
+      "hv_a_address": 75,
+      "tap": 0.9191959729754643,
+      "gsu_r_pu_sysbase": 0.0004118651449519479,
+      "gsu_x_pu_sysbase": 0.016474605798077916,
+      "gsu_z_abs_pu_sysbase": 0.01647975330821699,
+      "v_hv_op_pu": 1.0116177403962612,
+      "z0_pu": 1.0664,
+      "drop_op_pu": -0.03414631453793793,
+      "drop_bound_op_pu": 0.10303276117607846,
+      "current_limit_pu_sysbase": 9.46911883125,
+      "drop_bound_ilim_pu": 0.15604874238519198
+    },
+    {
+      "asset_id": "RES04",
+      "collector_bus": 900004,
+      "hv_bus": 39,
+      "collector_v_address": 299,
+      "hv_v_address": 194,
+      "hv_a_address": 38,
+      "tap": 0.9097671728469362,
+      "gsu_r_pu_sysbase": 0.0005127300784095677,
+      "gsu_x_pu_sysbase": 0.020509203136382707,
+      "gsu_z_abs_pu_sysbase": 0.020515611261249716,
+      "v_hv_op_pu": 1.0142920064525223,
+      "z0_pu": 1.0813333333333335,
+      "drop_op_pu": -0.033558516719352394,
+      "drop_bound_op_pu": 0.10160986730920796,
+      "current_limit_pu_sysbase": 7.606341356250001,
+      "drop_bound_ilim_pu": 0.15604874238519195
+    },
+    {
+      "asset_id": "RES05",
+      "collector_bus": 900005,
+      "hv_bus": 88,
+      "collector_v_address": 300,
+      "hv_v_address": 243,
+      "hv_a_address": 87,
+      "tap": 0.9,
+      "gsu_r_pu_sysbase": 0.0006790209146505086,
+      "gsu_x_pu_sysbase": 0.02716083658602034,
+      "gsu_z_abs_pu_sysbase": 0.027169323021655027,
+      "v_hv_op_pu": 0.9524721006908633,
+      "z0_pu": 1.022288942246042,
+      "drop_op_pu": -0.036013391854917254,
+      "drop_bound_op_pu": 0.10747855324877924,
+      "current_limit_pu_sysbase": 5.74356388125,
+      "drop_bound_ilim_pu": 0.15604874238519192
+    },
+    {
+      "asset_id": "RES06",
+      "collector_bus": 900006,
+      "hv_bus": 85,
+      "collector_v_address": 301,
+      "hv_v_address": 240,
+      "hv_a_address": 84,
+      "tap": 0.9,
+      "gsu_r_pu_sysbase": 0.0004407679621415582,
+      "gsu_x_pu_sysbase": 0.01763071848566233,
+      "gsu_z_abs_pu_sysbase": 0.017636227224583093,
+      "v_hv_op_pu": 0.978669581758987,
+      "z0_pu": 1.0527063704160036,
+      "drop_op_pu": -0.03470427598287085,
+      "drop_bound_op_pu": 0.10437301378865095,
+      "current_limit_pu_sysbase": 8.848193006249998,
+      "drop_bound_ilim_pu": 0.15604874238519192
+    },
+    {
+      "asset_id": "RES07",
+      "collector_bus": 900007,
+      "hv_bus": 87,
+      "collector_v_address": 302,
+      "hv_v_address": 242,
+      "hv_a_address": 86,
+      "tap": 0.9031637963833324,
+      "gsu_r_pu_sysbase": 0.000558306085379307,
+      "gsu_x_pu_sysbase": 0.022332243415172277,
+      "gsu_z_abs_pu_sysbase": 0.022339221151138573,
+      "v_hv_op_pu": 1.0143419575980352,
+      "z0_pu": 1.0898666666666668,
+      "drop_op_pu": -0.03323189160140094,
+      "drop_bound_op_pu": 0.10081429212899178,
+      "current_limit_pu_sysbase": 6.985415531250001,
+      "drop_bound_ilim_pu": 0.15604874238519192
+    },
+    {
+      "asset_id": "RES08",
+      "collector_bus": 900008,
+      "hv_bus": 117,
+      "collector_v_address": 303,
+      "hv_v_address": 272,
+      "hv_a_address": 116,
+      "tap": 0.9061903915255033,
+      "gsu_r_pu_sysbase": 0.00038651959757028947,
+      "gsu_x_pu_sysbase": 0.015460783902811578,
+      "gsu_z_abs_pu_sysbase": 0.015465614643095938,
+      "v_hv_op_pu": 0.9991604315868213,
+      "z0_pu": 1.0685333333333333,
+      "drop_op_pu": -0.034061045210903806,
+      "drop_bound_op_pu": 0.10282705563572724,
+      "current_limit_pu_sysbase": 10.09004465625,
+      "drop_bound_ilim_pu": 0.15604874238519192
+    },
+    {
+      "asset_id": "RES09",
+      "collector_bus": 900009,
+      "hv_bus": 13,
+      "collector_v_address": 304,
+      "hv_v_address": 168,
+      "hv_a_address": 12,
+      "tap": 0.9092187286229678,
+      "gsu_r_pu_sysbase": 0.0004926230165111534,
+      "gsu_x_pu_sysbase": 0.019704920660446133,
+      "gsu_z_abs_pu_sysbase": 0.019711077486298748,
+      "v_hv_op_pu": 1.015545409657229,
+      "z0_pu": 1.0834666666666668,
+      "drop_op_pu": -0.03347624012463446,
+      "drop_bound_op_pu": 0.10140979865562043,
+      "current_limit_pu_sysbase": 7.91680426875,
+      "drop_bound_ilim_pu": 0.15604874238519195
+    },
+    {
+      "asset_id": "RES10",
+      "collector_bus": 900010,
+      "hv_bus": 7,
+      "collector_v_address": 305,
+      "hv_v_address": 162,
+      "hv_a_address": 6,
+      "tap": 0.9007729399261014,
+      "gsu_r_pu_sysbase": 0.0006441993292838156,
+      "gsu_x_pu_sysbase": 0.025767973171352626,
+      "gsu_z_abs_pu_sysbase": 0.025776024405159893,
+      "v_hv_op_pu": 0.987653858440753,
+      "z0_pu": 1.0621333333333334,
+      "drop_op_pu": -0.03431818587169433,
+      "drop_bound_op_pu": 0.1034466512520523,
+      "current_limit_pu_sysbase": 6.054026793750001,
+      "drop_bound_ilim_pu": 0.15604874238519192
+    },
+    {
+      "asset_id": "RES11",
+      "collector_bus": 900011,
+      "hv_bus": 15,
+      "collector_v_address": 306,
+      "hv_v_address": 170,
+      "hv_a_address": 14,
+      "tap": 0.9,
+      "gsu_r_pu_sysbase": 0.00042582667528930204,
+      "gsu_x_pu_sysbase": 0.01703306701157208,
+      "gsu_z_abs_pu_sysbase": 0.017038389013580273,
+      "v_hv_op_pu": 0.9820489860265359,
+      "z0_pu": 1.0566227483136217,
+      "drop_op_pu": -0.03454279171586272,
+      "drop_bound_op_pu": 0.10398615465128237,
+      "current_limit_pu_sysbase": 9.158655918749998,
+      "drop_bound_ilim_pu": 0.15604874238519192
+    },
+    {
+      "asset_id": "RES12",
+      "collector_bus": 900012,
+      "hv_bus": 30,
+      "collector_v_address": 307,
+      "hv_v_address": 185,
+      "hv_a_address": 29,
+      "tap": 0.9,
+      "gsu_r_pu_sysbase": 0.0005345483796184854,
+      "gsu_x_pu_sysbase": 0.021381935184739416,
+      "gsu_z_abs_pu_sysbase": 0.02138861599577098,
+      "v_hv_op_pu": 0.9892016436367979,
+      "z0_pu": 1.0649066663616902,
+      "drop_op_pu": -0.03420627101252971,
+      "drop_bound_op_pu": 0.10317724546679571,
+      "current_limit_pu_sysbase": 7.2958784437499995,
+      "drop_bound_ilim_pu": 0.15604874238519192
+    },
+    {
+      "asset_id": "RES13",
+      "collector_bus": 900013,
+      "hv_bus": 58,
+      "collector_v_address": 308,
+      "hv_v_address": 213,
+      "hv_a_address": 57,
+      "tap": 0.908865728036594,
+      "gsu_r_pu_sysbase": 0.0007178221097733948,
+      "gsu_x_pu_sysbase": 0.02871288439093579,
+      "gsu_z_abs_pu_sysbase": 0.028721855765749604,
+      "v_hv_op_pu": 1.0039720716542848,
+      "z0_pu": 1.0706666666666667,
+      "drop_op_pu": -0.03397623127068572,
+      "drop_bound_op_pu": 0.10262216984611676,
+      "current_limit_pu_sysbase": 5.43310096875,
+      "drop_bound_ilim_pu": 0.15604874238519195
+    },
+    {
+      "asset_id": "RES14",
+      "collector_bus": 900014,
+      "hv_bus": 52,
+      "collector_v_address": 309,
+      "hv_v_address": 207,
+      "hv_a_address": 51,
+      "tap": 0.9179295182633473,
+      "gsu_r_pu_sysbase": 0.0004567958880376148,
+      "gsu_x_pu_sysbase": 0.018271835521504593,
+      "gsu_z_abs_pu_sysbase": 0.018277544578204293,
+      "v_hv_op_pu": 1.027157969441989,
+      "z0_pu": 1.0856000000000001,
+      "drop_op_pu": -0.033394377025039335,
+      "drop_bound_op_pu": 0.10121051631876123,
+      "current_limit_pu_sysbase": 8.537730093750001,
+      "drop_bound_ilim_pu": 0.15604874238519198
+    },
+    {
+      "asset_id": "RES15",
+      "collector_bus": 900015,
+      "hv_bus": 103,
+      "collector_v_address": 310,
+      "hv_v_address": 258,
+      "hv_a_address": 102,
+      "tap": 0.9375142315805121,
+      "gsu_r_pu_sysbase": 0.0005842738102806701,
+      "gsu_x_pu_sysbase": 0.023370952411226803,
+      "gsu_z_abs_pu_sysbase": 0.023378254693052,
+      "v_hv_op_pu": 1.0298581633220476,
+      "z0_pu": 1.0642666666666667,
+      "drop_op_pu": -0.034232031946000996,
+      "drop_bound_op_pu": 0.10323929138938166,
+      "current_limit_pu_sysbase": 6.674952618750001,
+      "drop_bound_ilim_pu": 0.15604874238519192
+    },
+    {
+      "asset_id": "RES16",
+      "collector_bus": 900016,
+      "hv_bus": 102,
+      "collector_v_address": 311,
+      "hv_v_address": 257,
+      "hv_a_address": 101,
+      "tap": 0.9118614157627238,
+      "gsu_r_pu_sysbase": 0.00039879006098521937,
+      "gsu_x_pu_sysbase": 0.015951602439408772,
+      "gsu_z_abs_pu_sysbase": 0.015956586536527557,
+      "v_hv_op_pu": 1.0147569544413388,
+      "z0_pu": 1.0792000000000002,
+      "drop_op_pu": -0.03364120251162084,
+      "drop_bound_op_pu": 0.10181072694363016,
+      "current_limit_pu_sysbase": 9.77958174375,
+      "drop_bound_ilim_pu": 0.15604874238519195
+    }
+  ],
+  "pvd1_parameters": [
+    {
+      "asset_id": "RES01",
+      "Sn_input": 632.86670625,
+      "Sn_sysbase": 632.86670625,
+      "ialim_input": 1.3,
+      "ialim_sysbase": 8.227267181250001,
+      "qmx_input": 0.6,
+      "qmx_sysbase": 3.7972002375,
+      "qmn_input": -0.6,
+      "qmn_sysbase": -3.7972002375,
+      "dqdv_input": -1.0,
+      "dqdv_sysbase": -6.3286670625,
+      "v0_input": 0.01,
+      "v0_sysbase": 0.01,
+      "v1_input": 5.0,
+      "v1_sysbase": 5.0,
+      "vt0_input": 0.005,
+      "vt0_sysbase": 0.005,
+      "vt1_input": 0.01,
+      "vt1_sysbase": 0.01,
+      "vt2_input": 5.0,
+      "vt2_sysbase": 5.0,
+      "vt3_input": 6.0,
+      "vt3_sysbase": 6.0,
+      "ft0_input": 0.05,
+      "ft0_sysbase": 0.05,
+      "ft1_input": 0.1,
+      "ft1_sysbase": 0.1,
+      "ft2_input": 999.0,
+      "ft2_sysbase": 999.0,
+      "ft3_input": 1000.0,
+      "ft3_sysbase": 1000.0,
+      "recflag_input": 0.0,
+      "recflag_sysbase": 0.0,
+      "pqflag_input": 0.0,
+      "pqflag_sysbase": 0.0,
+      "tip_input": 0.02,
+      "tip_sysbase": 0.02,
+      "tiq_input": 0.02,
+      "tiq_sysbase": 0.02,
+      "fn_input": 60.0,
+      "fn_sysbase": 60.0,
+      "Vqu": 5.314187734601312,
+      "Vql": -0.875812265398688,
+      "pref0": 5.5031887500000005,
+      "qref0": -1.808810670087185
+    },
+    {
+      "asset_id": "RES02",
+      "Sn_input": 489.57613125000006,
+      "Sn_sysbase": 489.57613125000006,
+      "ialim_input": 1.3,
+      "ialim_sysbase": 6.3644897062500005,
+      "qmx_input": 0.6,
+      "qmx_sysbase": 2.9374567875,
+      "qmn_input": -0.6,
+      "qmn_sysbase": -2.9374567875,
+      "dqdv_input": -1.0,
+      "dqdv_sysbase": -4.8957613125,
+      "v0_input": 0.01,
+      "v0_sysbase": 0.01,
+      "v1_input": 5.0,
+      "v1_sysbase": 5.0,
+      "vt0_input": 0.005,
+      "vt0_sysbase": 0.005,
+      "vt1_input": 0.01,
+      "vt1_sysbase": 0.01,
+      "vt2_input": 5.0,
+      "vt2_sysbase": 5.0,
+      "vt3_input": 6.0,
+      "vt3_sysbase": 6.0,
+      "ft0_input": 0.05,
+      "ft0_sysbase": 0.05,
+      "ft1_input": 0.1,
+      "ft1_sysbase": 0.1,
+      "ft2_input": 999.0,
+      "ft2_sysbase": 999.0,
+      "ft3_input": 1000.0,
+      "ft3_sysbase": 1000.0,
+      "recflag_input": 0.0,
+      "recflag_sysbase": 0.0,
+      "pqflag_input": 0.0,
+      "pqflag_sysbase": 0.0,
+      "tip_input": 0.02,
+      "tip_sysbase": 0.02,
+      "tiq_input": 0.02,
+      "tiq_sysbase": 0.02,
+      "fn_input": 60.0,
+      "fn_sysbase": 60.0,
+      "Vqu": 5.314187734601712,
+      "Vql": -0.8758122653982878,
+      "pref0": 4.25718375,
+      "qref0": -1.3992686315749197
+    },
+    {
+      "asset_id": "RES03",
+      "Sn_input": 728.3937562499999,
+      "Sn_sysbase": 728.3937562499999,
+      "ialim_input": 1.3,
+      "ialim_sysbase": 9.46911883125,
+      "qmx_input": 0.6,
+      "qmx_sysbase": 4.370362537499999,
+      "qmn_input": -0.6,
+      "qmn_sysbase": -4.370362537499999,
+      "dqdv_input": -1.0,
+      "dqdv_sysbase": -7.283937562499999,
+      "v0_input": 0.01,
+      "v0_sysbase": 0.01,
+      "v1_input": 5.0,
+      "v1_sysbase": 5.0,
+      "vt0_input": 0.005,
+      "vt0_sysbase": 0.005,
+      "vt1_input": 0.01,
+      "vt1_sysbase": 0.01,
+      "vt2_input": 5.0,
+      "vt2_sysbase": 5.0,
+      "vt3_input": 6.0,
+      "vt3_sysbase": 6.0,
+      "ft0_input": 0.05,
+      "ft0_sysbase": 0.05,
+      "ft1_input": 0.1,
+      "ft1_sysbase": 0.1,
+      "ft2_input": 999.0,
+      "ft2_sysbase": 999.0,
+      "ft3_input": 1000.0,
+      "ft3_sysbase": 1000.0,
+      "recflag_input": 0.0,
+      "recflag_sysbase": 0.0,
+      "pqflag_input": 0.0,
+      "pqflag_sysbase": 0.0,
+      "tip_input": 0.02,
+      "tip_sysbase": 0.02,
+      "tiq_input": 0.02,
+      "tiq_sysbase": 0.02,
+      "fn_input": 60.0,
+      "fn_sysbase": 60.0,
+      "Vqu": 5.314187734538051,
+      "Vql": -0.8758122654619488,
+      "pref0": 6.33385875,
+      "qref0": -2.08183869622151
+    },
+    {
+      "asset_id": "RES04",
+      "Sn_input": 585.10318125,
+      "Sn_sysbase": 585.10318125,
+      "ialim_input": 1.3,
+      "ialim_sysbase": 7.606341356250001,
+      "qmx_input": 0.6,
+      "qmx_sysbase": 3.5106190875000003,
+      "qmn_input": -0.6,
+      "qmn_sysbase": -3.5106190875000003,
+      "dqdv_input": -1.0,
+      "dqdv_sysbase": -5.8510318125000005,
+      "v0_input": 0.01,
+      "v0_sysbase": 0.01,
+      "v1_input": 5.0,
+      "v1_sysbase": 5.0,
+      "vt0_input": 0.005,
+      "vt0_sysbase": 0.005,
+      "vt1_input": 0.01,
+      "vt1_sysbase": 0.01,
+      "vt2_input": 5.0,
+      "vt2_sysbase": 5.0,
+      "vt3_input": 6.0,
+      "vt3_sysbase": 6.0,
+      "ft0_input": 0.05,
+      "ft0_sysbase": 0.05,
+      "ft1_input": 0.1,
+      "ft1_sysbase": 0.1,
+      "ft2_input": 999.0,
+      "ft2_sysbase": 999.0,
+      "ft3_input": 1000.0,
+      "ft3_sysbase": 1000.0,
+      "recflag_input": 0.0,
+      "recflag_sysbase": 0.0,
+      "pqflag_input": 0.0,
+      "pqflag_sysbase": 0.0,
+      "tip_input": 0.02,
+      "tip_sysbase": 0.02,
+      "tiq_input": 0.02,
+      "tiq_sysbase": 0.02,
+      "fn_input": 60.0,
+      "fn_sysbase": 60.0,
+      "Vqu": 5.314187734568639,
+      "Vql": -0.8758122654313603,
+      "pref0": 5.087853750000001,
+      "qref0": -1.6722966574415836
+    },
+    {
+      "asset_id": "RES05",
+      "Sn_input": 441.81260625,
+      "Sn_sysbase": 441.81260625,
+      "ialim_input": 1.3,
+      "ialim_sysbase": 5.74356388125,
+      "qmx_input": 0.6,
+      "qmx_sysbase": 2.6508756375,
+      "qmn_input": -0.6,
+      "qmn_sysbase": -2.6508756375,
+      "dqdv_input": -1.0,
+      "dqdv_sysbase": -4.4181260625,
+      "v0_input": 0.01,
+      "v0_sysbase": 0.01,
+      "v1_input": 5.0,
+      "v1_sysbase": 5.0,
+      "vt0_input": 0.005,
+      "vt0_sysbase": 0.005,
+      "vt1_input": 0.01,
+      "vt1_sysbase": 0.01,
+      "vt2_input": 5.0,
+      "vt2_sysbase": 5.0,
+      "vt3_input": 6.0,
+      "vt3_sysbase": 6.0,
+      "ft0_input": 0.05,
+      "ft0_sysbase": 0.05,
+      "ft1_input": 0.1,
+      "ft1_sysbase": 0.1,
+      "ft2_input": 999.0,
+      "ft2_sysbase": 999.0,
+      "ft3_input": 1000.0,
+      "ft3_sysbase": 1000.0,
+      "recflag_input": 0.0,
+      "recflag_sysbase": 0.0,
+      "pqflag_input": 0.0,
+      "pqflag_sysbase": 0.0,
+      "tip_input": 0.02,
+      "tip_sysbase": 0.02,
+      "tiq_input": 0.02,
+      "tiq_sysbase": 0.02,
+      "fn_input": 60.0,
+      "fn_sysbase": 60.0,
+      "Vqu": 5.314187734627177,
+      "Vql": -0.8758122653728222,
+      "pref0": 3.8418487500000005,
+      "qref0": -1.2627546186258323
+    },
+    {
+      "asset_id": "RES06",
+      "Sn_input": 680.63023125,
+      "Sn_sysbase": 680.63023125,
+      "ialim_input": 1.3,
+      "ialim_sysbase": 8.848193006249998,
+      "qmx_input": 0.6,
+      "qmx_sysbase": 4.083781387499999,
+      "qmn_input": -0.6,
+      "qmn_sysbase": -4.083781387499999,
+      "dqdv_input": -1.0,
+      "dqdv_sysbase": -6.8063023125,
+      "v0_input": 0.01,
+      "v0_sysbase": 0.01,
+      "v1_input": 5.0,
+      "v1_sysbase": 5.0,
+      "vt0_input": 0.005,
+      "vt0_sysbase": 0.005,
+      "vt1_input": 0.01,
+      "vt1_sysbase": 0.01,
+      "vt2_input": 5.0,
+      "vt2_sysbase": 5.0,
+      "vt3_input": 6.0,
+      "vt3_sysbase": 6.0,
+      "ft0_input": 0.05,
+      "ft0_sysbase": 0.05,
+      "ft1_input": 0.1,
+      "ft1_sysbase": 0.1,
+      "ft2_input": 999.0,
+      "ft2_sysbase": 999.0,
+      "ft3_input": 1000.0,
+      "ft3_sysbase": 1000.0,
+      "recflag_input": 0.0,
+      "recflag_sysbase": 0.0,
+      "pqflag_input": 0.0,
+      "pqflag_sysbase": 0.0,
+      "tip_input": 0.02,
+      "tip_sysbase": 0.02,
+      "tiq_input": 0.02,
+      "tiq_sysbase": 0.02,
+      "fn_input": 60.0,
+      "fn_sysbase": 60.0,
+      "Vqu": 5.314187734627157,
+      "Vql": -0.8758122653728431,
+      "pref0": 5.91852375,
+      "qref0": -1.945324682748046
+    },
+    {
+      "asset_id": "RES07",
+      "Sn_input": 537.3396562500001,
+      "Sn_sysbase": 537.3396562500001,
+      "ialim_input": 1.3,
+      "ialim_sysbase": 6.985415531250001,
+      "qmx_input": 0.6,
+      "qmx_sysbase": 3.2240379375000003,
+      "qmn_input": -0.6,
+      "qmn_sysbase": -3.2240379375000003,
+      "dqdv_input": -1.0,
+      "dqdv_sysbase": -5.373396562500001,
+      "v0_input": 0.01,
+      "v0_sysbase": 0.01,
+      "v1_input": 5.0,
+      "v1_sysbase": 5.0,
+      "vt0_input": 0.005,
+      "vt0_sysbase": 0.005,
+      "vt1_input": 0.01,
+      "vt1_sysbase": 0.01,
+      "vt2_input": 5.0,
+      "vt2_sysbase": 5.0,
+      "vt3_input": 6.0,
+      "vt3_sysbase": 6.0,
+      "ft0_input": 0.05,
+      "ft0_sysbase": 0.05,
+      "ft1_input": 0.1,
+      "ft1_sysbase": 0.1,
+      "ft2_input": 999.0,
+      "ft2_sysbase": 999.0,
+      "ft3_input": 1000.0,
+      "ft3_sysbase": 1000.0,
+      "recflag_input": 0.0,
+      "recflag_sysbase": 0.0,
+      "pqflag_input": 0.0,
+      "pqflag_sysbase": 0.0,
+      "tip_input": 0.02,
+      "tip_sysbase": 0.02,
+      "tiq_input": 0.02,
+      "tiq_sysbase": 0.02,
+      "fn_input": 60.0,
+      "fn_sysbase": 60.0,
+      "Vqu": 5.314187734623058,
+      "Vql": -0.875812265376942,
+      "pref0": 4.672518750000001,
+      "qref0": -1.5357826442967988
+    },
+    {
+      "asset_id": "RES08",
+      "Sn_input": 776.15728125,
+      "Sn_sysbase": 776.15728125,
+      "ialim_input": 1.3,
+      "ialim_sysbase": 10.09004465625,
+      "qmx_input": 0.6,
+      "qmx_sysbase": 4.6569436875,
+      "qmn_input": -0.6,
+      "qmn_sysbase": -4.6569436875,
+      "dqdv_input": -1.0,
+      "dqdv_sysbase": -7.7615728125,
+      "v0_input": 0.01,
+      "v0_sysbase": 0.01,
+      "v1_input": 5.0,
+      "v1_sysbase": 5.0,
+      "vt0_input": 0.005,
+      "vt0_sysbase": 0.005,
+      "vt1_input": 0.01,
+      "vt1_sysbase": 0.01,
+      "vt2_input": 5.0,
+      "vt2_sysbase": 5.0,
+      "vt3_input": 6.0,
+      "vt3_sysbase": 6.0,
+      "ft0_input": 0.05,
+      "ft0_sysbase": 0.05,
+      "ft1_input": 0.1,
+      "ft1_sysbase": 0.1,
+      "ft2_input": 999.0,
+      "ft2_sysbase": 999.0,
+      "ft3_input": 1000.0,
+      "ft3_sysbase": 1000.0,
+      "recflag_input": 0.0,
+      "recflag_sysbase": 0.0,
+      "pqflag_input": 0.0,
+      "pqflag_sysbase": 0.0,
+      "tip_input": 0.02,
+      "tip_sysbase": 0.02,
+      "tiq_input": 0.02,
+      "tiq_sysbase": 0.02,
+      "fn_input": 60.0,
+      "fn_sysbase": 60.0,
+      "Vqu": 5.314187734614737,
+      "Vql": -0.8758122653852632,
+      "pref0": 6.749193750000001,
+      "qref0": -2.2183527084932937
+    },
+    {
+      "asset_id": "RES09",
+      "Sn_input": 608.98494375,
+      "Sn_sysbase": 608.98494375,
+      "ialim_input": 1.3,
+      "ialim_sysbase": 7.91680426875,
+      "qmx_input": 0.6,
+      "qmx_sysbase": 3.6539096625,
+      "qmn_input": -0.6,
+      "qmn_sysbase": -3.6539096625,
+      "dqdv_input": -1.0,
+      "dqdv_sysbase": -6.0898494375,
+      "v0_input": 0.01,
+      "v0_sysbase": 0.01,
+      "v1_input": 5.0,
+      "v1_sysbase": 5.0,
+      "vt0_input": 0.005,
+      "vt0_sysbase": 0.005,
+      "vt1_input": 0.01,
+      "vt1_sysbase": 0.01,
+      "vt2_input": 5.0,
+      "vt2_sysbase": 5.0,
+      "vt3_input": 6.0,
+      "vt3_sysbase": 6.0,
+      "ft0_input": 0.05,
+      "ft0_sysbase": 0.05,
+      "ft1_input": 0.1,
+      "ft1_sysbase": 0.1,
+      "ft2_input": 999.0,
+      "ft2_sysbase": 999.0,
+      "ft3_input": 1000.0,
+      "ft3_sysbase": 1000.0,
+      "recflag_input": 0.0,
+      "recflag_sysbase": 0.0,
+      "pqflag_input": 0.0,
+      "pqflag_sysbase": 0.0,
+      "tip_input": 0.02,
+      "tip_sysbase": 0.02,
+      "tiq_input": 0.02,
+      "tiq_sysbase": 0.02,
+      "fn_input": 60.0,
+      "fn_sysbase": 60.0,
+      "Vqu": 5.3141877345761275,
+      "Vql": -0.8758122654238726,
+      "pref0": 5.29552125,
+      "qref0": -1.7405536638221712
+    },
+    {
+      "asset_id": "RES10",
+      "Sn_input": 465.6943687500001,
+      "Sn_sysbase": 465.6943687500001,
+      "ialim_input": 1.3,
+      "ialim_sysbase": 6.054026793750001,
+      "qmx_input": 0.6,
+      "qmx_sysbase": 2.7941662125000004,
+      "qmn_input": -0.6,
+      "qmn_sysbase": -2.7941662125000004,
+      "dqdv_input": -1.0,
+      "dqdv_sysbase": -4.656943687500001,
+      "v0_input": 0.01,
+      "v0_sysbase": 0.01,
+      "v1_input": 5.0,
+      "v1_sysbase": 5.0,
+      "vt0_input": 0.005,
+      "vt0_sysbase": 0.005,
+      "vt1_input": 0.01,
+      "vt1_sysbase": 0.01,
+      "vt2_input": 5.0,
+      "vt2_sysbase": 5.0,
+      "vt3_input": 6.0,
+      "vt3_sysbase": 6.0,
+      "ft0_input": 0.05,
+      "ft0_sysbase": 0.05,
+      "ft1_input": 0.1,
+      "ft1_sysbase": 0.1,
+      "ft2_input": 999.0,
+      "ft2_sysbase": 999.0,
+      "ft3_input": 1000.0,
+      "ft3_sysbase": 1000.0,
+      "recflag_input": 0.0,
+      "recflag_sysbase": 0.0,
+      "pqflag_input": 0.0,
+      "pqflag_sysbase": 0.0,
+      "tip_input": 0.02,
+      "tip_sysbase": 0.02,
+      "tiq_input": 0.02,
+      "tiq_sysbase": 0.02,
+      "fn_input": 60.0,
+      "fn_sysbase": 60.0,
+      "Vqu": 5.314187734582257,
+      "Vql": -0.8758122654177433,
+      "pref0": 4.049516250000001,
+      "qref0": -1.3310116252472346
+    },
+    {
+      "asset_id": "RES11",
+      "Sn_input": 704.51199375,
+      "Sn_sysbase": 704.51199375,
+      "ialim_input": 1.3,
+      "ialim_sysbase": 9.158655918749998,
+      "qmx_input": 0.6,
+      "qmx_sysbase": 4.2270719625,
+      "qmn_input": -0.6,
+      "qmn_sysbase": -4.2270719625,
+      "dqdv_input": -1.0,
+      "dqdv_sysbase": -7.0451199375,
+      "v0_input": 0.01,
+      "v0_sysbase": 0.01,
+      "v1_input": 5.0,
+      "v1_sysbase": 5.0,
+      "vt0_input": 0.005,
+      "vt0_sysbase": 0.005,
+      "vt1_input": 0.01,
+      "vt1_sysbase": 0.01,
+      "vt2_input": 5.0,
+      "vt2_sysbase": 5.0,
+      "vt3_input": 6.0,
+      "vt3_sysbase": 6.0,
+      "ft0_input": 0.05,
+      "ft0_sysbase": 0.05,
+      "ft1_input": 0.1,
+      "ft1_sysbase": 0.1,
+      "ft2_input": 999.0,
+      "ft2_sysbase": 999.0,
+      "ft3_input": 1000.0,
+      "ft3_sysbase": 1000.0,
+      "recflag_input": 0.0,
+      "recflag_sysbase": 0.0,
+      "pqflag_input": 0.0,
+      "pqflag_sysbase": 0.0,
+      "tip_input": 0.02,
+      "tip_sysbase": 0.02,
+      "tiq_input": 0.02,
+      "tiq_sysbase": 0.02,
+      "fn_input": 60.0,
+      "fn_sysbase": 60.0,
+      "Vqu": 5.314187734643884,
+      "Vql": -0.8758122653561162,
+      "pref0": 6.126191250000001,
+      "qref0": -2.013581689042415
+    },
+    {
+      "asset_id": "RES12",
+      "Sn_input": 561.22141875,
+      "Sn_sysbase": 561.22141875,
+      "ialim_input": 1.3,
+      "ialim_sysbase": 7.2958784437499995,
+      "qmx_input": 0.6,
+      "qmx_sysbase": 3.3673285125,
+      "qmn_input": -0.6,
+      "qmn_sysbase": -3.3673285125,
+      "dqdv_input": -1.0,
+      "dqdv_sysbase": -5.6122141875,
+      "v0_input": 0.01,
+      "v0_sysbase": 0.01,
+      "v1_input": 5.0,
+      "v1_sysbase": 5.0,
+      "vt0_input": 0.005,
+      "vt0_sysbase": 0.005,
+      "vt1_input": 0.01,
+      "vt1_sysbase": 0.01,
+      "vt2_input": 5.0,
+      "vt2_sysbase": 5.0,
+      "vt3_input": 6.0,
+      "vt3_sysbase": 6.0,
+      "ft0_input": 0.05,
+      "ft0_sysbase": 0.05,
+      "ft1_input": 0.1,
+      "ft1_sysbase": 0.1,
+      "ft2_input": 999.0,
+      "ft2_sysbase": 999.0,
+      "ft3_input": 1000.0,
+      "ft3_sysbase": 1000.0,
+      "recflag_input": 0.0,
+      "recflag_sysbase": 0.0,
+      "pqflag_input": 0.0,
+      "pqflag_sysbase": 0.0,
+      "tip_input": 0.02,
+      "tip_sysbase": 0.02,
+      "tiq_input": 0.02,
+      "tiq_sysbase": 0.02,
+      "fn_input": 60.0,
+      "fn_sysbase": 60.0,
+      "Vqu": 5.314187734637908,
+      "Vql": -0.8758122653620914,
+      "pref0": 4.88018625,
+      "qref0": -1.6040396506266446
+    },
+    {
+      "asset_id": "RES13",
+      "Sn_input": 417.93084374999995,
+      "Sn_sysbase": 417.93084374999995,
+      "ialim_input": 1.3,
+      "ialim_sysbase": 5.43310096875,
+      "qmx_input": 0.6,
+      "qmx_sysbase": 2.5075850624999996,
+      "qmn_input": -0.6,
+      "qmn_sysbase": -2.5075850624999996,
+      "dqdv_input": -1.0,
+      "dqdv_sysbase": -4.1793084375,
+      "v0_input": 0.01,
+      "v0_sysbase": 0.01,
+      "v1_input": 5.0,
+      "v1_sysbase": 5.0,
+      "vt0_input": 0.005,
+      "vt0_sysbase": 0.005,
+      "vt1_input": 0.01,
+      "vt1_sysbase": 0.01,
+      "vt2_input": 5.0,
+      "vt2_sysbase": 5.0,
+      "vt3_input": 6.0,
+      "vt3_sysbase": 6.0,
+      "ft0_input": 0.05,
+      "ft0_sysbase": 0.05,
+      "ft1_input": 0.1,
+      "ft1_sysbase": 0.1,
+      "ft2_input": 999.0,
+      "ft2_sysbase": 999.0,
+      "ft3_input": 1000.0,
+      "ft3_sysbase": 1000.0,
+      "recflag_input": 0.0,
+      "recflag_sysbase": 0.0,
+      "pqflag_input": 0.0,
+      "pqflag_sysbase": 0.0,
+      "tip_input": 0.02,
+      "tip_sysbase": 0.02,
+      "tiq_input": 0.02,
+      "tiq_sysbase": 0.02,
+      "fn_input": 60.0,
+      "fn_sysbase": 60.0,
+      "Vqu": 5.314187734616161,
+      "Vql": -0.8758122653838385,
+      "pref0": 3.63418125,
+      "qref0": -1.194497612259665
+    },
+    {
+      "asset_id": "RES14",
+      "Sn_input": 656.74846875,
+      "Sn_sysbase": 656.74846875,
+      "ialim_input": 1.3,
+      "ialim_sysbase": 8.537730093750001,
+      "qmx_input": 0.6,
+      "qmx_sysbase": 3.9404908125,
+      "qmn_input": -0.6,
+      "qmn_sysbase": -3.9404908125,
+      "dqdv_input": -1.0,
+      "dqdv_sysbase": -6.5674846875,
+      "v0_input": 0.01,
+      "v0_sysbase": 0.01,
+      "v1_input": 5.0,
+      "v1_sysbase": 5.0,
+      "vt0_input": 0.005,
+      "vt0_sysbase": 0.005,
+      "vt1_input": 0.01,
+      "vt1_sysbase": 0.01,
+      "vt2_input": 5.0,
+      "vt2_sysbase": 5.0,
+      "vt3_input": 6.0,
+      "vt3_sysbase": 6.0,
+      "ft0_input": 0.05,
+      "ft0_sysbase": 0.05,
+      "ft1_input": 0.1,
+      "ft1_sysbase": 0.1,
+      "ft2_input": 999.0,
+      "ft2_sysbase": 999.0,
+      "ft3_input": 1000.0,
+      "ft3_sysbase": 1000.0,
+      "recflag_input": 0.0,
+      "recflag_sysbase": 0.0,
+      "pqflag_input": 0.0,
+      "pqflag_sysbase": 0.0,
+      "tip_input": 0.02,
+      "tip_sysbase": 0.02,
+      "tiq_input": 0.02,
+      "tiq_sysbase": 0.02,
+      "fn_input": 60.0,
+      "fn_sysbase": 60.0,
+      "Vqu": 5.314187734605361,
+      "Vql": -0.8758122653946393,
+      "pref0": 5.710856250000001,
+      "qref0": -1.8770676764789798
+    },
+    {
+      "asset_id": "RES15",
+      "Sn_input": 513.45789375,
+      "Sn_sysbase": 513.45789375,
+      "ialim_input": 1.3,
+      "ialim_sysbase": 6.674952618750001,
+      "qmx_input": 0.6,
+      "qmx_sysbase": 3.0807473625000004,
+      "qmn_input": -0.6,
+      "qmn_sysbase": -3.0807473625000004,
+      "dqdv_input": -1.0,
+      "dqdv_sysbase": -5.134578937500001,
+      "v0_input": 0.01,
+      "v0_sysbase": 0.01,
+      "v1_input": 5.0,
+      "v1_sysbase": 5.0,
+      "vt0_input": 0.005,
+      "vt0_sysbase": 0.005,
+      "vt1_input": 0.01,
+      "vt1_sysbase": 0.01,
+      "vt2_input": 5.0,
+      "vt2_sysbase": 5.0,
+      "vt3_input": 6.0,
+      "vt3_sysbase": 6.0,
+      "ft0_input": 0.05,
+      "ft0_sysbase": 0.05,
+      "ft1_input": 0.1,
+      "ft1_sysbase": 0.1,
+      "ft2_input": 999.0,
+      "ft2_sysbase": 999.0,
+      "ft3_input": 1000.0,
+      "ft3_sysbase": 1000.0,
+      "recflag_input": 0.0,
+      "recflag_sysbase": 0.0,
+      "pqflag_input": 0.0,
+      "pqflag_sysbase": 0.0,
+      "tip_input": 0.02,
+      "tip_sysbase": 0.02,
+      "tiq_input": 0.02,
+      "tiq_sysbase": 0.02,
+      "fn_input": 60.0,
+      "fn_sysbase": 60.0,
+      "Vqu": 5.314187734595789,
+      "Vql": -0.8758122654042111,
+      "pref0": 4.464851250000001,
+      "qref0": -1.4675256380236228
+    },
+    {
+      "asset_id": "RES16",
+      "Sn_input": 752.27551875,
+      "Sn_sysbase": 752.27551875,
+      "ialim_input": 1.3,
+      "ialim_sysbase": 9.77958174375,
+      "qmx_input": 0.6,
+      "qmx_sysbase": 4.513653112499999,
+      "qmn_input": -0.6,
+      "qmn_sysbase": -4.513653112499999,
+      "dqdv_input": -1.0,
+      "dqdv_sysbase": -7.5227551875,
+      "v0_input": 0.01,
+      "v0_sysbase": 0.01,
+      "v1_input": 5.0,
+      "v1_sysbase": 5.0,
+      "vt0_input": 0.005,
+      "vt0_sysbase": 0.005,
+      "vt1_input": 0.01,
+      "vt1_sysbase": 0.01,
+      "vt2_input": 5.0,
+      "vt2_sysbase": 5.0,
+      "vt3_input": 6.0,
+      "vt3_sysbase": 6.0,
+      "ft0_input": 0.05,
+      "ft0_sysbase": 0.05,
+      "ft1_input": 0.1,
+      "ft1_sysbase": 0.1,
+      "ft2_input": 999.0,
+      "ft2_sysbase": 999.0,
+      "ft3_input": 1000.0,
+      "ft3_sysbase": 1000.0,
+      "recflag_input": 0.0,
+      "recflag_sysbase": 0.0,
+      "pqflag_input": 0.0,
+      "pqflag_sysbase": 0.0,
+      "tip_input": 0.02,
+      "tip_sysbase": 0.02,
+      "tiq_input": 0.02,
+      "tiq_sysbase": 0.02,
+      "fn_input": 60.0,
+      "fn_sysbase": 60.0,
+      "Vqu": 5.314187734554175,
+      "Vql": -0.8758122654458249,
+      "pref0": 6.54152625,
+      "qref0": -2.150095702533707
+    }
+  ],
+  "added_devices": {
+    "shunt_reactors_in_service": [
+      {
+        "idx": "SHR01",
+        "bus": 74,
+        "vn_kv": 345.0,
+        "mvar": 62.5,
+        "b_sys": -0.625,
+        "near_block": "RES01",
+        "cluster": 0
+      },
+      {
+        "idx": "SHR02",
+        "bus": 88,
+        "vn_kv": 220.0,
+        "mvar": 87.5,
+        "b_sys": -0.875,
+        "near_block": "RES05",
+        "cluster": 1
+      },
+      {
+        "idx": "SHR03",
+        "bus": 13,
+        "vn_kv": 345.0,
+        "mvar": 112.5,
+        "b_sys": -1.125,
+        "near_block": "RES09",
+        "cluster": 2
+      },
+      {
+        "idx": "SHR04",
+        "bus": 58,
+        "vn_kv": 230.0,
+        "mvar": 137.5,
+        "b_sys": -1.375,
+        "near_block": "RES13",
+        "cluster": 3
+      }
+    ],
+    "capacitors_out_of_service": [
+      {
+        "idx": "SHC01",
+        "bus": 73,
+        "vn_kv": 345.0,
+        "mvar": 55.0,
+        "b_sys": 0.55,
+        "near_block": "RES02",
+        "cluster": 0
+      },
+      {
+        "idx": "SHC02",
+        "bus": 85,
+        "vn_kv": 220.0,
+        "mvar": 85.0,
+        "b_sys": 0.85,
+        "near_block": "RES06",
+        "cluster": 1
+      }
+    ],
+    "parallel_circuits_out_of_service": [
+      {
+        "idx": "LPAR01",
+        "parallel_to": "Line_194",
+        "bus1": 131,
+        "bus2": 133,
+        "b_sys": 2.77,
+        "x_sys": 0.039,
+        "charging_mvar_at_1pu": 277.0,
+        "input": {
+          "Sn": 100.0,
+          "fn": 60.0,
+          "Vn1": 500.0,
+          "Vn2": 500.0,
+          "r": 0.002,
+          "x": 0.039,
+          "b": 2.77,
+          "g": 0.0,
+          "b1": 0.0,
+          "g1": 0.0,
+          "b2": 0.0,
+          "g2": 0.0,
+          "trans": 0.0,
+          "tap": 1.0,
+          "phi": 0.0
+        }
+      },
+      {
+        "idx": "LPAR02",
+        "parallel_to": "Line_197",
+        "bus1": 132,
+        "bus2": 133,
+        "b_sys": 2.09,
+        "x_sys": 0.0293,
+        "charging_mvar_at_1pu": 209.0,
+        "input": {
+          "Sn": 100.0,
+          "fn": 60.0,
+          "Vn1": 500.0,
+          "Vn2": 500.0,
+          "r": 0.0012,
+          "x": 0.0293,
+          "b": 2.09,
+          "g": 0.0,
+          "b1": 0.0,
+          "g1": 0.0,
+          "b2": 0.0,
+          "g2": 0.0,
+          "trans": 0.0,
+          "tap": 1.0,
+          "phi": 0.0
+        }
+      }
+    ],
+    "statcom_shunts_b0": [
+      {
+        "idx": "STATCOM01",
+        "bus": 39,
+        "vn_kv": 345.0,
+        "mvar": 100.0,
+        "near_block": "RES04",
+        "cluster": 0
+      },
+      {
+        "idx": "STATCOM02",
+        "bus": 117,
+        "vn_kv": 230.0,
+        "mvar": 100.0,
+        "near_block": "RES08",
+        "cluster": 1
+      },
+      {
+        "idx": "STATCOM03",
+        "bus": 30,
+        "vn_kv": 345.0,
+        "mvar": 100.0,
+        "near_block": "RES12",
+        "cluster": 2
+      },
+      {
+        "idx": "STATCOM04",
+        "bus": 102,
+        "vn_kv": 220.0,
+        "mvar": 100.0,
+        "near_block": "RES16",
+        "cluster": 3
+      }
+    ],
+    "fast_reactor_shunts_b0": [
+      {
+        "idx": "FASTR01",
+        "bus": 74,
+        "vn_kv": 345.0,
+        "mvar": 50.0,
+        "cluster": 0
+      },
+      {
+        "idx": "FASTR02",
+        "bus": 88,
+        "vn_kv": 220.0,
+        "mvar": 50.0,
+        "cluster": 1
+      },
+      {
+        "idx": "FASTR03",
+        "bus": 13,
+        "vn_kv": 345.0,
+        "mvar": 50.0,
+        "cluster": 2
+      },
+      {
+        "idx": "FASTR04",
+        "bus": 58,
+        "vn_kv": 230.0,
+        "mvar": 50.0,
+        "cluster": 3
+      }
+    ],
+    "manual_reactor_shunts_b0": [
+      {
+        "idx": "MANR01",
+        "bus": 74,
+        "vn_kv": 345.0,
+        "mvar": 100.0,
+        "cluster": 0
+      },
+      {
+        "idx": "MANR02",
+        "bus": 88,
+        "vn_kv": 220.0,
+        "mvar": 100.0,
+        "cluster": 1
+      },
+      {
+        "idx": "MANR03",
+        "bus": 13,
+        "vn_kv": 345.0,
+        "mvar": 100.0,
+        "cluster": 2
+      },
+      {
+        "idx": "MANR04",
+        "bus": 58,
+        "vn_kv": 230.0,
+        "mvar": 100.0,
+        "cluster": 3
+      }
+    ],
+    "collector_reactors_out_of_service": []
+  },
+  "machines": [
+    {
+      "model": "GENCLS",
+      "idx": "GENCLS_1",
+      "bus": 53,
+      "gen": 15,
+      "sn_mva": 100.0,
+      "u": 1.0,
+      "p_base_pu": 8.33,
+      "p_op_pu": 2.1410568151090894,
+      "q_op_pu": 1.3332627263673387,
+      "area": 2,
+      "slack_linked": false,
+      "exciters": [],
+      "governors": [],
+      "pss": []
+    },
+    {
+      "model": "GENCLS",
+      "idx": "GENCLS_2",
+      "bus": 65,
+      "gen": 23,
+      "sn_mva": 100.0,
+      "u": 1.0,
+      "p_base_pu": 0.91,
+      "p_op_pu": 0.23389696299511079,
+      "q_op_pu": 0.5229501648820922,
+      "area": 2,
+      "slack_linked": false,
+      "exciters": [],
+      "governors": [],
+      "pss": []
+    },
+    {
+      "model": "GENCLS",
+      "idx": "GENCLS_3",
+      "bus": 68,
+      "gen": 24,
+      "sn_mva": 100.0,
+      "u": 1.0,
+      "p_base_pu": 0.66,
+      "p_op_pu": 0.19999999999999998,
+      "q_op_pu": -0.28788466916308464,
+      "area": 2,
+      "slack_linked": false,
+      "exciters": [],
+      "governors": [],
+      "pss": []
+    },
+    {
+      "model": "GENCLS",
+      "idx": "GENCLS_4",
+      "bus": 71,
+      "gen": 25,
+      "sn_mva": 100.0,
+      "u": 1.0,
+      "p_base_pu": 1.34,
+      "p_op_pu": 0.3444197037510421,
+      "q_op_pu": -4.008752154592565,
+      "area": 2,
+      "slack_linked": false,
+      "exciters": [],
+      "governors": [],
+      "pss": []
+    },
+    {
+      "model": "GENCLS",
+      "idx": "GENCLS_5",
+      "bus": 72,
+      "gen": 26,
+      "sn_mva": 100.0,
+      "u": 1.0,
+      "p_base_pu": 1.5,
+      "p_op_pu": 0.3855444444974352,
+      "q_op_pu": 3.8416138297648814,
+      "area": 2,
+      "slack_linked": false,
+      "exciters": [],
+      "governors": [],
+      "pss": []
+    },
+    {
+      "model": "GENCLS",
+      "idx": "GENCLS_6",
+      "bus": 78,
+      "gen": 27,
+      "sn_mva": 100.0,
+      "u": 1.0,
+      "p_base_pu": 4.66037556886126,
+      "p_op_pu": 1.1978546069221172,
+      "q_op_pu": 3.8202020112928556,
+      "area": 3,
+      "slack_linked": true,
+      "exciters": [],
+      "governors": [],
+      "pss": []
+    },
+    {
+      "model": "GENCLS",
+      "idx": "GENCLS_7",
+      "bus": 91,
+      "gen": 32,
+      "sn_mva": 100.0,
+      "u": 1.0,
+      "p_base_pu": 9.3,
+      "p_op_pu": 2.3903755558841,
+      "q_op_pu": 8.267139654240056,
+      "area": 4,
+      "slack_linked": false,
+      "exciters": [],
+      "governors": [],
+      "pss": []
+    },
+    {
+      "model": "GENCLS",
+      "idx": "GENCLS_8",
+      "bus": 92,
+      "gen": 33,
+      "sn_mva": 100.0,
+      "u": 1.0,
+      "p_base_pu": 4.5,
+      "p_op_pu": 1.1566333334923067,
+      "q_op_pu": 2.169059180391421,
+      "area": 4,
+      "slack_linked": false,
+      "exciters": [],
+      "governors": [],
+      "pss": []
+    },
+    {
+      "model": "GENCLS",
+      "idx": "GENCLS_9",
+      "bus": 97,
+      "gen": 34,
+      "sn_mva": 100.0,
+      "u": 1.0,
+      "p_base_pu": 6.0,
+      "p_op_pu": 1.5421777779897408,
+      "q_op_pu": 0.9944756850441339,
+      "area": 4,
+      "slack_linked": false,
+      "exciters": [],
+      "governors": [],
+      "pss": []
+    },
+    {
+      "model": "GENCLS",
+      "idx": "GENCLS_10",
+      "bus": 115,
+      "gen": 37,
+      "sn_mva": 100.0,
+      "u": 1.0,
+      "p_base_pu": 5.5,
+      "p_op_pu": 1.4136629631572633,
+      "q_op_pu": 5.931851676707018,
+      "area": 5,
+      "slack_linked": false,
+      "exciters": [],
+      "governors": [],
+      "pss": []
+    },
+    {
+      "model": "GENCLS",
+      "idx": "GENCLS_11",
+      "bus": 119,
+      "gen": 38,
+      "sn_mva": 100.0,
+      "u": 1.0,
+      "p_base_pu": 5.5,
+      "p_op_pu": 1.4136629631572628,
+      "q_op_pu": 1.0877068557088725,
+      "area": 5,
+      "slack_linked": false,
+      "exciters": [],
+      "governors": [
+        "TGOV1_28"
+      ],
+      "pss": []
+    },
+    {
+      "model": "GENCLS",
+      "idx": "GENCLS_12",
+      "bus": 120,
+      "gen": 39,
+      "sn_mva": 100.0,
+      "u": 1.0,
+      "p_base_pu": 7.0,
+      "p_op_pu": 1.7992074076546978,
+      "q_op_pu": 1.092766402385988,
+      "area": 5,
+      "slack_linked": false,
+      "exciters": [],
+      "governors": [],
+      "pss": []
+    },
+    {
+      "model": "GENCLS",
+      "idx": "GENCLS_13",
+      "bus": 121,
+      "gen": 40,
+      "sn_mva": 100.0,
+      "u": 1.0,
+      "p_base_pu": 1.45,
+      "p_op_pu": 0.3726929630141875,
+      "q_op_pu": 1.6730735348203236,
+      "area": 5,
+      "slack_linked": false,
+      "exciters": [],
+      "governors": [],
+      "pss": []
+    },
+    {
+      "model": "GENCLS",
+      "idx": "GENCLS_14",
+      "bus": 122,
+      "gen": 41,
+      "sn_mva": 100.0,
+      "u": 1.0,
+      "p_base_pu": 1.55,
+      "p_op_pu": 0.3983959259806832,
+      "q_op_pu": 1.9472600518565304,
+      "area": 5,
+      "slack_linked": false,
+      "exciters": [],
+      "governors": [],
+      "pss": []
+    },
+    {
+      "model": "GENCLS",
+      "idx": "GENCLS_15",
+      "bus": 123,
+      "gen": 42,
+      "sn_mva": 100.0,
+      "u": 1.0,
+      "p_base_pu": 6.55,
+      "p_op_pu": 1.683544074305468,
+      "q_op_pu": 0.543447418580148,
+      "area": 5,
+      "slack_linked": false,
+      "exciters": [],
+      "governors": [],
+      "pss": []
+    },
+    {
+      "model": "GENCLS",
+      "idx": "GENCLS_16",
+      "bus": 130,
+      "gen": 43,
+      "sn_mva": 100.0,
+      "u": 1.0,
+      "p_base_pu": 4.9,
+      "p_op_pu": 1.2594451853582886,
+      "q_op_pu": -8.689497042339848,
+      "area": 6,
+      "slack_linked": false,
+      "exciters": [],
+      "governors": [],
+      "pss": []
+    },
+    {
+      "model": "GENCLS",
+      "idx": "GENCLS_17",
+      "bus": 133,
+      "gen": 44,
+      "sn_mva": 100.0,
+      "u": 1.0,
+      "p_base_pu": 17.0,
+      "p_op_pu": 4.3695037043042655,
+      "q_op_pu": -4.210523313945146,
+      "area": 6,
+      "slack_linked": false,
+      "exciters": [],
+      "governors": [
+        "TGOV1_29"
+      ],
+      "pss": []
+    },
+    {
+      "model": "GENCLS",
+      "idx": "GENCLS_18",
+      "bus": 134,
+      "gen": 45,
+      "sn_mva": 100.0,
+      "u": 1.0,
+      "p_base_pu": 8.8,
+      "p_op_pu": 2.2618607410516214,
+      "q_op_pu": -1.2593977525562159,
+      "area": 6,
+      "slack_linked": false,
+      "exciters": [],
+      "governors": [],
+      "pss": []
+    },
+    {
+      "model": "GENCLS",
+      "idx": "GENCLS_19",
+      "bus": 135,
+      "gen": 46,
+      "sn_mva": 100.0,
+      "u": 1.0,
+      "p_base_pu": 23.3,
+      "p_op_pu": 5.9887903711934936,
+      "q_op_pu": -2.5372760438289905,
+      "area": 6,
+      "slack_linked": false,
+      "exciters": [],
+      "governors": [],
+      "pss": []
+    },
+    {
+      "model": "GENCLS",
+      "idx": "GENCLS_20",
+      "bus": 137,
+      "gen": 47,
+      "sn_mva": 100.0,
+      "u": 1.0,
+      "p_base_pu": 0.7,
+      "p_op_pu": 0.1999999999999999,
+      "q_op_pu": 0.9943887821054983,
+      "area": 6,
+      "slack_linked": false,
+      "exciters": [],
+      "governors": [],
+      "pss": []
+    },
+    {
+      "model": "GENCLS",
+      "idx": "GENCLS_21",
+      "bus": 139,
+      "gen": 48,
+      "sn_mva": 100.0,
+      "u": 1.0,
+      "p_base_pu": 1.15,
+      "p_op_pu": 0.2955840741147004,
+      "q_op_pu": -0.44162570899047265,
+      "area": 6,
+      "slack_linked": false,
+      "exciters": [],
+      "governors": [],
+      "pss": []
+    },
+    {
+      "model": "GENROU",
+      "idx": "GENROU_22",
+      "bus": 21,
+      "gen": 1,
+      "sn_mva": 750.0,
+      "u": 1.0,
+      "p_base_pu": 6.5,
+      "p_op_pu": 2.2510000000000003,
+      "q_op_pu": 1.8629188947842172,
+      "area": 1,
+      "slack_linked": false,
+      "exciters": [
+        "IEEEX1_1"
+      ],
+      "governors": [
+        "TGOV1_1"
+      ],
+      "pss": []
+    },
+    {
+      "model": "GENROU",
+      "idx": "GENROU_23",
+      "bus": 22,
+      "gen": 2,
+      "sn_mva": 700.0,
+      "u": 1.0,
+      "p_base_pu": 6.32,
+      "p_op_pu": 2.101,
+      "q_op_pu": 2.575714812048208,
+      "area": 1,
+      "slack_linked": false,
+      "exciters": [
+        "IEEEX1_2"
+      ],
+      "governors": [
+        "TGOV1_2"
+      ],
+      "pss": []
+    },
+    {
+      "model": "GENROU",
+      "idx": "GENROU_24",
+      "bus": 23,
+      "gen": 3,
+      "sn_mva": 300.0,
+      "u": 1.0,
+      "p_base_pu": 2.7664999999999997,
+      "p_op_pu": 0.9009999999999998,
+      "q_op_pu": 0.043322693355833664,
+      "area": 1,
+      "slack_linked": false,
+      "exciters": [
+        "IEEEX1_3"
+      ],
+      "governors": [
+        "TGOV1_3"
+      ],
+      "pss": []
+    },
+    {
+      "model": "GENROU",
+      "idx": "GENROU_25",
+      "bus": 23,
+      "gen": 4,
+      "sn_mva": 300.0,
+      "u": 1.0,
+      "p_base_pu": 2.2635,
+      "p_op_pu": 0.9009999999999996,
+      "q_op_pu": 0.023712693355833536,
+      "area": 1,
+      "slack_linked": false,
+      "exciters": [
+        "IEEEX1_4"
+      ],
+      "governors": [
+        "TGOV1_4"
+      ],
+      "pss": []
+    },
+    {
+      "model": "GENROU",
+      "idx": "GENROU_26",
+      "bus": 24,
+      "gen": 5,
+      "sn_mva": 800.0,
+      "u": 1.0,
+      "p_base_pu": 7.0,
+      "p_op_pu": 2.401000000000001,
+      "q_op_pu": 4.606479522045632,
+      "area": 1,
+      "slack_linked": false,
+      "exciters": [
+        "IEEEX1_5"
+      ],
+      "governors": [
+        "TGOV1_5"
+      ],
+      "pss": []
+    },
+    {
+      "model": "GENROU",
+      "idx": "GENROU_27",
+      "bus": 25,
+      "gen": 6,
+      "sn_mva": 650.0,
+      "u": 1.0,
+      "p_base_pu": 5.6,
+      "p_op_pu": 1.951,
+      "q_op_pu": 1.675157234023093,
+      "area": 1,
+      "slack_linked": false,
+      "exciters": [
+        "IEEEX1_6"
+      ],
+      "governors": [
+        "TGOV1_6"
+      ],
+      "pss": []
+    },
+    {
+      "model": "GENROU",
+      "idx": "GENROU_28",
+      "bus": 26,
+      "gen": 7,
+      "sn_mva": 900.0,
+      "u": 1.0,
+      "p_base_pu": 8.0,
+      "p_op_pu": 2.7009999999999996,
+      "q_op_pu": -0.24552267134803096,
+      "area": 1,
+      "slack_linked": false,
+      "exciters": [
+        "IEEEX1_7"
+      ],
+      "governors": [
+        "TGOV1_7"
+      ],
+      "pss": []
+    },
+    {
+      "model": "GENROU",
+      "idx": "GENROU_29",
+      "bus": 27,
+      "gen": 8,
+      "sn_mva": 600.0,
+      "u": 1.0,
+      "p_base_pu": 5.4,
+      "p_op_pu": 1.8009999999999997,
+      "q_op_pu": 0.8138682543812024,
+      "area": 1,
+      "slack_linked": false,
+      "exciters": [
+        "IEEEX1_8"
+      ],
+      "governors": [
+        "TGOV1_8"
+      ],
+      "pss": []
+    },
+    {
+      "model": "GENROU",
+      "idx": "GENROU_30",
+      "bus": 36,
+      "gen": 9,
+      "sn_mva": 650.0,
+      "u": 1.0,
+      "p_base_pu": 5.54,
+      "p_op_pu": 1.951,
+      "q_op_pu": 1.8192475295228836,
+      "area": 1,
+      "slack_linked": false,
+      "exciters": [
+        "IEEEX1_9"
+      ],
+      "governors": [
+        "TGOV1_9"
+      ],
+      "pss": []
+    },
+    {
+      "model": "GENROU",
+      "idx": "GENROU_31",
+      "bus": 42,
+      "gen": 10,
+      "sn_mva": 400.0,
+      "u": 1.0,
+      "p_base_pu": 3.7,
+      "p_op_pu": 1.2009999999999996,
+      "q_op_pu": 0.8291708789598526,
+      "area": 2,
+      "slack_linked": false,
+      "exciters": [
+        "IEEEX1_10"
+      ],
+      "governors": [
+        "TGOV1_10"
+      ],
+      "pss": []
+    },
+    {
+      "model": "GENROU",
+      "idx": "GENROU_32",
+      "bus": 47,
+      "gen": 11,
+      "sn_mva": 450.0,
+      "u": 1.0,
+      "p_base_pu": 4.0,
+      "p_op_pu": 1.3509999999999998,
+      "q_op_pu": -0.20168974902511114,
+      "area": 2,
+      "slack_linked": false,
+      "exciters": [
+        "IEEEX1_11"
+      ],
+      "governors": [
+        "TGOV1_11"
+      ],
+      "pss": []
+    },
+    {
+      "model": "GENROU",
+      "idx": "GENROU_33",
+      "bus": 48,
+      "gen": 12,
+      "sn_mva": 500.0,
+      "u": 1.0,
+      "p_base_pu": 4.0,
+      "p_op_pu": 1.5010000000000003,
+      "q_op_pu": 0.7430033855460605,
+      "area": 2,
+      "slack_linked": false,
+      "exciters": [
+        "IEEEX1_12"
+      ],
+      "governors": [
+        "TGOV1_12"
+      ],
+      "pss": []
+    },
+    {
+      "model": "GENROU",
+      "idx": "GENROU_34",
+      "bus": 50,
+      "gen": 13,
+      "sn_mva": 700.0,
+      "u": 1.0,
+      "p_base_pu": 6.0,
+      "p_op_pu": 2.1010000000000004,
+      "q_op_pu": 1.1338674585351893,
+      "area": 2,
+      "slack_linked": false,
+      "exciters": [
+        "IEEEX1_13"
+      ],
+      "governors": [
+        "TGOV1_13"
+      ],
+      "pss": []
+    },
+    {
+      "model": "GENROU",
+      "idx": "GENROU_35",
+      "bus": 51,
+      "gen": 14,
+      "sn_mva": 150.0,
+      "u": 1.0,
+      "p_base_pu": 1.41,
+      "p_op_pu": 0.451,
+      "q_op_pu": -0.746212958993454,
+      "area": 2,
+      "slack_linked": false,
+      "exciters": [
+        "IEEEX1_14"
+      ],
+      "governors": [
+        "TGOV1_14"
+      ],
+      "pss": []
+    },
+    {
+      "model": "GENROU",
+      "idx": "GENROU_36",
+      "bus": 54,
+      "gen": 16,
+      "sn_mva": 650.0,
+      "u": 1.0,
+      "p_base_pu": 5.575,
+      "p_op_pu": 1.9509999999999996,
+      "q_op_pu": 1.393775055240347,
+      "area": 2,
+      "slack_linked": false,
+      "exciters": [
+        "IEEEX1_15"
+      ],
+      "governors": [
+        "TGOV1_15"
+      ],
+      "pss": []
+    },
+    {
+      "model": "GENROU",
+      "idx": "GENROU_37",
+      "bus": 54,
+      "gen": 17,
+      "sn_mva": 650.0,
+      "u": 1.0,
+      "p_base_pu": 5.575,
+      "p_op_pu": 1.9509999999999996,
+      "q_op_pu": 1.393775055240347,
+      "area": 2,
+      "slack_linked": false,
+      "exciters": [
+        "IEEEX1_16"
+      ],
+      "governors": [
+        "TGOV1_16"
+      ],
+      "pss": []
+    },
+    {
+      "model": "GENROU",
+      "idx": "GENROU_38",
+      "bus": 55,
+      "gen": 18,
+      "sn_mva": 1200.0,
+      "u": 1.0,
+      "p_base_pu": 10.95,
+      "p_op_pu": 3.6009999999999986,
+      "q_op_pu": 1.1381289716612517,
+      "area": 2,
+      "slack_linked": false,
+      "exciters": [
+        "IEEEX1_17"
+      ],
+      "governors": [
+        "TGOV1_17"
+      ],
+      "pss": []
+    },
+    {
+      "model": "GENROU",
+      "idx": "GENROU_39",
+      "bus": 56,
+      "gen": 19,
+      "sn_mva": 500.0,
+      "u": 1.0,
+      "p_base_pu": 4.1,
+      "p_op_pu": 1.5010000000000001,
+      "q_op_pu": 1.6310174277614053,
+      "area": 2,
+      "slack_linked": false,
+      "exciters": [
+        "IEEEX1_18"
+      ],
+      "governors": [
+        "TGOV1_18"
+      ],
+      "pss": []
+    },
+    {
+      "model": "GENROU",
+      "idx": "GENROU_40",
+      "bus": 57,
+      "gen": 20,
+      "sn_mva": 350.0,
+      "u": 1.0,
+      "p_base_pu": 2.98,
+      "p_op_pu": 1.0510000000000002,
+      "q_op_pu": 0.11506668013464749,
+      "area": 2,
+      "slack_linked": false,
+      "exciters": [
+        "IEEEX1_19"
+      ],
+      "governors": [
+        "TGOV1_19"
+      ],
+      "pss": []
+    },
+    {
+      "model": "GENROU",
+      "idx": "GENROU_41",
+      "bus": 60,
+      "gen": 21,
+      "sn_mva": 450.0,
+      "u": 1.0,
+      "p_base_pu": 4.1,
+      "p_op_pu": 1.351,
+      "q_op_pu": 0.8461331213567798,
+      "area": 2,
+      "slack_linked": false,
+      "exciters": [
+        "IEEEX1_20"
+      ],
+      "governors": [
+        "TGOV1_20"
+      ],
+      "pss": []
+    },
+    {
+      "model": "GENROU",
+      "idx": "GENROU_42",
+      "bus": 61,
+      "gen": 22,
+      "sn_mva": 200.0,
+      "u": 1.0,
+      "p_base_pu": 1.94,
+      "p_op_pu": 0.6010000000000001,
+      "q_op_pu": 0.279436520871994,
+      "area": 2,
+      "slack_linked": false,
+      "exciters": [
+        "IEEEX1_21"
+      ],
+      "governors": [
+        "TGOV1_21"
+      ],
+      "pss": []
+    },
+    {
+      "model": "GENROU",
+      "idx": "GENROU_43",
+      "bus": 79,
+      "gen": 28,
+      "sn_mva": 1150.0,
+      "u": 1.0,
+      "p_base_pu": 10.0,
+      "p_op_pu": 3.4509999999999987,
+      "q_op_pu": 2.0742764805742513,
+      "area": 3,
+      "slack_linked": false,
+      "exciters": [
+        "IEEEX1_22"
+      ],
+      "governors": [
+        "TGOV1_22"
+      ],
+      "pss": []
+    },
+    {
+      "model": "GENROU",
+      "idx": "GENROU_44",
+      "bus": 80,
+      "gen": 29,
+      "sn_mva": 800.0,
+      "u": 1.0,
+      "p_base_pu": 7.2,
+      "p_op_pu": 2.401,
+      "q_op_pu": 0.4663141804641435,
+      "area": 3,
+      "slack_linked": false,
+      "exciters": [
+        "IEEEX1_23"
+      ],
+      "governors": [
+        "TGOV1_23"
+      ],
+      "pss": []
+    },
+    {
+      "model": "GENROU",
+      "idx": "GENROU_45",
+      "bus": 82,
+      "gen": 30,
+      "sn_mva": 500.0,
+      "u": 1.0,
+      "p_base_pu": 4.6,
+      "p_op_pu": 1.5010000000000003,
+      "q_op_pu": 1.030052324510048,
+      "area": 3,
+      "slack_linked": false,
+      "exciters": [
+        "IEEEX1_24"
+      ],
+      "governors": [
+        "TGOV1_24"
+      ],
+      "pss": []
+    },
+    {
+      "model": "GENROU",
+      "idx": "GENROU_46",
+      "bus": 86,
+      "gen": 31,
+      "sn_mva": 1900.0,
+      "u": 1.0,
+      "p_base_pu": 16.5,
+      "p_op_pu": 5.701000000000001,
+      "q_op_pu": 3.977132336830037,
+      "area": 4,
+      "slack_linked": false,
+      "exciters": [],
+      "governors": [
+        "TGOV1_25"
+      ],
+      "pss": []
+    },
+    {
+      "model": "GENROU",
+      "idx": "GENROU_47",
+      "bus": 98,
+      "gen": 35,
+      "sn_mva": 650.0,
+      "u": 1.0,
+      "p_base_pu": 5.85,
+      "p_op_pu": 1.951,
+      "q_op_pu": -0.163924955685058,
+      "area": 4,
+      "slack_linked": false,
+      "exciters": [],
+      "governors": [
+        "TGOV1_26"
+      ],
+      "pss": []
+    },
+    {
+      "model": "GENROU",
+      "idx": "GENROU_48",
+      "bus": 101,
+      "gen": 36,
+      "sn_mva": 1350.0,
+      "u": 1.0,
+      "p_base_pu": 12.0,
+      "p_op_pu": 4.051,
+      "q_op_pu": 7.738330886841151,
+      "area": 4,
+      "slack_linked": false,
+      "exciters": [],
+      "governors": [
+        "TGOV1_27"
+      ],
+      "pss": []
+    }
+  ],
+  "generator_trip_rule": "largest in-service synchronous machines by MVA rating (ties: |P|, idx) not linked to the slack; trip sets u=0 on the machine and every linked exciter/governor/PSS",
+  "generator_trip_machines": [
+    "GENROU_46",
+    "GENROU_48",
+    "GENROU_38",
+    "GENROU_43",
+    "GENROU_28",
+    "GENROU_26"
+  ],
+  "load_disconnection_rule": "largest |q0| in-service PQ loads (n_blocks/2), signed; q<0 loads flagged",
+  "redispatch": {
+    "channel": "governor pref0",
+    "partition": "case areas",
+    "net_export_mw": {
+      "1": 702.2415000000001,
+      "2": -420.4190823647326,
+      "3": 783.3085856922116,
+      "4": 1030.5455417366163,
+      "5": -260.3639952730436,
+      "6": -1574.481592397763
+    },
+    "n_pairs": 0,
+    "pairing_rule": "down units in exporting, up units in importing (pseudo-)areas, ranked by P; a pair is used only if the down unit stays above max(must-run, governor VMIN) and the up unit below min(governor VMAX, capability) after the 20 % exchange",
+    "n_down_candidates": 15,
+    "n_down_with_headroom": 0
+  },
+  "control_notes": {},
+  "event_family_counts": {
+    "plant_trip": 16,
+    "fixed_pf_ramp": 16,
+    "load_disconnection": 8,
+    "generator_trip": 6,
+    "generation_redispatch": 0,
+    "shunt_reactor_disconnection": 4,
+    "capacitor_switching": 2,
+    "line_energization": 2
+  },
+  "control_class_counts": {
+    "statcom": 4,
+    "plant_q_command": 16,
+    "avr_vref": 6,
+    "fast_reactor": 4,
+    "manual_reactor": 4
+  },
+  "events": [
+    {
+      "event_id": "plant_trip:RES01",
+      "family": "plant_trip",
+      "kind": "switch",
+      "description": "trip of plant RES01 (550.3 MW, -180.9 Mvar)",
+      "profile": {
+        "kind": "step",
+        "start_s": 0.0,
+        "duration_s": null,
+        "description": "step at the event time"
+      },
+      "mutations": [
+        {
+          "model": "PVD1",
+          "idx": "RES01",
+          "attr": "u",
+          "base": 1.0,
+          "value": 0.0
+        }
+      ],
+      "disconnects_assets": [
+        "RES01"
+      ],
+      "metadata": {
+        "asset_id": "RES01",
+        "bus": 900001,
+        "hv_bus": 74,
+        "p_mw": 550.318875,
+        "q_mvar": -180.88106699241368,
+        "cluster": 0
+      }
+    },
+    {
+      "event_id": "plant_trip:RES02",
+      "family": "plant_trip",
+      "kind": "switch",
+      "description": "trip of plant RES02 (425.7 MW, -139.9 Mvar)",
+      "profile": {
+        "kind": "step",
+        "start_s": 0.0,
+        "duration_s": null,
+        "description": "step at the event time"
+      },
+      "mutations": [
+        {
+          "model": "PVD1",
+          "idx": "RES02",
+          "attr": "u",
+          "base": 1.0,
+          "value": 0.0
+        }
+      ],
+      "disconnects_assets": [
+        "RES02"
+      ],
+      "metadata": {
+        "asset_id": "RES02",
+        "bus": 900002,
+        "hv_bus": 73,
+        "p_mw": 425.71837500000004,
+        "q_mvar": -139.92686314507475,
+        "cluster": 0
+      }
+    },
+    {
+      "event_id": "plant_trip:RES03",
+      "family": "plant_trip",
+      "kind": "switch",
+      "description": "trip of plant RES03 (633.4 MW, -208.2 Mvar)",
+      "profile": {
+        "kind": "step",
+        "start_s": 0.0,
+        "duration_s": null,
+        "description": "step at the event time"
+      },
+      "mutations": [
+        {
+          "model": "PVD1",
+          "idx": "RES03",
+          "attr": "u",
+          "base": 1.0,
+          "value": 0.0
+        }
+      ],
+      "disconnects_assets": [
+        "RES03"
+      ],
+      "metadata": {
+        "asset_id": "RES03",
+        "bus": 900003,
+        "hv_bus": 76,
+        "p_mw": 633.385875,
+        "q_mvar": -208.1838695573063,
+        "cluster": 0
+      }
+    },
+    {
+      "event_id": "plant_trip:RES04",
+      "family": "plant_trip",
+      "kind": "switch",
+      "description": "trip of plant RES04 (508.8 MW, -167.2 Mvar)",
+      "profile": {
+        "kind": "step",
+        "start_s": 0.0,
+        "duration_s": null,
+        "description": "step at the event time"
+      },
+      "mutations": [
+        {
+          "model": "PVD1",
+          "idx": "RES04",
+          "attr": "u",
+          "base": 1.0,
+          "value": 0.0
+        }
+      ],
+      "disconnects_assets": [
+        "RES04"
+      ],
+      "metadata": {
+        "asset_id": "RES04",
+        "bus": 900004,
+        "hv_bus": 39,
+        "p_mw": 508.78537500000004,
+        "q_mvar": -167.22966570996738,
+        "cluster": 0
+      }
+    },
+    {
+      "event_id": "plant_trip:RES05",
+      "family": "plant_trip",
+      "kind": "switch",
+      "description": "trip of plant RES05 (384.2 MW, -126.3 Mvar)",
+      "profile": {
+        "kind": "step",
+        "start_s": 0.0,
+        "duration_s": null,
+        "description": "step at the event time"
+      },
+      "mutations": [
+        {
+          "model": "PVD1",
+          "idx": "RES05",
+          "attr": "u",
+          "base": 1.0,
+          "value": 0.0
+        }
+      ],
+      "disconnects_assets": [
+        "RES05"
+      ],
+      "metadata": {
+        "asset_id": "RES05",
+        "bus": 900005,
+        "hv_bus": 88,
+        "p_mw": 384.18487500000003,
+        "q_mvar": -126.27546186262843,
+        "cluster": 1
+      }
+    },
+    {
+      "event_id": "plant_trip:RES06",
+      "family": "plant_trip",
+      "kind": "switch",
+      "description": "trip of plant RES06 (591.9 MW, -194.5 Mvar)",
+      "profile": {
+        "kind": "step",
+        "start_s": 0.0,
+        "duration_s": null,
+        "description": "step at the event time"
+      },
+      "mutations": [
+        {
+          "model": "PVD1",
+          "idx": "RES06",
+          "attr": "u",
+          "base": 1.0,
+          "value": 0.0
+        }
+      ],
+      "disconnects_assets": [
+        "RES06"
+      ],
+      "metadata": {
+        "asset_id": "RES06",
+        "bus": 900006,
+        "hv_bus": 85,
+        "p_mw": 591.852375,
+        "q_mvar": -194.53246827485998,
+        "cluster": 1
+      }
+    },
+    {
+      "event_id": "plant_trip:RES07",
+      "family": "plant_trip",
+      "kind": "switch",
+      "description": "trip of plant RES07 (467.3 MW, -153.6 Mvar)",
+      "profile": {
+        "kind": "step",
+        "start_s": 0.0,
+        "duration_s": null,
+        "description": "step at the event time"
+      },
+      "mutations": [
+        {
+          "model": "PVD1",
+          "idx": "RES07",
+          "attr": "u",
+          "base": 1.0,
+          "value": 0.0
+        }
+      ],
+      "disconnects_assets": [
+        "RES07"
+      ],
+      "metadata": {
+        "asset_id": "RES07",
+        "bus": 900007,
+        "hv_bus": 87,
+        "p_mw": 467.2518750000001,
+        "q_mvar": -153.57826442752108,
+        "cluster": 1
+      }
+    },
+    {
+      "event_id": "plant_trip:RES08",
+      "family": "plant_trip",
+      "kind": "switch",
+      "description": "trip of plant RES08 (674.9 MW, -221.8 Mvar)",
+      "profile": {
+        "kind": "step",
+        "start_s": 0.0,
+        "duration_s": null,
+        "description": "step at the event time"
+      },
+      "mutations": [
+        {
+          "model": "PVD1",
+          "idx": "RES08",
+          "attr": "u",
+          "base": 1.0,
+          "value": 0.0
+        }
+      ],
+      "disconnects_assets": [
+        "RES08"
+      ],
+      "metadata": {
+        "asset_id": "RES08",
+        "bus": 900008,
+        "hv_bus": 117,
+        "p_mw": 674.9193750000001,
+        "q_mvar": -221.83527083975264,
+        "cluster": 1
+      }
+    },
+    {
+      "event_id": "plant_trip:RES09",
+      "family": "plant_trip",
+      "kind": "switch",
+      "description": "trip of plant RES09 (529.6 MW, -174.1 Mvar)",
+      "profile": {
+        "kind": "step",
+        "start_s": 0.0,
+        "duration_s": null,
+        "description": "step at the event time"
+      },
+      "mutations": [
+        {
+          "model": "PVD1",
+          "idx": "RES09",
+          "attr": "u",
+          "base": 1.0,
+          "value": 0.0
+        }
+      ],
+      "disconnects_assets": [
+        "RES09"
+      ],
+      "metadata": {
+        "asset_id": "RES09",
+        "bus": 900009,
+        "hv_bus": 13,
+        "p_mw": 529.552125,
+        "q_mvar": -174.05536635119051,
+        "cluster": 2
+      }
+    },
+    {
+      "event_id": "plant_trip:RES10",
+      "family": "plant_trip",
+      "kind": "switch",
+      "description": "trip of plant RES10 (405.0 MW, -133.1 Mvar)",
+      "profile": {
+        "kind": "step",
+        "start_s": 0.0,
+        "duration_s": null,
+        "description": "step at the event time"
+      },
+      "mutations": [
+        {
+          "model": "PVD1",
+          "idx": "RES10",
+          "attr": "u",
+          "base": 1.0,
+          "value": 0.0
+        }
+      ],
+      "disconnects_assets": [
+        "RES10"
+      ],
+      "metadata": {
+        "asset_id": "RES10",
+        "bus": 900010,
+        "hv_bus": 7,
+        "p_mw": 404.9516250000001,
+        "q_mvar": -133.1011625038516,
+        "cluster": 2
+      }
+    },
+    {
+      "event_id": "plant_trip:RES11",
+      "family": "plant_trip",
+      "kind": "switch",
+      "description": "trip of plant RES11 (612.6 MW, -201.4 Mvar)",
+      "profile": {
+        "kind": "step",
+        "start_s": 0.0,
+        "duration_s": null,
+        "description": "step at the event time"
+      },
+      "mutations": [
+        {
+          "model": "PVD1",
+          "idx": "RES11",
+          "attr": "u",
+          "base": 1.0,
+          "value": 0.0
+        }
+      ],
+      "disconnects_assets": [
+        "RES11"
+      ],
+      "metadata": {
+        "asset_id": "RES11",
+        "bus": 900011,
+        "hv_bus": 15,
+        "p_mw": 612.619125,
+        "q_mvar": -201.35816891608317,
+        "cluster": 2
+      }
+    },
+    {
+      "event_id": "plant_trip:RES12",
+      "family": "plant_trip",
+      "kind": "switch",
+      "description": "trip of plant RES12 (488.0 MW, -160.4 Mvar)",
+      "profile": {
+        "kind": "step",
+        "start_s": 0.0,
+        "duration_s": null,
+        "description": "step at the event time"
+      },
+      "mutations": [
+        {
+          "model": "PVD1",
+          "idx": "RES12",
+          "attr": "u",
+          "base": 1.0,
+          "value": 0.0
+        }
+      ],
+      "disconnects_assets": [
+        "RES12"
+      ],
+      "metadata": {
+        "asset_id": "RES12",
+        "bus": 900012,
+        "hv_bus": 30,
+        "p_mw": 488.01862500000004,
+        "q_mvar": -160.4039650687442,
+        "cluster": 2
+      }
+    },
+    {
+      "event_id": "plant_trip:RES13",
+      "family": "plant_trip",
+      "kind": "switch",
+      "description": "trip of plant RES13 (363.4 MW, -119.4 Mvar)",
+      "profile": {
+        "kind": "step",
+        "start_s": 0.0,
+        "duration_s": null,
+        "description": "step at the event time"
+      },
+      "mutations": [
+        {
+          "model": "PVD1",
+          "idx": "RES13",
+          "attr": "u",
+          "base": 1.0,
+          "value": 0.0
+        }
+      ],
+      "disconnects_assets": [
+        "RES13"
+      ],
+      "metadata": {
+        "asset_id": "RES13",
+        "bus": 900013,
+        "hv_bus": 58,
+        "p_mw": 363.41812500000003,
+        "q_mvar": -119.44976122140527,
+        "cluster": 3
+      }
+    },
+    {
+      "event_id": "plant_trip:RES14",
+      "family": "plant_trip",
+      "kind": "switch",
+      "description": "trip of plant RES14 (571.1 MW, -187.7 Mvar)",
+      "profile": {
+        "kind": "step",
+        "start_s": 0.0,
+        "duration_s": null,
+        "description": "step at the event time"
+      },
+      "mutations": [
+        {
+          "model": "PVD1",
+          "idx": "RES14",
+          "attr": "u",
+          "base": 1.0,
+          "value": 0.0
+        }
+      ],
+      "disconnects_assets": [
+        "RES14"
+      ],
+      "metadata": {
+        "asset_id": "RES14",
+        "bus": 900014,
+        "hv_bus": 52,
+        "p_mw": 571.085625,
+        "q_mvar": -187.70676763363684,
+        "cluster": 3
+      }
+    },
+    {
+      "event_id": "plant_trip:RES15",
+      "family": "plant_trip",
+      "kind": "switch",
+      "description": "trip of plant RES15 (446.5 MW, -146.8 Mvar)",
+      "profile": {
+        "kind": "step",
+        "start_s": 0.0,
+        "duration_s": null,
+        "description": "step at the event time"
+      },
+      "mutations": [
+        {
+          "model": "PVD1",
+          "idx": "RES15",
+          "attr": "u",
+          "base": 1.0,
+          "value": 0.0
+        }
+      ],
+      "disconnects_assets": [
+        "RES15"
+      ],
+      "metadata": {
+        "asset_id": "RES15",
+        "bus": 900015,
+        "hv_bus": 103,
+        "p_mw": 446.48512500000004,
+        "q_mvar": -146.7525637862979,
+        "cluster": 3
+      }
+    },
+    {
+      "event_id": "plant_trip:RES16",
+      "family": "plant_trip",
+      "kind": "switch",
+      "description": "trip of plant RES16 (654.2 MW, -215.0 Mvar)",
+      "profile": {
+        "kind": "step",
+        "start_s": 0.0,
+        "duration_s": null,
+        "description": "step at the event time"
+      },
+      "mutations": [
+        {
+          "model": "PVD1",
+          "idx": "RES16",
+          "attr": "u",
+          "base": 1.0,
+          "value": 0.0
+        }
+      ],
+      "disconnects_assets": [
+        "RES16"
+      ],
+      "metadata": {
+        "asset_id": "RES16",
+        "bus": 900016,
+        "hv_bus": 102,
+        "p_mw": 654.1526250000001,
+        "q_mvar": -215.00957019852947,
+        "cluster": 3
+      }
+    },
+    {
+      "event_id": "fixed_pf_ramp:RES01",
+      "family": "fixed_pf_ramp",
+      "kind": "param",
+      "description": "fixed-PF output ramp of RES01 to 70% over 0.5 s",
+      "profile": {
+        "kind": "ramp",
+        "start_s": 0.0,
+        "duration_s": 0.5,
+        "description": "linear ramp over 0.5 s"
+      },
+      "mutations": [
+        {
+          "model": "PVD1",
+          "idx": "RES01",
+          "attr": "pref0",
+          "base": 5.5031887500000005,
+          "value": 3.852232125
+        },
+        {
+          "model": "PVD1",
+          "idx": "RES01",
+          "attr": "qref0",
+          "base": -1.808810670087185,
+          "value": -1.2661674690610294
+        }
+      ],
+      "disconnects_assets": [],
+      "metadata": {
+        "asset_id": "RES01",
+        "bus": 900001,
+        "dp_mw": -165.09566250000006,
+        "dq_mvar": 54.26432010261556,
+        "cluster": 0
+      }
+    },
+    {
+      "event_id": "fixed_pf_ramp:RES02",
+      "family": "fixed_pf_ramp",
+      "kind": "param",
+      "description": "fixed-PF output ramp of RES02 to 70% over 0.5 s",
+      "profile": {
+        "kind": "ramp",
+        "start_s": 0.0,
+        "duration_s": 0.5,
+        "description": "linear ramp over 0.5 s"
+      },
+      "mutations": [
+        {
+          "model": "PVD1",
+          "idx": "RES02",
+          "attr": "pref0",
+          "base": 4.25718375,
+          "value": 2.980028625
+        },
+        {
+          "model": "PVD1",
+          "idx": "RES02",
+          "attr": "qref0",
+          "base": -1.3992686315749197,
+          "value": -0.9794880421024437
+        }
+      ],
+      "disconnects_assets": [],
+      "metadata": {
+        "asset_id": "RES02",
+        "bus": 900002,
+        "dp_mw": -127.71551250000002,
+        "dq_mvar": 41.9780589472476,
+        "cluster": 0
+      }
+    },
+    {
+      "event_id": "fixed_pf_ramp:RES03",
+      "family": "fixed_pf_ramp",
+      "kind": "param",
+      "description": "fixed-PF output ramp of RES03 to 70% over 0.5 s",
+      "profile": {
+        "kind": "ramp",
+        "start_s": 0.0,
+        "duration_s": 0.5,
+        "description": "linear ramp over 0.5 s"
+      },
+      "mutations": [
+        {
+          "model": "PVD1",
+          "idx": "RES03",
+          "attr": "pref0",
+          "base": 6.33385875,
+          "value": 4.433701125
+        },
+        {
+          "model": "PVD1",
+          "idx": "RES03",
+          "attr": "qref0",
+          "base": -2.08183869622151,
+          "value": -1.457287087355057
+        }
+      ],
+      "disconnects_assets": [],
+      "metadata": {
+        "asset_id": "RES03",
+        "bus": 900003,
+        "dp_mw": -190.01576250000002,
+        "dq_mvar": 62.45516088664531,
+        "cluster": 0
+      }
+    },
+    {
+      "event_id": "fixed_pf_ramp:RES04",
+      "family": "fixed_pf_ramp",
+      "kind": "param",
+      "description": "fixed-PF output ramp of RES04 to 70% over 0.5 s",
+      "profile": {
+        "kind": "ramp",
+        "start_s": 0.0,
+        "duration_s": 0.5,
+        "description": "linear ramp over 0.5 s"
+      },
+      "mutations": [
+        {
+          "model": "PVD1",
+          "idx": "RES04",
+          "attr": "pref0",
+          "base": 5.087853750000001,
+          "value": 3.5614976250000003
+        },
+        {
+          "model": "PVD1",
+          "idx": "RES04",
+          "attr": "qref0",
+          "base": -1.6722966574415836,
+          "value": -1.1706076602091084
+        }
+      ],
+      "disconnects_assets": [],
+      "metadata": {
+        "asset_id": "RES04",
+        "bus": 900004,
+        "dp_mw": -152.63561250000004,
+        "dq_mvar": 50.16889972324752,
+        "cluster": 0
+      }
+    },
+    {
+      "event_id": "fixed_pf_ramp:RES05",
+      "family": "fixed_pf_ramp",
+      "kind": "param",
+      "description": "fixed-PF output ramp of RES05 to 70% over 0.5 s",
+      "profile": {
+        "kind": "ramp",
+        "start_s": 0.0,
+        "duration_s": 0.5,
+        "description": "linear ramp over 0.5 s"
+      },
+      "mutations": [
+        {
+          "model": "PVD1",
+          "idx": "RES05",
+          "attr": "pref0",
+          "base": 3.8418487500000005,
+          "value": 2.689294125
+        },
+        {
+          "model": "PVD1",
+          "idx": "RES05",
+          "attr": "qref0",
+          "base": -1.2627546186258323,
+          "value": -0.8839282330380825
+        }
+      ],
+      "disconnects_assets": [],
+      "metadata": {
+        "asset_id": "RES05",
+        "bus": 900005,
+        "dp_mw": -115.25546250000002,
+        "dq_mvar": 37.88263855877497,
+        "cluster": 1
+      }
+    },
+    {
+      "event_id": "fixed_pf_ramp:RES06",
+      "family": "fixed_pf_ramp",
+      "kind": "param",
+      "description": "fixed-PF output ramp of RES06 to 70% over 0.5 s",
+      "profile": {
+        "kind": "ramp",
+        "start_s": 0.0,
+        "duration_s": 0.5,
+        "description": "linear ramp over 0.5 s"
+      },
+      "mutations": [
+        {
+          "model": "PVD1",
+          "idx": "RES06",
+          "attr": "pref0",
+          "base": 5.91852375,
+          "value": 4.142966625
+        },
+        {
+          "model": "PVD1",
+          "idx": "RES06",
+          "attr": "qref0",
+          "base": -1.945324682748046,
+          "value": -1.361727277923632
+        }
+      ],
+      "disconnects_assets": [],
+      "metadata": {
+        "asset_id": "RES06",
+        "bus": 900006,
+        "dp_mw": -177.55571250000003,
+        "dq_mvar": 58.35974048244139,
+        "cluster": 1
+      }
+    },
+    {
+      "event_id": "fixed_pf_ramp:RES07",
+      "family": "fixed_pf_ramp",
+      "kind": "param",
+      "description": "fixed-PF output ramp of RES07 to 70% over 0.5 s",
+      "profile": {
+        "kind": "ramp",
+        "start_s": 0.0,
+        "duration_s": 0.5,
+        "description": "linear ramp over 0.5 s"
+      },
+      "mutations": [
+        {
+          "model": "PVD1",
+          "idx": "RES07",
+          "attr": "pref0",
+          "base": 4.672518750000001,
+          "value": 3.2707631250000007
+        },
+        {
+          "model": "PVD1",
+          "idx": "RES07",
+          "attr": "qref0",
+          "base": -1.5357826442967988,
+          "value": -1.075047851007759
+        }
+      ],
+      "disconnects_assets": [],
+      "metadata": {
+        "asset_id": "RES07",
+        "bus": 900007,
+        "dp_mw": -140.17556250000004,
+        "dq_mvar": 46.07347932890397,
+        "cluster": 1
+      }
+    },
+    {
+      "event_id": "fixed_pf_ramp:RES08",
+      "family": "fixed_pf_ramp",
+      "kind": "param",
+      "description": "fixed-PF output ramp of RES08 to 70% over 0.5 s",
+      "profile": {
+        "kind": "ramp",
+        "start_s": 0.0,
+        "duration_s": 0.5,
+        "description": "linear ramp over 0.5 s"
+      },
+      "mutations": [
+        {
+          "model": "PVD1",
+          "idx": "RES08",
+          "attr": "pref0",
+          "base": 6.749193750000001,
+          "value": 4.724435625
+        },
+        {
+          "model": "PVD1",
+          "idx": "RES08",
+          "attr": "qref0",
+          "base": -2.2183527084932937,
+          "value": -1.5528468959453054
+        }
+      ],
+      "disconnects_assets": [],
+      "metadata": {
+        "asset_id": "RES08",
+        "bus": 900008,
+        "dp_mw": -202.47581250000005,
+        "dq_mvar": 66.55058125479883,
+        "cluster": 1
+      }
+    },
+    {
+      "event_id": "fixed_pf_ramp:RES09",
+      "family": "fixed_pf_ramp",
+      "kind": "param",
+      "description": "fixed-PF output ramp of RES09 to 70% over 0.5 s",
+      "profile": {
+        "kind": "ramp",
+        "start_s": 0.0,
+        "duration_s": 0.5,
+        "description": "linear ramp over 0.5 s"
+      },
+      "mutations": [
+        {
+          "model": "PVD1",
+          "idx": "RES09",
+          "attr": "pref0",
+          "base": 5.29552125,
+          "value": 3.706864875
+        },
+        {
+          "model": "PVD1",
+          "idx": "RES09",
+          "attr": "qref0",
+          "base": -1.7405536638221712,
+          "value": -1.2183875646755198
+        }
+      ],
+      "disconnects_assets": [],
+      "metadata": {
+        "asset_id": "RES09",
+        "bus": 900009,
+        "dp_mw": -158.86563750000002,
+        "dq_mvar": 52.21660991466515,
+        "cluster": 2
+      }
+    },
+    {
+      "event_id": "fixed_pf_ramp:RES10",
+      "family": "fixed_pf_ramp",
+      "kind": "param",
+      "description": "fixed-PF output ramp of RES10 to 70% over 0.5 s",
+      "profile": {
+        "kind": "ramp",
+        "start_s": 0.0,
+        "duration_s": 0.5,
+        "description": "linear ramp over 0.5 s"
+      },
+      "mutations": [
+        {
+          "model": "PVD1",
+          "idx": "RES10",
+          "attr": "pref0",
+          "base": 4.049516250000001,
+          "value": 2.8346613750000005
+        },
+        {
+          "model": "PVD1",
+          "idx": "RES10",
+          "attr": "qref0",
+          "base": -1.3310116252472346,
+          "value": -0.9317081376730642
+        }
+      ],
+      "disconnects_assets": [],
+      "metadata": {
+        "asset_id": "RES10",
+        "bus": 900010,
+        "dp_mw": -121.48548750000003,
+        "dq_mvar": 39.93034875741704,
+        "cluster": 2
+      }
+    },
+    {
+      "event_id": "fixed_pf_ramp:RES11",
+      "family": "fixed_pf_ramp",
+      "kind": "param",
+      "description": "fixed-PF output ramp of RES11 to 70% over 0.5 s",
+      "profile": {
+        "kind": "ramp",
+        "start_s": 0.0,
+        "duration_s": 0.5,
+        "description": "linear ramp over 0.5 s"
+      },
+      "mutations": [
+        {
+          "model": "PVD1",
+          "idx": "RES11",
+          "attr": "pref0",
+          "base": 6.126191250000001,
+          "value": 4.288333875
+        },
+        {
+          "model": "PVD1",
+          "idx": "RES11",
+          "attr": "qref0",
+          "base": -2.013581689042415,
+          "value": -1.4095071823296905
+        }
+      ],
+      "disconnects_assets": [],
+      "metadata": {
+        "asset_id": "RES11",
+        "bus": 900011,
+        "dp_mw": -183.78573750000004,
+        "dq_mvar": 60.40745067127246,
+        "cluster": 2
+      }
+    },
+    {
+      "event_id": "fixed_pf_ramp:RES12",
+      "family": "fixed_pf_ramp",
+      "kind": "param",
+      "description": "fixed-PF output ramp of RES12 to 70% over 0.5 s",
+      "profile": {
+        "kind": "ramp",
+        "start_s": 0.0,
+        "duration_s": 0.5,
+        "description": "linear ramp over 0.5 s"
+      },
+      "mutations": [
+        {
+          "model": "PVD1",
+          "idx": "RES12",
+          "attr": "pref0",
+          "base": 4.88018625,
+          "value": 3.4161303750000003
+        },
+        {
+          "model": "PVD1",
+          "idx": "RES12",
+          "attr": "qref0",
+          "base": -1.6040396506266446,
+          "value": -1.1228277554386512
+        }
+      ],
+      "disconnects_assets": [],
+      "metadata": {
+        "asset_id": "RES12",
+        "bus": 900012,
+        "dp_mw": -146.40558750000002,
+        "dq_mvar": 48.12118951879935,
+        "cluster": 2
+      }
+    },
+    {
+      "event_id": "fixed_pf_ramp:RES13",
+      "family": "fixed_pf_ramp",
+      "kind": "param",
+      "description": "fixed-PF output ramp of RES13 to 70% over 0.5 s",
+      "profile": {
+        "kind": "ramp",
+        "start_s": 0.0,
+        "duration_s": 0.5,
+        "description": "linear ramp over 0.5 s"
+      },
+      "mutations": [
+        {
+          "model": "PVD1",
+          "idx": "RES13",
+          "attr": "pref0",
+          "base": 3.63418125,
+          "value": 2.543926875
+        },
+        {
+          "model": "PVD1",
+          "idx": "RES13",
+          "attr": "qref0",
+          "base": -1.194497612259665,
+          "value": -0.8361483285817655
+        }
+      ],
+      "disconnects_assets": [],
+      "metadata": {
+        "asset_id": "RES13",
+        "bus": 900013,
+        "dp_mw": -109.02543750000002,
+        "dq_mvar": 35.834928367789956,
+        "cluster": 3
+      }
+    },
+    {
+      "event_id": "fixed_pf_ramp:RES14",
+      "family": "fixed_pf_ramp",
+      "kind": "param",
+      "description": "fixed-PF output ramp of RES14 to 70% over 0.5 s",
+      "profile": {
+        "kind": "ramp",
+        "start_s": 0.0,
+        "duration_s": 0.5,
+        "description": "linear ramp over 0.5 s"
+      },
+      "mutations": [
+        {
+          "model": "PVD1",
+          "idx": "RES14",
+          "attr": "pref0",
+          "base": 5.710856250000001,
+          "value": 3.9975993750000005
+        },
+        {
+          "model": "PVD1",
+          "idx": "RES14",
+          "attr": "qref0",
+          "base": -1.8770676764789798,
+          "value": -1.3139473735352858
+        }
+      ],
+      "disconnects_assets": [],
+      "metadata": {
+        "asset_id": "RES14",
+        "bus": 900014,
+        "dp_mw": -171.32568750000004,
+        "dq_mvar": 56.3120302943694,
+        "cluster": 3
+      }
+    },
+    {
+      "event_id": "fixed_pf_ramp:RES15",
+      "family": "fixed_pf_ramp",
+      "kind": "param",
+      "description": "fixed-PF output ramp of RES15 to 70% over 0.5 s",
+      "profile": {
+        "kind": "ramp",
+        "start_s": 0.0,
+        "duration_s": 0.5,
+        "description": "linear ramp over 0.5 s"
+      },
+      "mutations": [
+        {
+          "model": "PVD1",
+          "idx": "RES15",
+          "attr": "pref0",
+          "base": 4.464851250000001,
+          "value": 3.125395875
+        },
+        {
+          "model": "PVD1",
+          "idx": "RES15",
+          "attr": "qref0",
+          "base": -1.4675256380236228,
+          "value": -1.027267946616536
+        }
+      ],
+      "disconnects_assets": [],
+      "metadata": {
+        "asset_id": "RES15",
+        "bus": 900015,
+        "dp_mw": -133.94553750000006,
+        "dq_mvar": 44.02576914070869,
+        "cluster": 3
+      }
+    },
+    {
+      "event_id": "fixed_pf_ramp:RES16",
+      "family": "fixed_pf_ramp",
+      "kind": "param",
+      "description": "fixed-PF output ramp of RES16 to 70% over 0.5 s",
+      "profile": {
+        "kind": "ramp",
+        "start_s": 0.0,
+        "duration_s": 0.5,
+        "description": "linear ramp over 0.5 s"
+      },
+      "mutations": [
+        {
+          "model": "PVD1",
+          "idx": "RES16",
+          "attr": "pref0",
+          "base": 6.54152625,
+          "value": 4.579068375
+        },
+        {
+          "model": "PVD1",
+          "idx": "RES16",
+          "attr": "qref0",
+          "base": -2.150095702533707,
+          "value": -1.5050669917735948
+        }
+      ],
+      "disconnects_assets": [],
+      "metadata": {
+        "asset_id": "RES16",
+        "bus": 900016,
+        "dp_mw": -196.24578750000003,
+        "dq_mvar": 64.50287107601123,
+        "cluster": 3
+      }
+    },
+    {
+      "event_id": "load_disconnection:PQ_87",
+      "family": "load_disconnection",
+      "kind": "switch",
+      "description": "disconnection of load PQ_87 at bus 131 (0.0 MW, -540.0 Mvar) [net capacitive load: q<0]",
+      "profile": {
+        "kind": "step",
+        "start_s": 0.0,
+        "duration_s": null,
+        "description": "step at the event time"
+      },
+      "mutations": [
+        {
+          "model": "PQ",
+          "idx": "PQ_87",
+          "attr": "u",
+          "base": 1.0,
+          "value": 0.0
+        }
+      ],
+      "disconnects_assets": [],
+      "metadata": {
+        "load": "PQ_87",
+        "bus": 131,
+        "p_mw": 0.0,
+        "q_mvar": -540.0,
+        "negative_q": true
+      }
+    },
+    {
+      "event_id": "load_disconnection:PQ_40",
+      "family": "load_disconnection",
+      "kind": "switch",
+      "description": "disconnection of load PQ_40 at bus 78 (1200.0 MW, +360.0 Mvar)",
+      "profile": {
+        "kind": "step",
+        "start_s": 0.0,
+        "duration_s": null,
+        "description": "step at the event time"
+      },
+      "mutations": [
+        {
+          "model": "PQ",
+          "idx": "PQ_40",
+          "attr": "u",
+          "base": 1.0,
+          "value": 0.0
+        }
+      ],
+      "disconnects_assets": [],
+      "metadata": {
+        "load": "PQ_40",
+        "bus": 78,
+        "p_mw": 1200.0,
+        "q_mvar": 359.99999999999994,
+        "negative_q": false
+      }
+    },
+    {
+      "event_id": "load_disconnection:PQ_48",
+      "family": "load_disconnection",
+      "kind": "switch",
+      "description": "disconnection of load PQ_48 at bus 91 (990.0 MW, +300.0 Mvar)",
+      "profile": {
+        "kind": "step",
+        "start_s": 0.0,
+        "duration_s": null,
+        "description": "step at the event time"
+      },
+      "mutations": [
+        {
+          "model": "PQ",
+          "idx": "PQ_48",
+          "attr": "u",
+          "base": 1.0,
+          "value": 0.0
+        }
+      ],
+      "disconnects_assets": [],
+      "metadata": {
+        "load": "PQ_48",
+        "bus": 91,
+        "p_mw": 990.0,
+        "q_mvar": 300.0,
+        "negative_q": false
+      }
+    },
+    {
+      "event_id": "load_disconnection:PQ_86",
+      "family": "load_disconnection",
+      "kind": "switch",
+      "description": "disconnection of load PQ_86 at bus 131 (696.0 MW, +280.8 Mvar)",
+      "profile": {
+        "kind": "step",
+        "start_s": 0.0,
+        "duration_s": null,
+        "description": "step at the event time"
+      },
+      "mutations": [
+        {
+          "model": "PQ",
+          "idx": "PQ_86",
+          "attr": "u",
+          "base": 1.0,
+          "value": 0.0
+        }
+      ],
+      "disconnects_assets": [],
+      "metadata": {
+        "load": "PQ_86",
+        "bus": 131,
+        "p_mw": 696.0,
+        "q_mvar": 280.79999999999995,
+        "negative_q": false
+      }
+    },
+    {
+      "event_id": "load_disconnection:PQ_89",
+      "family": "load_disconnection",
+      "kind": "switch",
+      "description": "disconnection of load PQ_89 at bus 132 (0.0 MW, -202.2 Mvar) [net capacitive load: q<0]",
+      "profile": {
+        "kind": "step",
+        "start_s": 0.0,
+        "duration_s": null,
+        "description": "step at the event time"
+      },
+      "mutations": [
+        {
+          "model": "PQ",
+          "idx": "PQ_89",
+          "attr": "u",
+          "base": 1.0,
+          "value": 0.0
+        }
+      ],
+      "disconnects_assets": [],
+      "metadata": {
+        "load": "PQ_89",
+        "bus": 132,
+        "p_mw": 0.0,
+        "q_mvar": -202.2,
+        "negative_q": true
+      }
+    },
+    {
+      "event_id": "load_disconnection:PQ_49",
+      "family": "load_disconnection",
+      "kind": "switch",
+      "description": "disconnection of load PQ_49 at bus 92 (6.0 MW, +192.0 Mvar)",
+      "profile": {
+        "kind": "step",
+        "start_s": 0.0,
+        "duration_s": null,
+        "description": "step at the event time"
+      },
+      "mutations": [
+        {
+          "model": "PQ",
+          "idx": "PQ_49",
+          "attr": "u",
+          "base": 1.0,
+          "value": 0.0
+        }
+      ],
+      "disconnects_assets": [],
+      "metadata": {
+        "load": "PQ_49",
+        "bus": 92,
+        "p_mw": 6.0,
+        "q_mvar": 192.0,
+        "negative_q": false
+      }
+    },
+    {
+      "event_id": "load_disconnection:PQ_27",
+      "family": "load_disconnection",
+      "kind": "switch",
+      "description": "disconnection of load PQ_27 at bus 53 (553.8 MW, +150.0 Mvar)",
+      "profile": {
+        "kind": "step",
+        "start_s": 0.0,
+        "duration_s": null,
+        "description": "step at the event time"
+      },
+      "mutations": [
+        {
+          "model": "PQ",
+          "idx": "PQ_27",
+          "attr": "u",
+          "base": 1.0,
+          "value": 0.0
+        }
+      ],
+      "disconnects_assets": [],
+      "metadata": {
+        "load": "PQ_27",
+        "bus": 53,
+        "p_mw": 553.8000000000001,
+        "q_mvar": 150.0,
+        "negative_q": false
+      }
+    },
+    {
+      "event_id": "load_disconnection:PQ_91",
+      "family": "load_disconnection",
+      "kind": "switch",
+      "description": "disconnection of load PQ_91 at bus 136 (162.0 MW, +133.8 Mvar)",
+      "profile": {
+        "kind": "step",
+        "start_s": 0.0,
+        "duration_s": null,
+        "description": "step at the event time"
+      },
+      "mutations": [
+        {
+          "model": "PQ",
+          "idx": "PQ_91",
+          "attr": "u",
+          "base": 1.0,
+          "value": 0.0
+        }
+      ],
+      "disconnects_assets": [],
+      "metadata": {
+        "load": "PQ_91",
+        "bus": 136,
+        "p_mw": 162.0,
+        "q_mvar": 133.79999999999998,
+        "negative_q": false
+      }
+    },
+    {
+      "event_id": "generator_trip:GENROU_46",
+      "family": "generator_trip",
+      "kind": "switch",
+      "description": "trip of GENROU GENROU_46 at bus 86 (1900 MVA, 570.1 MW) with 1 linked controller(s)",
+      "profile": {
+        "kind": "step",
+        "start_s": 0.0,
+        "duration_s": null,
+        "description": "step at the event time"
+      },
+      "mutations": [
+        {
+          "model": "GENROU",
+          "idx": "GENROU_46",
+          "attr": "u",
+          "base": 1.0,
+          "value": 0.0
+        },
+        {
+          "model": "TGOV1",
+          "idx": "TGOV1_25",
+          "attr": "u",
+          "base": 1.0,
+          "value": 0.0
+        },
+        {
+          "model": "TGOV1",
+          "idx": "TGOV1_25",
+          "attr": "ue",
+          "base": 1.0,
+          "value": 0.0
+        }
+      ],
+      "disconnects_assets": [],
+      "metadata": {
+        "machine": "GENROU_46",
+        "model": "GENROU",
+        "bus": 86,
+        "sn_mva": 1900.0,
+        "p_mw": 570.1000000000001,
+        "q_mvar": 397.7132336830037,
+        "linked": [
+          "TGOV1:TGOV1_25"
+        ]
+      }
+    },
+    {
+      "event_id": "generator_trip:GENROU_48",
+      "family": "generator_trip",
+      "kind": "switch",
+      "description": "trip of GENROU GENROU_48 at bus 101 (1350 MVA, 405.1 MW) with 1 linked controller(s)",
+      "profile": {
+        "kind": "step",
+        "start_s": 0.0,
+        "duration_s": null,
+        "description": "step at the event time"
+      },
+      "mutations": [
+        {
+          "model": "GENROU",
+          "idx": "GENROU_48",
+          "attr": "u",
+          "base": 1.0,
+          "value": 0.0
+        },
+        {
+          "model": "TGOV1",
+          "idx": "TGOV1_27",
+          "attr": "u",
+          "base": 1.0,
+          "value": 0.0
+        },
+        {
+          "model": "TGOV1",
+          "idx": "TGOV1_27",
+          "attr": "ue",
+          "base": 1.0,
+          "value": 0.0
+        }
+      ],
+      "disconnects_assets": [],
+      "metadata": {
+        "machine": "GENROU_48",
+        "model": "GENROU",
+        "bus": 101,
+        "sn_mva": 1350.0,
+        "p_mw": 405.1,
+        "q_mvar": 773.8330886841151,
+        "linked": [
+          "TGOV1:TGOV1_27"
+        ]
+      }
+    },
+    {
+      "event_id": "generator_trip:GENROU_38",
+      "family": "generator_trip",
+      "kind": "switch",
+      "description": "trip of GENROU GENROU_38 at bus 55 (1200 MVA, 360.1 MW) with 2 linked controller(s)",
+      "profile": {
+        "kind": "step",
+        "start_s": 0.0,
+        "duration_s": null,
+        "description": "step at the event time"
+      },
+      "mutations": [
+        {
+          "model": "GENROU",
+          "idx": "GENROU_38",
+          "attr": "u",
+          "base": 1.0,
+          "value": 0.0
+        },
+        {
+          "model": "IEEEX1",
+          "idx": "IEEEX1_17",
+          "attr": "u",
+          "base": 1.0,
+          "value": 0.0
+        },
+        {
+          "model": "IEEEX1",
+          "idx": "IEEEX1_17",
+          "attr": "ue",
+          "base": 1.0,
+          "value": 0.0
+        },
+        {
+          "model": "TGOV1",
+          "idx": "TGOV1_17",
+          "attr": "u",
+          "base": 1.0,
+          "value": 0.0
+        },
+        {
+          "model": "TGOV1",
+          "idx": "TGOV1_17",
+          "attr": "ue",
+          "base": 1.0,
+          "value": 0.0
+        }
+      ],
+      "disconnects_assets": [],
+      "metadata": {
+        "machine": "GENROU_38",
+        "model": "GENROU",
+        "bus": 55,
+        "sn_mva": 1200.0,
+        "p_mw": 360.09999999999985,
+        "q_mvar": 113.81289716612517,
+        "linked": [
+          "IEEEX1:IEEEX1_17",
+          "TGOV1:TGOV1_17"
+        ]
+      }
+    },
+    {
+      "event_id": "generator_trip:GENROU_43",
+      "family": "generator_trip",
+      "kind": "switch",
+      "description": "trip of GENROU GENROU_43 at bus 79 (1150 MVA, 345.1 MW) with 2 linked controller(s)",
+      "profile": {
+        "kind": "step",
+        "start_s": 0.0,
+        "duration_s": null,
+        "description": "step at the event time"
+      },
+      "mutations": [
+        {
+          "model": "GENROU",
+          "idx": "GENROU_43",
+          "attr": "u",
+          "base": 1.0,
+          "value": 0.0
+        },
+        {
+          "model": "IEEEX1",
+          "idx": "IEEEX1_22",
+          "attr": "u",
+          "base": 1.0,
+          "value": 0.0
+        },
+        {
+          "model": "IEEEX1",
+          "idx": "IEEEX1_22",
+          "attr": "ue",
+          "base": 1.0,
+          "value": 0.0
+        },
+        {
+          "model": "TGOV1",
+          "idx": "TGOV1_22",
+          "attr": "u",
+          "base": 1.0,
+          "value": 0.0
+        },
+        {
+          "model": "TGOV1",
+          "idx": "TGOV1_22",
+          "attr": "ue",
+          "base": 1.0,
+          "value": 0.0
+        }
+      ],
+      "disconnects_assets": [],
+      "metadata": {
+        "machine": "GENROU_43",
+        "model": "GENROU",
+        "bus": 79,
+        "sn_mva": 1150.0,
+        "p_mw": 345.09999999999985,
+        "q_mvar": 207.42764805742513,
+        "linked": [
+          "IEEEX1:IEEEX1_22",
+          "TGOV1:TGOV1_22"
+        ]
+      }
+    },
+    {
+      "event_id": "generator_trip:GENROU_28",
+      "family": "generator_trip",
+      "kind": "switch",
+      "description": "trip of GENROU GENROU_28 at bus 26 (900 MVA, 270.1 MW) with 2 linked controller(s)",
+      "profile": {
+        "kind": "step",
+        "start_s": 0.0,
+        "duration_s": null,
+        "description": "step at the event time"
+      },
+      "mutations": [
+        {
+          "model": "GENROU",
+          "idx": "GENROU_28",
+          "attr": "u",
+          "base": 1.0,
+          "value": 0.0
+        },
+        {
+          "model": "IEEEX1",
+          "idx": "IEEEX1_7",
+          "attr": "u",
+          "base": 1.0,
+          "value": 0.0
+        },
+        {
+          "model": "IEEEX1",
+          "idx": "IEEEX1_7",
+          "attr": "ue",
+          "base": 1.0,
+          "value": 0.0
+        },
+        {
+          "model": "TGOV1",
+          "idx": "TGOV1_7",
+          "attr": "u",
+          "base": 1.0,
+          "value": 0.0
+        },
+        {
+          "model": "TGOV1",
+          "idx": "TGOV1_7",
+          "attr": "ue",
+          "base": 1.0,
+          "value": 0.0
+        }
+      ],
+      "disconnects_assets": [],
+      "metadata": {
+        "machine": "GENROU_28",
+        "model": "GENROU",
+        "bus": 26,
+        "sn_mva": 900.0,
+        "p_mw": 270.09999999999997,
+        "q_mvar": -24.552267134803095,
+        "linked": [
+          "IEEEX1:IEEEX1_7",
+          "TGOV1:TGOV1_7"
+        ]
+      }
+    },
+    {
+      "event_id": "generator_trip:GENROU_26",
+      "family": "generator_trip",
+      "kind": "switch",
+      "description": "trip of GENROU GENROU_26 at bus 24 (800 MVA, 240.1 MW) with 2 linked controller(s)",
+      "profile": {
+        "kind": "step",
+        "start_s": 0.0,
+        "duration_s": null,
+        "description": "step at the event time"
+      },
+      "mutations": [
+        {
+          "model": "GENROU",
+          "idx": "GENROU_26",
+          "attr": "u",
+          "base": 1.0,
+          "value": 0.0
+        },
+        {
+          "model": "IEEEX1",
+          "idx": "IEEEX1_5",
+          "attr": "u",
+          "base": 1.0,
+          "value": 0.0
+        },
+        {
+          "model": "IEEEX1",
+          "idx": "IEEEX1_5",
+          "attr": "ue",
+          "base": 1.0,
+          "value": 0.0
+        },
+        {
+          "model": "TGOV1",
+          "idx": "TGOV1_5",
+          "attr": "u",
+          "base": 1.0,
+          "value": 0.0
+        },
+        {
+          "model": "TGOV1",
+          "idx": "TGOV1_5",
+          "attr": "ue",
+          "base": 1.0,
+          "value": 0.0
+        }
+      ],
+      "disconnects_assets": [],
+      "metadata": {
+        "machine": "GENROU_26",
+        "model": "GENROU",
+        "bus": 24,
+        "sn_mva": 800.0,
+        "p_mw": 240.1000000000001,
+        "q_mvar": 460.6479522045632,
+        "linked": [
+          "IEEEX1:IEEEX1_5",
+          "TGOV1:TGOV1_5"
+        ]
+      }
+    },
+    {
+      "event_id": "shunt_reactor_disconnection:SHR01",
+      "family": "shunt_reactor_disconnection",
+      "kind": "switch",
+      "description": "disconnection of 62.5 Mvar reactor SHR01 at bus 74",
+      "profile": {
+        "kind": "step",
+        "start_s": 0.0,
+        "duration_s": null,
+        "description": "step at the event time"
+      },
+      "mutations": [
+        {
+          "model": "Shunt",
+          "idx": "SHR01",
+          "attr": "u",
+          "base": 1.0,
+          "value": 0.0
+        }
+      ],
+      "disconnects_assets": [],
+      "metadata": {
+        "bus": 74,
+        "q_mvar_at_1pu": -62.5,
+        "near_block": "RES01"
+      }
+    },
+    {
+      "event_id": "shunt_reactor_disconnection:SHR02",
+      "family": "shunt_reactor_disconnection",
+      "kind": "switch",
+      "description": "disconnection of 87.5 Mvar reactor SHR02 at bus 88",
+      "profile": {
+        "kind": "step",
+        "start_s": 0.0,
+        "duration_s": null,
+        "description": "step at the event time"
+      },
+      "mutations": [
+        {
+          "model": "Shunt",
+          "idx": "SHR02",
+          "attr": "u",
+          "base": 1.0,
+          "value": 0.0
+        }
+      ],
+      "disconnects_assets": [],
+      "metadata": {
+        "bus": 88,
+        "q_mvar_at_1pu": -87.5,
+        "near_block": "RES05"
+      }
+    },
+    {
+      "event_id": "shunt_reactor_disconnection:SHR03",
+      "family": "shunt_reactor_disconnection",
+      "kind": "switch",
+      "description": "disconnection of 112.5 Mvar reactor SHR03 at bus 13",
+      "profile": {
+        "kind": "step",
+        "start_s": 0.0,
+        "duration_s": null,
+        "description": "step at the event time"
+      },
+      "mutations": [
+        {
+          "model": "Shunt",
+          "idx": "SHR03",
+          "attr": "u",
+          "base": 1.0,
+          "value": 0.0
+        }
+      ],
+      "disconnects_assets": [],
+      "metadata": {
+        "bus": 13,
+        "q_mvar_at_1pu": -112.5,
+        "near_block": "RES09"
+      }
+    },
+    {
+      "event_id": "shunt_reactor_disconnection:SHR04",
+      "family": "shunt_reactor_disconnection",
+      "kind": "switch",
+      "description": "disconnection of 137.5 Mvar reactor SHR04 at bus 58",
+      "profile": {
+        "kind": "step",
+        "start_s": 0.0,
+        "duration_s": null,
+        "description": "step at the event time"
+      },
+      "mutations": [
+        {
+          "model": "Shunt",
+          "idx": "SHR04",
+          "attr": "u",
+          "base": 1.0,
+          "value": 0.0
+        }
+      ],
+      "disconnects_assets": [],
+      "metadata": {
+        "bus": 58,
+        "q_mvar_at_1pu": -137.5,
+        "near_block": "RES13"
+      }
+    },
+    {
+      "event_id": "capacitor_switching:SHC01",
+      "family": "capacitor_switching",
+      "kind": "switch",
+      "description": "energization of 55.0 Mvar capacitor SHC01 at bus 73",
+      "profile": {
+        "kind": "step",
+        "start_s": 0.0,
+        "duration_s": null,
+        "description": "step at the event time"
+      },
+      "mutations": [
+        {
+          "model": "Shunt",
+          "idx": "SHC01",
+          "attr": "u",
+          "base": 0.0,
+          "value": 1.0
+        }
+      ],
+      "disconnects_assets": [],
+      "metadata": {
+        "bus": 73,
+        "q_mvar_at_1pu": 55.0,
+        "near_block": "RES02"
+      }
+    },
+    {
+      "event_id": "capacitor_switching:SHC02",
+      "family": "capacitor_switching",
+      "kind": "switch",
+      "description": "energization of 85.0 Mvar capacitor SHC02 at bus 85",
+      "profile": {
+        "kind": "step",
+        "start_s": 0.0,
+        "duration_s": null,
+        "description": "step at the event time"
+      },
+      "mutations": [
+        {
+          "model": "Shunt",
+          "idx": "SHC02",
+          "attr": "u",
+          "base": 0.0,
+          "value": 1.0
+        }
+      ],
+      "disconnects_assets": [],
+      "metadata": {
+        "bus": 85,
+        "q_mvar_at_1pu": 85.0,
+        "near_block": "RES06"
+      }
+    },
+    {
+      "event_id": "line_energization:LPAR01",
+      "family": "line_energization",
+      "kind": "switch",
+      "description": "energization of circuit LPAR01 parallel to Line_194 (131-133, charging 277.0 Mvar at 1 pu)",
+      "profile": {
+        "kind": "step",
+        "start_s": 0.0,
+        "duration_s": null,
+        "description": "step at the event time"
+      },
+      "mutations": [
+        {
+          "model": "Line",
+          "idx": "LPAR01",
+          "attr": "u",
+          "base": 0.0,
+          "value": 1.0
+        },
+        {
+          "model": "Line",
+          "idx": "LPAR01",
+          "attr": "ghk",
+          "base": 0.0,
+          "value": 1.3114812620230183
+        },
+        {
+          "model": "Line",
+          "idx": "LPAR01",
+          "attr": "bhk",
+          "base": 0.0,
+          "value": -25.573763298038678
+        }
+      ],
+      "disconnects_assets": [],
+      "metadata": {
+        "bus1": 131,
+        "bus2": 133,
+        "parallel_to": "Line_194",
+        "charging_mvar_at_1pu": 277.0
+      }
+    },
+    {
+      "event_id": "line_energization:LPAR02",
+      "family": "line_energization",
+      "kind": "switch",
+      "description": "energization of circuit LPAR02 parallel to Line_197 (132-133, charging 209.0 Mvar at 1 pu)",
+      "profile": {
+        "kind": "step",
+        "start_s": 0.0,
+        "duration_s": null,
+        "description": "step at the event time"
+      },
+      "mutations": [
+        {
+          "model": "Line",
+          "idx": "LPAR02",
+          "attr": "u",
+          "base": 0.0,
+          "value": 1.0
+        },
+        {
+          "model": "Line",
+          "idx": "LPAR02",
+          "attr": "ghk",
+          "base": 0.0,
+          "value": 1.395473060320205
+        },
+        {
+          "model": "Line",
+          "idx": "LPAR02",
+          "attr": "bhk",
+          "base": 0.0,
+          "value": -34.072528247358456
+        }
+      ],
+      "disconnects_assets": [],
+      "metadata": {
+        "bus1": 132,
+        "bus2": 133,
+        "parallel_to": "Line_197",
+        "charging_mvar_at_1pu": 209.0
+      }
+    }
+  ],
+  "controls": [
+    {
+      "control_id": "statcom:STATCOM01",
+      "control_class": "statcom",
+      "description": "100 Mvar STATCOM (absorbing) at bus 39 as controlled susceptance",
+      "alpha_max": 1.0,
+      "mvar_per_unit": 100.0,
+      "envelope": {
+        "kind": "sampled",
+        "start_s": 0.0,
+        "duration_s": null,
+        "description": "delay 0.02 s, first-order tau 0.03 s",
+        "n_samples": 2001,
+        "horizon_s": 2.0,
+        "final_value": 1.0
+      },
+      "mutations": [
+        {
+          "model": "Shunt",
+          "idx": "STATCOM01",
+          "attr": "b",
+          "base": 0.0,
+          "value": -1.0
+        }
+      ],
+      "metadata": {
+        "bus": 39,
+        "direction": "absorb",
+        "model": "controlled susceptance b in [-Q/Sb, 0]",
+        "delay_s": 0.02,
+        "tau_s": 0.03
+      }
+    },
+    {
+      "control_id": "statcom:STATCOM02",
+      "control_class": "statcom",
+      "description": "100 Mvar STATCOM (absorbing) at bus 117 as controlled susceptance",
+      "alpha_max": 1.0,
+      "mvar_per_unit": 100.0,
+      "envelope": {
+        "kind": "sampled",
+        "start_s": 0.0,
+        "duration_s": null,
+        "description": "delay 0.02 s, first-order tau 0.03 s",
+        "n_samples": 2001,
+        "horizon_s": 2.0,
+        "final_value": 1.0
+      },
+      "mutations": [
+        {
+          "model": "Shunt",
+          "idx": "STATCOM02",
+          "attr": "b",
+          "base": 0.0,
+          "value": -1.0
+        }
+      ],
+      "metadata": {
+        "bus": 117,
+        "direction": "absorb",
+        "model": "controlled susceptance b in [-Q/Sb, 0]",
+        "delay_s": 0.02,
+        "tau_s": 0.03
+      }
+    },
+    {
+      "control_id": "statcom:STATCOM03",
+      "control_class": "statcom",
+      "description": "100 Mvar STATCOM (absorbing) at bus 30 as controlled susceptance",
+      "alpha_max": 1.0,
+      "mvar_per_unit": 100.0,
+      "envelope": {
+        "kind": "sampled",
+        "start_s": 0.0,
+        "duration_s": null,
+        "description": "delay 0.02 s, first-order tau 0.03 s",
+        "n_samples": 2001,
+        "horizon_s": 2.0,
+        "final_value": 1.0
+      },
+      "mutations": [
+        {
+          "model": "Shunt",
+          "idx": "STATCOM03",
+          "attr": "b",
+          "base": 0.0,
+          "value": -1.0
+        }
+      ],
+      "metadata": {
+        "bus": 30,
+        "direction": "absorb",
+        "model": "controlled susceptance b in [-Q/Sb, 0]",
+        "delay_s": 0.02,
+        "tau_s": 0.03
+      }
+    },
+    {
+      "control_id": "statcom:STATCOM04",
+      "control_class": "statcom",
+      "description": "100 Mvar STATCOM (absorbing) at bus 102 as controlled susceptance",
+      "alpha_max": 1.0,
+      "mvar_per_unit": 100.0,
+      "envelope": {
+        "kind": "sampled",
+        "start_s": 0.0,
+        "duration_s": null,
+        "description": "delay 0.02 s, first-order tau 0.03 s",
+        "n_samples": 2001,
+        "horizon_s": 2.0,
+        "final_value": 1.0
+      },
+      "mutations": [
+        {
+          "model": "Shunt",
+          "idx": "STATCOM04",
+          "attr": "b",
+          "base": 0.0,
+          "value": -1.0
+        }
+      ],
+      "metadata": {
+        "bus": 102,
+        "direction": "absorb",
+        "model": "controlled susceptance b in [-Q/Sb, 0]",
+        "delay_s": 0.02,
+        "tau_s": 0.03
+      }
+    },
+    {
+      "control_id": "plant_q_command:RES01",
+      "control_class": "plant_q_command",
+      "description": "additional absorption command of RES01 up to PF 0.9 at S_n",
+      "alpha_max": 1.0,
+      "mvar_per_unit": 94.97913473510535,
+      "envelope": {
+        "kind": "sampled",
+        "start_s": 0.0,
+        "duration_s": null,
+        "description": "delay 0.1 s, first-order tau 0 s",
+        "n_samples": 2001,
+        "horizon_s": 2.0,
+        "final_value": 1.0
+      },
+      "mutations": [
+        {
+          "model": "PVD1",
+          "idx": "RES01",
+          "attr": "qref0",
+          "base": -1.808810670087185,
+          "value": -2.7586020174382386
+        }
+      ],
+      "metadata": {
+        "asset_id": "RES01",
+        "bus": 900001,
+        "headroom_mvar": 94.97913473510535,
+        "delay_s": 0.1
+      }
+    },
+    {
+      "control_id": "plant_q_command:RES02",
+      "control_class": "plant_q_command",
+      "description": "additional absorption command of RES02 up to PF 0.9 at S_n",
+      "alpha_max": 1.0,
+      "mvar_per_unit": 73.47442498376076,
+      "envelope": {
+        "kind": "sampled",
+        "start_s": 0.0,
+        "duration_s": null,
+        "description": "delay 0.1 s, first-order tau 0 s",
+        "n_samples": 2001,
+        "horizon_s": 2.0,
+        "final_value": 1.0
+      },
+      "mutations": [
+        {
+          "model": "PVD1",
+          "idx": "RES02",
+          "attr": "qref0",
+          "base": -1.3992686315749197,
+          "value": -2.134012881412527
+        }
+      ],
+      "metadata": {
+        "asset_id": "RES02",
+        "bus": 900002,
+        "headroom_mvar": 73.47442498376076,
+        "delay_s": 0.1
+      }
+    },
+    {
+      "control_id": "plant_q_command:RES03",
+      "control_class": "plant_q_command",
+      "description": "additional absorption command of RES03 up to PF 0.9 at S_n",
+      "alpha_max": 1.0,
+      "mvar_per_unit": 109.31560790266839,
+      "envelope": {
+        "kind": "sampled",
+        "start_s": 0.0,
+        "duration_s": null,
+        "description": "delay 0.1 s, first-order tau 0 s",
+        "n_samples": 2001,
+        "horizon_s": 2.0,
+        "final_value": 1.0
+      },
+      "mutations": [
+        {
+          "model": "PVD1",
+          "idx": "RES03",
+          "attr": "qref0",
+          "base": -2.08183869622151,
+          "value": -3.174994775248194
+        }
+      ],
+      "metadata": {
+        "asset_id": "RES03",
+        "bus": 900003,
+        "headroom_mvar": 109.31560790266839,
+        "delay_s": 0.1
+      }
+    },
+    {
+      "control_id": "plant_q_command:RES04",
+      "control_class": "plant_q_command",
+      "description": "additional absorption command of RES04 up to PF 0.9 at S_n",
+      "alpha_max": 1.0,
+      "mvar_per_unit": 87.81089815132381,
+      "envelope": {
+        "kind": "sampled",
+        "start_s": 0.0,
+        "duration_s": null,
+        "description": "delay 0.1 s, first-order tau 0 s",
+        "n_samples": 2001,
+        "horizon_s": 2.0,
+        "final_value": 1.0
+      },
+      "mutations": [
+        {
+          "model": "PVD1",
+          "idx": "RES04",
+          "attr": "qref0",
+          "base": -1.6722966574415836,
+          "value": -2.550405638954822
+        }
+      ],
+      "metadata": {
+        "asset_id": "RES04",
+        "bus": 900004,
+        "headroom_mvar": 87.81089815132381,
+        "delay_s": 0.1
+      }
+    },
+    {
+      "control_id": "plant_q_command:RES05",
+      "control_class": "plant_q_command",
+      "description": "additional absorption command of RES05 up to PF 0.9 at S_n",
+      "alpha_max": 1.0,
+      "mvar_per_unit": 66.30618839997918,
+      "envelope": {
+        "kind": "sampled",
+        "start_s": 0.0,
+        "duration_s": null,
+        "description": "delay 0.1 s, first-order tau 0 s",
+        "n_samples": 2001,
+        "horizon_s": 2.0,
+        "final_value": 1.0
+      },
+      "mutations": [
+        {
+          "model": "PVD1",
+          "idx": "RES05",
+          "attr": "qref0",
+          "base": -1.2627546186258323,
+          "value": -1.925816502625624
+        }
+      ],
+      "metadata": {
+        "asset_id": "RES05",
+        "bus": 900005,
+        "headroom_mvar": 66.30618839997918,
+        "delay_s": 0.1
+      }
+    },
+    {
+      "control_id": "plant_q_command:RES06",
+      "control_class": "plant_q_command",
+      "description": "additional absorption command of RES06 up to PF 0.9 at S_n",
+      "alpha_max": 1.0,
+      "mvar_per_unit": 102.1473713188869,
+      "envelope": {
+        "kind": "sampled",
+        "start_s": 0.0,
+        "duration_s": null,
+        "description": "delay 0.1 s, first-order tau 0 s",
+        "n_samples": 2001,
+        "horizon_s": 2.0,
+        "final_value": 1.0
+      },
+      "mutations": [
+        {
+          "model": "PVD1",
+          "idx": "RES06",
+          "attr": "qref0",
+          "base": -1.945324682748046,
+          "value": -2.966798395936915
+        }
+      ],
+      "metadata": {
+        "asset_id": "RES06",
+        "bus": 900006,
+        "headroom_mvar": 102.1473713188869,
+        "delay_s": 0.1
+      }
+    },
+    {
+      "control_id": "plant_q_command:RES07",
+      "control_class": "plant_q_command",
+      "description": "additional absorption command of RES07 up to PF 0.9 at S_n",
+      "alpha_max": 1.0,
+      "mvar_per_unit": 80.64266156754228,
+      "envelope": {
+        "kind": "sampled",
+        "start_s": 0.0,
+        "duration_s": null,
+        "description": "delay 0.1 s, first-order tau 0 s",
+        "n_samples": 2001,
+        "horizon_s": 2.0,
+        "final_value": 1.0
+      },
+      "mutations": [
+        {
+          "model": "PVD1",
+          "idx": "RES07",
+          "attr": "qref0",
+          "base": -1.5357826442967988,
+          "value": -2.3422092599722215
+        }
+      ],
+      "metadata": {
+        "asset_id": "RES07",
+        "bus": 900007,
+        "headroom_mvar": 80.64266156754228,
+        "delay_s": 0.1
+      }
+    },
+    {
+      "control_id": "plant_q_command:RES08",
+      "control_class": "plant_q_command",
+      "description": "additional absorption command of RES08 up to PF 0.9 at S_n",
+      "alpha_max": 1.0,
+      "mvar_per_unit": 116.48384448644995,
+      "envelope": {
+        "kind": "sampled",
+        "start_s": 0.0,
+        "duration_s": null,
+        "description": "delay 0.1 s, first-order tau 0 s",
+        "n_samples": 2001,
+        "horizon_s": 2.0,
+        "final_value": 1.0
+      },
+      "mutations": [
+        {
+          "model": "PVD1",
+          "idx": "RES08",
+          "attr": "qref0",
+          "base": -2.2183527084932937,
+          "value": -3.383191153357793
+        }
+      ],
+      "metadata": {
+        "asset_id": "RES08",
+        "bus": 900008,
+        "headroom_mvar": 116.48384448644995,
+        "delay_s": 0.1
+      }
+    },
+    {
+      "control_id": "plant_q_command:RES09",
+      "control_class": "plant_q_command",
+      "description": "additional absorption command of RES09 up to PF 0.9 at S_n",
+      "alpha_max": 1.0,
+      "mvar_per_unit": 91.39501644321459,
+      "envelope": {
+        "kind": "sampled",
+        "start_s": 0.0,
+        "duration_s": null,
+        "description": "delay 0.1 s, first-order tau 0 s",
+        "n_samples": 2001,
+        "horizon_s": 2.0,
+        "final_value": 1.0
+      },
+      "mutations": [
+        {
+          "model": "PVD1",
+          "idx": "RES09",
+          "attr": "qref0",
+          "base": -1.7405536638221712,
+          "value": -2.654503828254317
+        }
+      ],
+      "metadata": {
+        "asset_id": "RES09",
+        "bus": 900009,
+        "headroom_mvar": 91.39501644321459,
+        "delay_s": 0.1
+      }
+    },
+    {
+      "control_id": "plant_q_command:RES10",
+      "control_class": "plant_q_command",
+      "description": "additional absorption command of RES10 up to PF 0.9 at S_n",
+      "alpha_max": 1.0,
+      "mvar_per_unit": 69.89030669186998,
+      "envelope": {
+        "kind": "sampled",
+        "start_s": 0.0,
+        "duration_s": null,
+        "description": "delay 0.1 s, first-order tau 0 s",
+        "n_samples": 2001,
+        "horizon_s": 2.0,
+        "final_value": 1.0
+      },
+      "mutations": [
+        {
+          "model": "PVD1",
+          "idx": "RES10",
+          "attr": "qref0",
+          "base": -1.3310116252472346,
+          "value": -2.029914692165934
+        }
+      ],
+      "metadata": {
+        "asset_id": "RES10",
+        "bus": 900010,
+        "headroom_mvar": 69.89030669186998,
+        "delay_s": 0.1
+      }
+    },
+    {
+      "control_id": "plant_q_command:RES11",
+      "control_class": "plant_q_command",
+      "description": "additional absorption command of RES11 up to PF 0.9 at S_n",
+      "alpha_max": 1.0,
+      "mvar_per_unit": 105.73148961077763,
+      "envelope": {
+        "kind": "sampled",
+        "start_s": 0.0,
+        "duration_s": null,
+        "description": "delay 0.1 s, first-order tau 0 s",
+        "n_samples": 2001,
+        "horizon_s": 2.0,
+        "final_value": 1.0
+      },
+      "mutations": [
+        {
+          "model": "PVD1",
+          "idx": "RES11",
+          "attr": "qref0",
+          "base": -2.013581689042415,
+          "value": -3.0708965851501913
+        }
+      ],
+      "metadata": {
+        "asset_id": "RES11",
+        "bus": 900011,
+        "headroom_mvar": 105.73148961077763,
+        "delay_s": 0.1
+      }
+    },
+    {
+      "control_id": "plant_q_command:RES12",
+      "control_class": "plant_q_command",
+      "description": "additional absorption command of RES12 up to PF 0.9 at S_n",
+      "alpha_max": 1.0,
+      "mvar_per_unit": 84.22677985943305,
+      "envelope": {
+        "kind": "sampled",
+        "start_s": 0.0,
+        "duration_s": null,
+        "description": "delay 0.1 s, first-order tau 0 s",
+        "n_samples": 2001,
+        "horizon_s": 2.0,
+        "final_value": 1.0
+      },
+      "mutations": [
+        {
+          "model": "PVD1",
+          "idx": "RES12",
+          "attr": "qref0",
+          "base": -1.6040396506266446,
+          "value": -2.446307449220975
+        }
+      ],
+      "metadata": {
+        "asset_id": "RES12",
+        "bus": 900012,
+        "headroom_mvar": 84.22677985943305,
+        "delay_s": 0.1
+      }
+    },
+    {
+      "control_id": "plant_q_command:RES13",
+      "control_class": "plant_q_command",
+      "description": "additional absorption command of RES13 up to PF 0.9 at S_n",
+      "alpha_max": 1.0,
+      "mvar_per_unit": 62.72207010808841,
+      "envelope": {
+        "kind": "sampled",
+        "start_s": 0.0,
+        "duration_s": null,
+        "description": "delay 0.1 s, first-order tau 0 s",
+        "n_samples": 2001,
+        "horizon_s": 2.0,
+        "final_value": 1.0
+      },
+      "mutations": [
+        {
+          "model": "PVD1",
+          "idx": "RES13",
+          "attr": "qref0",
+          "base": -1.194497612259665,
+          "value": -1.8217183133405492
+        }
+      ],
+      "metadata": {
+        "asset_id": "RES13",
+        "bus": 900013,
+        "headroom_mvar": 62.72207010808841,
+        "delay_s": 0.1
+      }
+    },
+    {
+      "control_id": "plant_q_command:RES14",
+      "control_class": "plant_q_command",
+      "description": "additional absorption command of RES14 up to PF 0.9 at S_n",
+      "alpha_max": 1.0,
+      "mvar_per_unit": 98.56325302699611,
+      "envelope": {
+        "kind": "sampled",
+        "start_s": 0.0,
+        "duration_s": null,
+        "description": "delay 0.1 s, first-order tau 0 s",
+        "n_samples": 2001,
+        "horizon_s": 2.0,
+        "final_value": 1.0
+      },
+      "mutations": [
+        {
+          "model": "PVD1",
+          "idx": "RES14",
+          "attr": "qref0",
+          "base": -1.8770676764789798,
+          "value": -2.862700206748941
+        }
+      ],
+      "metadata": {
+        "asset_id": "RES14",
+        "bus": 900014,
+        "headroom_mvar": 98.56325302699611,
+        "delay_s": 0.1
+      }
+    },
+    {
+      "control_id": "plant_q_command:RES15",
+      "control_class": "plant_q_command",
+      "description": "additional absorption command of RES15 up to PF 0.9 at S_n",
+      "alpha_max": 1.0,
+      "mvar_per_unit": 77.05854327565152,
+      "envelope": {
+        "kind": "sampled",
+        "start_s": 0.0,
+        "duration_s": null,
+        "description": "delay 0.1 s, first-order tau 0 s",
+        "n_samples": 2001,
+        "horizon_s": 2.0,
+        "final_value": 1.0
+      },
+      "mutations": [
+        {
+          "model": "PVD1",
+          "idx": "RES15",
+          "attr": "qref0",
+          "base": -1.4675256380236228,
+          "value": -2.238111070780138
+        }
+      ],
+      "metadata": {
+        "asset_id": "RES15",
+        "bus": 900015,
+        "headroom_mvar": 77.05854327565152,
+        "delay_s": 0.1
+      }
+    },
+    {
+      "control_id": "plant_q_command:RES16",
+      "control_class": "plant_q_command",
+      "description": "additional absorption command of RES16 up to PF 0.9 at S_n",
+      "alpha_max": 1.0,
+      "mvar_per_unit": 112.8997261945592,
+      "envelope": {
+        "kind": "sampled",
+        "start_s": 0.0,
+        "duration_s": null,
+        "description": "delay 0.1 s, first-order tau 0 s",
+        "n_samples": 2001,
+        "horizon_s": 2.0,
+        "final_value": 1.0
+      },
+      "mutations": [
+        {
+          "model": "PVD1",
+          "idx": "RES16",
+          "attr": "qref0",
+          "base": -2.150095702533707,
+          "value": -3.279092964479299
+        }
+      ],
+      "metadata": {
+        "asset_id": "RES16",
+        "bus": 900016,
+        "headroom_mvar": 112.8997261945592,
+        "delay_s": 0.1
+      }
+    },
+    {
+      "control_id": "avr_vref:IEEEX1_17",
+      "control_class": "avr_vref",
+      "description": "AVR set-point reduction -0.03 pu on IEEEX1 IEEEX1_17 (GENROU_38)",
+      "alpha_max": 1.0,
+      "mvar_per_unit": null,
+      "envelope": {
+        "kind": "sampled",
+        "start_s": 0.0,
+        "duration_s": null,
+        "description": "delay 0.05 s, first-order tau 0 s",
+        "n_samples": 2001,
+        "horizon_s": 2.0,
+        "final_value": 1.0
+      },
+      "mutations": [
+        {
+          "model": "IEEEX1",
+          "idx": "IEEEX1_17",
+          "attr": "vref0",
+          "base": 1.0374071838057177,
+          "value": 1.0074071838057177
+        }
+      ],
+      "metadata": {
+        "machine": "GENROU_38",
+        "bus": 55,
+        "sn_mva": 1200.0,
+        "delay_s": 0.05,
+        "slack_linked": false
+      }
+    },
+    {
+      "control_id": "avr_vref:IEEEX1_22",
+      "control_class": "avr_vref",
+      "description": "AVR set-point reduction -0.03 pu on IEEEX1 IEEEX1_22 (GENROU_43)",
+      "alpha_max": 1.0,
+      "mvar_per_unit": null,
+      "envelope": {
+        "kind": "sampled",
+        "start_s": 0.0,
+        "duration_s": null,
+        "description": "delay 0.05 s, first-order tau 0 s",
+        "n_samples": 2001,
+        "horizon_s": 2.0,
+        "final_value": 1.0
+      },
+      "mutations": [
+        {
+          "model": "IEEEX1",
+          "idx": "IEEEX1_22",
+          "attr": "vref0",
+          "base": 1.0487948205380977,
+          "value": 1.0187948205380977
+        }
+      ],
+      "metadata": {
+        "machine": "GENROU_43",
+        "bus": 79,
+        "sn_mva": 1150.0,
+        "delay_s": 0.05,
+        "slack_linked": false
+      }
+    },
+    {
+      "control_id": "avr_vref:IEEEX1_7",
+      "control_class": "avr_vref",
+      "description": "AVR set-point reduction -0.03 pu on IEEEX1 IEEEX1_7 (GENROU_28)",
+      "alpha_max": 1.0,
+      "mvar_per_unit": null,
+      "envelope": {
+        "kind": "sampled",
+        "start_s": 0.0,
+        "duration_s": null,
+        "description": "delay 0.05 s, first-order tau 0 s",
+        "n_samples": 2001,
+        "horizon_s": 2.0,
+        "final_value": 1.0
+      },
+      "mutations": [
+        {
+          "model": "IEEEX1",
+          "idx": "IEEEX1_7",
+          "attr": "vref0",
+          "base": 1.0511713606248645,
+          "value": 1.0211713606248645
+        }
+      ],
+      "metadata": {
+        "machine": "GENROU_28",
+        "bus": 26,
+        "sn_mva": 900.0,
+        "delay_s": 0.05,
+        "slack_linked": false
+      }
+    },
+    {
+      "control_id": "avr_vref:IEEEX1_5",
+      "control_class": "avr_vref",
+      "description": "AVR set-point reduction -0.03 pu on IEEEX1 IEEEX1_5 (GENROU_26)",
+      "alpha_max": 1.0,
+      "mvar_per_unit": null,
+      "envelope": {
+        "kind": "sampled",
+        "start_s": 0.0,
+        "duration_s": null,
+        "description": "delay 0.05 s, first-order tau 0 s",
+        "n_samples": 2001,
+        "horizon_s": 2.0,
+        "final_value": 1.0
+      },
+      "mutations": [
+        {
+          "model": "IEEEX1",
+          "idx": "IEEEX1_5",
+          "attr": "vref0",
+          "base": 1.0812261782994192,
+          "value": 1.0512261782994192
+        }
+      ],
+      "metadata": {
+        "machine": "GENROU_26",
+        "bus": 24,
+        "sn_mva": 800.0,
+        "delay_s": 0.05,
+        "slack_linked": false
+      }
+    },
+    {
+      "control_id": "avr_vref:IEEEX1_23",
+      "control_class": "avr_vref",
+      "description": "AVR set-point reduction -0.03 pu on IEEEX1 IEEEX1_23 (GENROU_44)",
+      "alpha_max": 1.0,
+      "mvar_per_unit": null,
+      "envelope": {
+        "kind": "sampled",
+        "start_s": 0.0,
+        "duration_s": null,
+        "description": "delay 0.05 s, first-order tau 0 s",
+        "n_samples": 2001,
+        "horizon_s": 2.0,
+        "final_value": 1.0
+      },
+      "mutations": [
+        {
+          "model": "IEEEX1",
+          "idx": "IEEEX1_23",
+          "attr": "vref0",
+          "base": 1.0207478769132496,
+          "value": 0.9907478769132496
+        }
+      ],
+      "metadata": {
+        "machine": "GENROU_44",
+        "bus": 80,
+        "sn_mva": 800.0,
+        "delay_s": 0.05,
+        "slack_linked": false
+      }
+    },
+    {
+      "control_id": "avr_vref:IEEEX1_1",
+      "control_class": "avr_vref",
+      "description": "AVR set-point reduction -0.03 pu on IEEEX1 IEEEX1_1 (GENROU_22)",
+      "alpha_max": 1.0,
+      "mvar_per_unit": null,
+      "envelope": {
+        "kind": "sampled",
+        "start_s": 0.0,
+        "duration_s": null,
+        "description": "delay 0.05 s, first-order tau 0 s",
+        "n_samples": 2001,
+        "horizon_s": 2.0,
+        "final_value": 1.0
+      },
+      "mutations": [
+        {
+          "model": "IEEEX1",
+          "idx": "IEEEX1_1",
+          "attr": "vref0",
+          "base": 1.0479616891358092,
+          "value": 1.0179616891358092
+        }
+      ],
+      "metadata": {
+        "machine": "GENROU_22",
+        "bus": 21,
+        "sn_mva": 750.0,
+        "delay_s": 0.05,
+        "slack_linked": false
+      }
+    },
+    {
+      "control_id": "fast_reactor:FASTR01",
+      "control_class": "fast_reactor",
+      "description": "50 Mvar breaker-switched reactor at bus 74 (150 ms)",
+      "alpha_max": 1.0,
+      "mvar_per_unit": 50.0,
+      "envelope": {
+        "kind": "sampled",
+        "start_s": 0.0,
+        "duration_s": null,
+        "description": "delay 0.15 s, first-order tau 0 s",
+        "n_samples": 2001,
+        "horizon_s": 2.0,
+        "final_value": 1.0
+      },
+      "mutations": [
+        {
+          "model": "Shunt",
+          "idx": "FASTR01",
+          "attr": "b",
+          "base": 0.0,
+          "value": -0.5
+        }
+      ],
+      "metadata": {
+        "bus": 74,
+        "delay_s": 0.15
+      }
+    },
+    {
+      "control_id": "fast_reactor:FASTR02",
+      "control_class": "fast_reactor",
+      "description": "50 Mvar breaker-switched reactor at bus 88 (150 ms)",
+      "alpha_max": 1.0,
+      "mvar_per_unit": 50.0,
+      "envelope": {
+        "kind": "sampled",
+        "start_s": 0.0,
+        "duration_s": null,
+        "description": "delay 0.15 s, first-order tau 0 s",
+        "n_samples": 2001,
+        "horizon_s": 2.0,
+        "final_value": 1.0
+      },
+      "mutations": [
+        {
+          "model": "Shunt",
+          "idx": "FASTR02",
+          "attr": "b",
+          "base": 0.0,
+          "value": -0.5
+        }
+      ],
+      "metadata": {
+        "bus": 88,
+        "delay_s": 0.15
+      }
+    },
+    {
+      "control_id": "fast_reactor:FASTR03",
+      "control_class": "fast_reactor",
+      "description": "50 Mvar breaker-switched reactor at bus 13 (150 ms)",
+      "alpha_max": 1.0,
+      "mvar_per_unit": 50.0,
+      "envelope": {
+        "kind": "sampled",
+        "start_s": 0.0,
+        "duration_s": null,
+        "description": "delay 0.15 s, first-order tau 0 s",
+        "n_samples": 2001,
+        "horizon_s": 2.0,
+        "final_value": 1.0
+      },
+      "mutations": [
+        {
+          "model": "Shunt",
+          "idx": "FASTR03",
+          "attr": "b",
+          "base": 0.0,
+          "value": -0.5
+        }
+      ],
+      "metadata": {
+        "bus": 13,
+        "delay_s": 0.15
+      }
+    },
+    {
+      "control_id": "fast_reactor:FASTR04",
+      "control_class": "fast_reactor",
+      "description": "50 Mvar breaker-switched reactor at bus 58 (150 ms)",
+      "alpha_max": 1.0,
+      "mvar_per_unit": 50.0,
+      "envelope": {
+        "kind": "sampled",
+        "start_s": 0.0,
+        "duration_s": null,
+        "description": "delay 0.15 s, first-order tau 0 s",
+        "n_samples": 2001,
+        "horizon_s": 2.0,
+        "final_value": 1.0
+      },
+      "mutations": [
+        {
+          "model": "Shunt",
+          "idx": "FASTR04",
+          "attr": "b",
+          "base": 0.0,
+          "value": -0.5
+        }
+      ],
+      "metadata": {
+        "bus": 58,
+        "delay_s": 0.15
+      }
+    },
+    {
+      "control_id": "manual_reactor:MANR01",
+      "control_class": "manual_reactor",
+      "description": "100 Mvar operator-switched reactor at bus 74 (30 s)",
+      "alpha_max": 1.0,
+      "mvar_per_unit": 100.0,
+      "envelope": {
+        "kind": "sampled",
+        "start_s": 0.0,
+        "duration_s": null,
+        "description": "delay 30 s, first-order tau 0 s",
+        "n_samples": 3101,
+        "horizon_s": 31.0,
+        "final_value": 1.0
+      },
+      "mutations": [
+        {
+          "model": "Shunt",
+          "idx": "MANR01",
+          "attr": "b",
+          "base": 0.0,
+          "value": -1.0
+        }
+      ],
+      "metadata": {
+        "bus": 74,
+        "delay_s": 30.0
+      }
+    },
+    {
+      "control_id": "manual_reactor:MANR02",
+      "control_class": "manual_reactor",
+      "description": "100 Mvar operator-switched reactor at bus 88 (30 s)",
+      "alpha_max": 1.0,
+      "mvar_per_unit": 100.0,
+      "envelope": {
+        "kind": "sampled",
+        "start_s": 0.0,
+        "duration_s": null,
+        "description": "delay 30 s, first-order tau 0 s",
+        "n_samples": 3101,
+        "horizon_s": 31.0,
+        "final_value": 1.0
+      },
+      "mutations": [
+        {
+          "model": "Shunt",
+          "idx": "MANR02",
+          "attr": "b",
+          "base": 0.0,
+          "value": -1.0
+        }
+      ],
+      "metadata": {
+        "bus": 88,
+        "delay_s": 30.0
+      }
+    },
+    {
+      "control_id": "manual_reactor:MANR03",
+      "control_class": "manual_reactor",
+      "description": "100 Mvar operator-switched reactor at bus 13 (30 s)",
+      "alpha_max": 1.0,
+      "mvar_per_unit": 100.0,
+      "envelope": {
+        "kind": "sampled",
+        "start_s": 0.0,
+        "duration_s": null,
+        "description": "delay 30 s, first-order tau 0 s",
+        "n_samples": 3101,
+        "horizon_s": 31.0,
+        "final_value": 1.0
+      },
+      "mutations": [
+        {
+          "model": "Shunt",
+          "idx": "MANR03",
+          "attr": "b",
+          "base": 0.0,
+          "value": -1.0
+        }
+      ],
+      "metadata": {
+        "bus": 13,
+        "delay_s": 30.0
+      }
+    },
+    {
+      "control_id": "manual_reactor:MANR04",
+      "control_class": "manual_reactor",
+      "description": "100 Mvar operator-switched reactor at bus 58 (30 s)",
+      "alpha_max": 1.0,
+      "mvar_per_unit": 100.0,
+      "envelope": {
+        "kind": "sampled",
+        "start_s": 0.0,
+        "duration_s": null,
+        "description": "delay 30 s, first-order tau 0 s",
+        "n_samples": 3101,
+        "horizon_s": 31.0,
+        "final_value": 1.0
+      },
+      "mutations": [
+        {
+          "model": "Shunt",
+          "idx": "MANR04",
+          "attr": "b",
+          "base": 0.0,
+          "value": -1.0
+        }
+      ],
+      "metadata": {
+        "bus": 58,
+        "delay_s": 30.0
+      }
+    }
+  ],
+  "device_counts": {
+    "augmented": {
+      "buses": 156,
+      "lines": 139,
+      "lines_in_service": 137,
+      "transformers": 112,
+      "transformers_in_service": 112,
+      "machines": 48,
+      "machines_in_service": 48,
+      "machines_models": {
+        "GENCLS": 21,
+        "GENROU": 27
+      },
+      "exciters": 24,
+      "exciters_in_service": 24,
+      "exciters_models": {
+        "IEEEX1": 24
+      },
+      "governors": 29,
+      "governors_in_service": 29,
+      "governors_models": {
+        "TGOV1": 29
+      },
+      "pss": 0,
+      "pss_in_service": 0,
+      "pss_models": {},
+      "loads": 92,
+      "loads_in_service": 92,
+      "loads_models": {
+        "PQ": 92
+      },
+      "shunts": 18,
+      "shunts_in_service": 16,
+      "shunts_models": {
+        "Shunt": 18
+      },
+      "static_gens": 64,
+      "static_gens_in_service": 0,
+      "static_gens_models": {
+        "PV": 63,
+        "Slack": 1
+      },
+      "der": 16,
+      "der_in_service": 16,
+      "der_models": {
+        "PVD1": 16
+      },
+      "freq_measurement": 16,
+      "freq_measurement_in_service": 16,
+      "freq_measurement_models": {
+        "BusFreq": 16
+      },
+      "pvd1": 16
+    },
+    "base_case": {
+      "buses": 140,
+      "lines": 137,
+      "lines_in_service": 137,
+      "transformers": 96,
+      "transformers_in_service": 96,
+      "machines": 48,
+      "machines_in_service": 48,
+      "machines_models": {
+        "GENCLS": 21,
+        "GENROU": 27
+      },
+      "exciters": 24,
+      "exciters_in_service": 24,
+      "exciters_models": {
+        "IEEEX1": 24
+      },
+      "governors": 29,
+      "governors_in_service": 29,
+      "governors_models": {
+        "TGOV1": 29
+      },
+      "pss": 0,
+      "pss_in_service": 0,
+      "pss_models": {},
+      "loads": 92,
+      "loads_in_service": 92,
+      "loads_models": {
+        "PQ": 92
+      },
+      "shunts": 0,
+      "shunts_in_service": 0,
+      "shunts_models": {},
+      "static_gens": 48,
+      "static_gens_in_service": 48,
+      "static_gens_models": {
+        "PV": 47,
+        "Slack": 1
+      },
+      "der": 0,
+      "der_in_service": 0,
+      "der_models": {},
+      "freq_measurement": 0,
+      "freq_measurement_in_service": 0,
+      "freq_measurement_models": {},
+      "pvd1": 0
+    }
+  },
+  "protected_output_addresses": [
+    296,
+    297,
+    298,
+    299,
+    300,
+    301,
+    302,
+    303,
+    304,
+    305,
+    306,
+    307,
+    308,
+    309,
+    310,
+    311
+  ],
+  "runtime_s": {
+    "base_analysis_s": 0.15298308299679775,
+    "tap_solve_s": 0.6734077500004787,
+    "final_build_s": 0.18975370800762903,
+    "total_s": 1.025505957994028
+  }
+}

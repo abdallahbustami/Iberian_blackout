@@ -1,10 +1,4 @@
-"""Core data model for protection-aware dynamic voltage security assessment.
-
-The classes in this module are intentionally independent of ANDES.  They
-describe the paper-level objects: protected relay-side voltages, candidate
-events, candidate controls, discrete modes, uncertainty envelopes, and result
-containers used by both the sparse screen and nonlinear validation workflow.
-"""
+"""Data classes of the method: relay voltages, events, controls, modes, uncertainty sets and results."""
 
 from __future__ import annotations
 
@@ -16,12 +10,10 @@ from typing import Any, Mapping, Sequence
 
 
 class DataModelError(ValueError):
-    """Raised when a data-model object violates the schema."""
+    pass
 
 
 class _StrEnum(str, Enum):
-    """String enum base compatible with Python 3.10."""
-
     def __str__(self) -> str:
         return self.value
 
@@ -230,16 +222,12 @@ def _to_dict(value: Any) -> Any:
 
 
 class Serializable:
-    """Mixin for JSON-friendly dictionaries."""
-
     def to_dict(self) -> dict[str, Any]:
         return _to_dict(self)
 
 
 @dataclass(frozen=True, slots=True)
 class Interval(Serializable):
-    """Closed interval for uncertain or exact scalar quantities."""
-
     lower: float
     upper: float
     unit: Unit | str = Unit.NONE
@@ -286,8 +274,6 @@ class Interval(Serializable):
 
 @dataclass(frozen=True, slots=True)
 class LocationSpec(Serializable):
-    """Electrical location independent of a specific simulator."""
-
     bus_id: str | None = None
     area: str | None = None
     zone: str | None = None
@@ -307,8 +293,6 @@ class LocationSpec(Serializable):
 
 @dataclass(frozen=True, slots=True)
 class AssetRef(Serializable):
-    """Reference to a network, dynamic, protection, or control asset."""
-
     asset_id: str
     model_family: str | None = None
     component_type: str | None = None
@@ -323,8 +307,6 @@ class AssetRef(Serializable):
 
 @dataclass(frozen=True, slots=True)
 class TimeProfile(Serializable):
-    """Time profile for events and controls."""
-
     kind: ProfileKind
     start_s: float = 0.0
     duration_s: float | None = None
@@ -370,8 +352,6 @@ class TimeProfile(Serializable):
 
 @dataclass(frozen=True, slots=True)
 class ProtectionTiming(Serializable):
-    """Relay timing and dwell logic."""
-
     kind: DelayKind
     delay_s: Interval = Interval.exact(0.0, Unit.SECOND)
     dwell_time_s: Interval = Interval.exact(0.0, Unit.SECOND)
@@ -397,8 +377,6 @@ class ProtectionTiming(Serializable):
 
 @dataclass(frozen=True, slots=True)
 class ProtectedVoltageSpec(Serializable):
-    """Relay-side voltage output z_i."""
-
     output_id: str
     side: MeasurementSide
     kind: ProtectedVoltageKind
@@ -437,8 +415,6 @@ class ProtectedVoltageSpec(Serializable):
 
 @dataclass(frozen=True, slots=True)
 class DisconnectedAsset(Serializable):
-    """Asset disconnected by a protection operation."""
-
     asset: AssetRef
     p_injection_mw: Interval | None = None
     q_absorption_mvar: Interval | None = None
@@ -453,8 +429,6 @@ class DisconnectedAsset(Serializable):
 
 @dataclass(frozen=True, slots=True)
 class ProtectedAsset(Serializable):
-    """Protected relay-side asset used by the cascade screen."""
-
     asset_id: str
     name: str
     protected_voltage: ProtectedVoltageSpec
@@ -482,8 +456,6 @@ class ProtectedAsset(Serializable):
 
 @dataclass(frozen=True, slots=True)
 class FixedPowerFactorSpec(Serializable):
-    """Fixed power-factor coupling Q = sigma*kappa*P."""
-
     pf_abs: Interval
     reactive_sign: int
     description: str | None = None
@@ -502,8 +474,6 @@ class FixedPowerFactorSpec(Serializable):
 
 @dataclass(frozen=True, slots=True)
 class CandidateEvent(Serializable):
-    """Candidate disturbance or discrete event d_j."""
-
     event_id: str
     kind: EventKind
     name: str
@@ -542,8 +512,6 @@ class CandidateEvent(Serializable):
 
 @dataclass(frozen=True, slots=True)
 class ResponseEnvelope(Serializable):
-    """Dynamic response envelope for a control channel."""
-
     delay_s: Interval = Interval.exact(0.0, Unit.SECOND)
     rise_time_s: Interval | None = None
     settling_time_s: Interval | None = None
@@ -564,8 +532,6 @@ class ResponseEnvelope(Serializable):
 
 @dataclass(frozen=True, slots=True)
 class CandidateControl(Serializable):
-    """Candidate preventive action u_k."""
-
     control_id: str
     kind: ControlKind
     name: str
@@ -699,8 +665,6 @@ class ProtectionStateSpec(Serializable):
 
 @dataclass(frozen=True, slots=True)
 class ModeState(Serializable):
-    """Discrete mode m for a mode-wise DAE computation."""
-
     mode_id: str
     topology_id: str
     connected_assets: tuple[AssetStatusSpec, ...] = ()
@@ -741,8 +705,6 @@ class ModeState(Serializable):
 
 @dataclass(frozen=True, slots=True)
 class ParameterBound(Serializable):
-    """One uncertain scalar bound."""
-
     target_id: str
     parameter: str
     interval: Interval
@@ -788,8 +750,6 @@ class ComplianceEnvelope(Serializable):
 
 @dataclass(frozen=True, slots=True)
 class UncertaintySet(Serializable):
-    """Uncertainty set Theta used by the robust screen."""
-
     set_id: str
     thresholds_pu: tuple[ParameterBound, ...] = ()
     tap_ratios: tuple[ParameterBound, ...] = ()
@@ -858,8 +818,6 @@ class TimeGridControlAuthority(Serializable):
 
 @dataclass(frozen=True, slots=True)
 class WindowMapResult(Serializable):
-    """Finite-window disturbance and control maps."""
-
     mode_id: str
     protected_asset_ids: tuple[str, ...]
     event_ids: tuple[str, ...]
@@ -932,8 +890,6 @@ class CascadeLayer(Serializable):
 
 @dataclass(frozen=True, slots=True)
 class CascadeResult(Serializable):
-    """Result of iterating the threshold cascade map."""
-
     mode_id: str
     seed_ids: tuple[str, ...]
     layers: tuple[CascadeLayer, ...]
@@ -999,8 +955,6 @@ class BindingConstraint(Serializable):
 
 @dataclass(frozen=True, slots=True)
 class MitigationResult(Serializable):
-    """Result of the mitigation LP/QP."""
-
     mode_id: str
     seed_ids: tuple[str, ...]
     feasible: bool
@@ -1080,8 +1034,6 @@ class VoltageExcursion(Serializable):
 
 @dataclass(frozen=True, slots=True)
 class ValidationResult(Serializable):
-    """Comparison between screen prediction and nonlinear validation."""
-
     scenario_id: str
     mode_id: str
     seed_ids: tuple[str, ...]

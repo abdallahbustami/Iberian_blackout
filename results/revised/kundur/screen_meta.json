@@ -1,0 +1,185 @@
+{
+ "system": "kundur",
+ "variant": "baseline",
+ "fingerprint": "fcb50999fd6def48b1b0a8c7b4d8fb031987bd10",
+ "settings": {
+  "T_window_s": 1.0,
+  "dt_s": 0.005,
+  "epsilon": 0.05,
+  "t_seed_s": 0.5,
+  "tds_t_end_s": 2.0,
+  "tds_tstep_s": 0.002,
+  "eps_meas_pu": 0.002
+ },
+ "assets": [
+  {
+   "asset_id": "RES01",
+   "collector_bus": 900001,
+   "hv_bus": 6,
+   "z0_pu": 1.0576921638922938,
+   "margin_pu": 0.042307836107706276,
+   "tap": 0.9,
+   "pickup_pu": 1.1,
+   "dwell_s": 0.05
+  },
+  {
+   "asset_id": "RES02",
+   "collector_bus": 900002,
+   "hv_bus": 5,
+   "z0_pu": 1.0683171352413006,
+   "margin_pu": 0.031682864758699525,
+   "tap": 0.9,
+   "pickup_pu": 1.1,
+   "dwell_s": 0.05
+  },
+  {
+   "asset_id": "RES03",
+   "collector_bus": 900003,
+   "hv_bus": 10,
+   "z0_pu": 1.06,
+   "margin_pu": 0.040000000000000036,
+   "tap": 0.9075500043179586,
+   "pickup_pu": 1.1,
+   "dwell_s": 0.05
+  },
+  {
+   "asset_id": "RES04",
+   "collector_bus": 900004,
+   "hv_bus": 9,
+   "z0_pu": 1.0651247217527255,
+   "margin_pu": 0.034875278247274544,
+   "tap": 0.9,
+   "pickup_pu": 1.1,
+   "dwell_s": 0.05
+  }
+ ],
+ "outputs": [
+  "V_900001",
+  "V_900002",
+  "V_900003",
+  "V_900004",
+  "V_6",
+  "V_5",
+  "V_10",
+  "V_9"
+ ],
+ "pre_mode": {
+  "mode_id": "pre_event",
+  "n_states": 68,
+  "n_algebraic": 228,
+  "max_real_eigenvalue": 1.8679286315732854e-14,
+  "stability": "marginal",
+  "gy_condition_estimate": 2277.0819179938953,
+  "log_norm_mu": 12.505692645972307,
+  "removed_algebraic": 29,
+  "unstable_flag": false,
+  "warnings": [
+   "reduced_state_matrix_marginal_max_real=1.86793e-14"
+  ]
+ },
+ "engine_warnings": [],
+ "designated_seed": "load_disconnection:PQ_1",
+ "plot_seed": null,
+ "mitigation_seeds": [],
+ "failed_events": {},
+ "failed_controls": {},
+ "requested_studies": [
+  "S1",
+  "S2",
+  "S3",
+  "S4",
+  "S6",
+  "S8",
+  "S10",
+  "S11",
+  "S12"
+ ],
+ "studies_run": [
+  "S1",
+  "S10",
+  "S11",
+  "S12",
+  "S2",
+  "S3",
+  "S4",
+  "S6",
+  "S8"
+ ],
+ "scenario": {
+  "name": "light_load",
+  "load_scale": 0.6,
+  "res_share": 0.13,
+  "tap_range": [
+   0.9,
+   1.1
+  ],
+  "dispatch_rule": "proportional_must_run",
+  "must_run_fraction": 0.2,
+  "description": "light load (every PQ load at 60 % of the stock P and Q), RES = 50 % of the scaled load, all synchronous units online with one common dispatch factor and a must-run minimum, stock voltage set points, taps within +/-10 %",
+  "res_share_requested": 0.5,
+  "res_share_capped": true,
+  "res_share_reason": "capped by must-run: 1440 MW committed minimum vs 858 MW required at the requested share 0.50 (scaled load 1640 MW - RES 820 MW + losses 38 MW); 4 of 4 units on the governor-minimum basis",
+  "res_share_search": [
+   {
+    "res_share": 0.5,
+    "feasible": false,
+    "must_run_mw": 1440.4,
+    "required_mw": 857.8821299190638,
+    "losses_mw": 37.68212991906381,
+    "balance_share": 0.144892788294967
+   },
+   {
+    "res_share": 0.14,
+    "feasible": false,
+    "must_run_mw": 1440.4,
+    "required_mw": 1440.710299697668,
+    "losses_mw": 29.966299697667864,
+    "balance_share": 0.14018916099589607
+   },
+   {
+    "res_share": 0.13,
+    "feasible": true
+   }
+  ],
+  "res_share_cap_detail": {
+   "scenario": "light_load",
+   "must_run_total_mw": 1440.4,
+   "sync_needed_mw": 857.8821299190638,
+   "scaled_load_mw": 1640.4,
+   "res_share": 0.5,
+   "res_mw": 820.2,
+   "losses_mw": 37.68212991906381,
+   "n_units_online": 4,
+   "n_units_governor_minimum": 4,
+   "slack_at_all_must_run_mw": -222.41787008093624,
+   "slack_must_run_mw": 360.1,
+   "max_feasible_res_share": 0.144892788294967,
+   "largest_must_run_units": [
+    {
+     "unit": 2,
+     "must_run_mw": 360.1,
+     "basis": "governor VMIN",
+     "stock_mw": 700.0
+    },
+    {
+     "unit": 3,
+     "must_run_mw": 360.1,
+     "basis": "governor VMIN",
+     "stock_mw": 700.0
+    },
+    {
+     "unit": 4,
+     "must_run_mw": 360.1,
+     "basis": "governor VMIN",
+     "stock_mw": 700.0
+    },
+    {
+     "unit": 1,
+     "must_run_mw": 360.1,
+     "basis": "governor VMIN",
+     "stock_mw": 726.8029213150204
+    }
+   ]
+  }
+ }
+}

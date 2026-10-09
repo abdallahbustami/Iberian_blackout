@@ -1,0 +1,126 @@
+[
+  {
+    "time_s": 1.0,
+    "code": "OA1a",
+    "category": "operator_action",
+    "description": "Energize a second circuit in parallel with the 500 kV line of the renewable zone with the largest charging susceptance.",
+    "trigger": "scheduled",
+    "device": "PAR_Line_2154",
+    "bus": 7341,
+    "measured": {
+      "b_pu": 0.57375,
+      "charging_mvar_at_1pu": 57.375,
+      "ghk_pu": 9.447415540837037,
+      "bhk_pu": -114.96424662608611
+    },
+    "setting": {},
+    "lost_p_mw": 0.0,
+    "lost_q_absorption_mvar": 0.0,
+    "shed_mw": 0.0,
+    "island": ""
+  },
+  {
+    "time_s": 3.0,
+    "code": "OA1b",
+    "category": "operator_action",
+    "description": "Energize a second circuit in parallel with the zone 500 kV line with the second-largest charging susceptance.",
+    "trigger": "scheduled",
+    "device": "PAR_Line_1848",
+    "bus": 7304,
+    "measured": {
+      "b_pu": 0.56788,
+      "charging_mvar_at_1pu": 56.788000000000004,
+      "ghk_pu": 9.645985734451974,
+      "bhk_pu": -116.15790550755867
+    },
+    "setting": {},
+    "lost_p_mw": 0.0,
+    "lost_q_absorption_mvar": 0.0,
+    "shed_mw": 0.0,
+    "island": ""
+  },
+  {
+    "time_s": 5.0,
+    "code": "OA2",
+    "category": "operator_action",
+    "description": "Reduce the affected area's export by 1000 MW through governor set points (area governor units down pro rata; the voltage-regulated governor units of the directly tied areas up, pro rata to dispatch).",
+    "trigger": "scheduled",
+    "device": "",
+    "bus": null,
+    "measured": {},
+    "setting": {
+      "size": 1000.0,
+      "duration_s": 10.0
+    },
+    "lost_p_mw": 0.0,
+    "lost_q_absorption_mvar": 0.0,
+    "shed_mw": 0.0,
+    "island": ""
+  },
+  {
+    "time_s": 5.0,
+    "code": "OA3",
+    "category": "operator_action",
+    "description": "Reduce the 16 protected plants' output by 208 MW in total (pro rata) at constant power factor (P and Q scaled together).",
+    "trigger": "scheduled",
+    "device": "",
+    "bus": null,
+    "measured": {},
+    "setting": {
+      "size": 208.0,
+      "duration_s": 10.0
+    },
+    "lost_p_mw": 0.0,
+    "lost_q_absorption_mvar": 0.0,
+    "shed_mw": 0.0,
+    "island": ""
+  },
+  {
+    "time_s": 14.16,
+    "code": "TRIP_Badajoz582",
+    "category": "plant_trip",
+    "description": "Badajoz582 tripped by plant OV1 relay",
+    "trigger": "plant_OV1",
+    "device": "PVD1_Badajoz582",
+    "bus": 8162,
+    "measured": {
+      "v_pu": 1.1006719018630284,
+      "f_pu": 0.9994572086821158,
+      "p_mw": 543.9321286952912,
+      "q_mvar": -154.20756225890736,
+      "pickup_start_s": 13.16
+    },
+    "setting": {
+      "pickup": 1.1,
+      "delay_s": 1.0
+    },
+    "lost_p_mw": 543.9321286952912,
+    "lost_q_absorption_mvar": 154.20756225890736,
+    "shed_mw": 0.0,
+    "island": "0"
+  },
+  {
+    "time_s": 15.17,
+    "code": "TRIP_Badajoz145",
+    "category": "plant_trip",
+    "description": "Badajoz145 tripped by plant OV1 relay",
+    "trigger": "plant_OV1",
+    "device": "PVD1_Badajoz145",
+    "bus": 8163,
+    "measured": {
+      "v_pu": 1.1041985434428094,
+      "f_pu": 0.9985475474595117,
+      "p_mw": 134.62211035094106,
+      "q_mvar": -34.35184884817495,
+      "pickup_start_s": 14.17
+    },
+    "setting": {
+      "pickup": 1.1,
+      "delay_s": 1.0
+    },
+    "lost_p_mw": 134.62211035094106,
+    "lost_q_absorption_mvar": 34.35184884817495,
+    "shed_mw": 0.0,
+    "island": "0"
+  }
+]

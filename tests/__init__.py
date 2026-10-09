@@ -1,1 +1,1 @@
-"""Test package for pa_dvsa."""
+"""Tests of pa_dvsa."""

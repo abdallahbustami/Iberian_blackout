@@ -1,0 +1,3 @@
+seed_id,control_id,control_class,alpha
+load_disconnection:PQ_1,statcom:STATCOM02,statcom,0.31866031550593765
+load_disconnection:PQ_1,statcom:STATCOM03,statcom,0.020928671547635072

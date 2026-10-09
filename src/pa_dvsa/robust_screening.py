@@ -1,18 +1,4 @@
-r"""Robust finite-window screening under bounded uncertainty.
-
-This module implements the robust quantities from ``LaTeX/root.tex``:
-
-.. math::
-
-   \bar K_{ij}^{m,\mathrm{pk}}=\sup_{\theta\in\Theta}K_{ij}^{m,\mathrm{pk}}(\theta),
-   \quad
-   \bar K_{ij}^{m,\mathrm{tr}}=\sup_{\theta\in\Theta}K_{ij}^{m,\mathrm{tr}}(\theta),
-   \quad
-   \bar r_i^{0,m}=\sup_{\theta\in\Theta}r_i^{0,m}(\theta).
-
-The certificate uses bounded or worst-case quantities.  Monte Carlo sampling is
-kept as supporting evidence and never relaxes the robust no-pickup decision.
-"""
+"""Robust screening: worst-case excursions and margins over the uncertainty set, and the classes of the plants."""
 
 from __future__ import annotations
 
@@ -36,13 +22,11 @@ from .protected_outputs import ProtectedOutputEvaluation
 
 
 class RobustScreeningError(RuntimeError):
-    """Raised when robust screening inputs are inconsistent."""
+    pass
 
 
 @dataclass(frozen=True, slots=True)
 class RobustScenario:
-    """One deterministic uncertainty scenario used in a scenario/interval sweep."""
-
     scenario_id: str
     margin_pu: Mapping[str, float] | Sequence[float] | None = None
     event_scale: Mapping[str, float] | Sequence[float] | None = None
@@ -73,8 +57,6 @@ class RobustScenario:
 
 @dataclass(frozen=True, slots=True)
 class MonteCarloSummary:
-    """Supporting random-sweep evidence.  Not used for certification."""
-
     sample_count: int
     max_k_pk_sampled: Matrix
     max_k_tr_sampled: Matrix
@@ -96,8 +78,6 @@ class MonteCarloSummary:
 
 @dataclass(frozen=True, slots=True)
 class RobustScreenResult:
-    """Worst-case robust matrices and the no-pickup certificate."""
-
     mode_id: str
     protected_asset_ids: tuple[str, ...]
     event_ids: tuple[str, ...]
@@ -161,15 +141,6 @@ def compute_robust_screen(
     rng_seed: int | None = None,
     metadata: Mapping[str, Any] | None = None,
 ) -> RobustScreenResult:
-    """Compute robust ``K_bar_pk``, ``K_bar_tr``, ``r_bar``, and certificate.
-
-    The robust no-pickup certificate checks
-    ``r_bar_i + sum_{j in S} K_bar_pk[i,j] <= 1 - epsilon`` for every
-    protected asset outside the seed set.  Any asset whose uncertainty envelope
-    destroys positive margin is marked data-limited and prevents a safe
-    certificate.
-    """
-
     finite_window = window_result if isinstance(window_result, FiniteWindowMapsResult) else None
     window = finite_window.window_result if finite_window is not None else window_result
     epsilon_value = _epsilon(epsilon)
@@ -311,8 +282,6 @@ def build_uncertainty_scenarios(
     candidate_events: Sequence[CandidateEvent] | None = None,
     event_nominal_values: Mapping[str, float] | None = None,
 ) -> tuple[RobustScenario, ...]:
-    """Convert an ``UncertaintySet`` into conservative interval-sweep scenarios."""
-
     if uncertainty_set is None:
         return ()
     protected = tuple(protected_asset_ids)
@@ -1125,3 +1094,514 @@ def _serializable_factor(value: Any) -> Any:
     if isinstance(value, Mapping):
         return {str(key): float(item) for key, item in value.items()}
     return [float(item) for item in value]
+
+
+from dataclasses import field as _field
+
+from .protected_outputs import ProtectedOutputModel
+from .finite_window import trip_excursion_upper as _trip_excursion_upper
+
+
+ROBUST_ASSET_CLASSES = ("pickup_predicted", "risky", "certified", "data_limited")
+
+
+def _interval_lookup(table: Mapping[str, tuple[float, float]] | None, key: str) -> tuple[float, float] | None:
+    if not table:
+        return None
+    if key in table:
+        return tuple(float(v) for v in table[key])
+    if "*" in table:
+        return tuple(float(v) for v in table["*"])
+    return None
+
+
+@dataclass(frozen=True)
+class UncertaintyIntervals:
+    relay_threshold_pu: Mapping[str, tuple[float, float]] = _field(default_factory=dict)
+    relay_dwell_s: Mapping[str, tuple[float, float]] = _field(default_factory=dict)
+    tap_ratio: Mapping[str, tuple[float, float]] = _field(default_factory=dict)
+    reconstruction_error_pu: Mapping[str, tuple[float, float]] = _field(default_factory=dict)
+    q_absorption_scale: Mapping[str, tuple[float, float]] = _field(default_factory=dict)
+    control_gain_scale: Mapping[str, tuple[float, float]] = _field(default_factory=dict)
+    control_delay_s: Mapping[str, tuple[float, float]] = _field(default_factory=dict)
+    model_error_pu: Mapping[str, float] = _field(default_factory=dict)
+    set_id: str = "Theta"
+
+    def __post_init__(self) -> None:
+        for name in (
+            "relay_threshold_pu",
+            "relay_dwell_s",
+            "tap_ratio",
+            "reconstruction_error_pu",
+            "q_absorption_scale",
+            "control_gain_scale",
+            "control_delay_s",
+        ):
+            for key, value in dict(getattr(self, name)).items():
+                lo, hi = (float(v) for v in value)
+                if not (math.isfinite(lo) and math.isfinite(hi)) or lo > hi:
+                    raise RobustScreeningError(f"{name}[{key}] must be a finite interval (lo <= hi)")
+        for key, lo_hi in dict(self.tap_ratio).items():
+            if float(lo_hi[0]) <= 0.0:
+                raise RobustScreeningError(f"tap_ratio[{key}] must be positive")
+        for key, lo_hi in dict(self.relay_dwell_s).items():
+            if float(lo_hi[0]) < 0.0:
+                raise RobustScreeningError(f"relay_dwell_s[{key}] must be nonnegative")
+        for key, lo_hi in dict(self.q_absorption_scale).items():
+            if float(lo_hi[0]) < 0.0:
+                raise RobustScreeningError(f"q_absorption_scale[{key}] must be nonnegative")
+        for key, lo_hi in dict(self.control_delay_s).items():
+            if float(lo_hi[0]) < 0.0:
+                raise RobustScreeningError(
+                    f"control_delay_s[{key}] must be an additional (nonnegative) delay relative to the "
+                    "nominal envelope; use the fastest credible envelope as nominal"
+                )
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "set_id": self.set_id,
+            "relay_threshold_pu": {k: list(v) for k, v in self.relay_threshold_pu.items()},
+            "relay_dwell_s": {k: list(v) for k, v in self.relay_dwell_s.items()},
+            "tap_ratio": {k: list(v) for k, v in self.tap_ratio.items()},
+            "reconstruction_error_pu": {k: list(v) for k, v in self.reconstruction_error_pu.items()},
+            "q_absorption_scale": {k: list(v) for k, v in self.q_absorption_scale.items()},
+            "control_gain_scale": {k: list(v) for k, v in self.control_gain_scale.items()},
+            "control_delay_s": {k: list(v) for k, v in self.control_delay_s.items()},
+            "model_error_pu": dict(self.model_error_pu),
+        }
+
+
+@dataclass(frozen=True)
+class AssetBounds:
+    asset_id: str
+    h_nominal_pu: float
+    h_lower_pu: float
+    z0_upper_pu: float
+    response_scale_upper: float
+    response_scale_lower: float
+    dwell_lower_s: float
+    data_limited: bool
+    reason: str
+
+
+@dataclass(frozen=True)
+class RobustWindowBounds:
+    asset_ids: tuple[str, ...]
+    event_ids: tuple[str, ...]
+    assets: tuple[AssetBounds, ...]
+    k_bar_pk: np.ndarray
+    k_bar_tr: np.ndarray
+    r_bar: np.ndarray
+    h_lower: np.ndarray
+    event_scale_upper: np.ndarray
+    event_scale_lower: np.ndarray
+    classes: np.ndarray
+    uncertainty: UncertaintyIntervals | None
+    output_models: tuple[ProtectedOutputModel, ...]
+    horizon_s: float
+    metadata: Mapping[str, Any] | None = None
+
+    @property
+    def data_limited_assets(self) -> tuple[str, ...]:
+        return tuple(a.asset_id for a in self.assets if a.data_limited)
+
+    def to_dict(self) -> dict[str, Any]:
+        def clean(a: np.ndarray) -> list[list[float | None]]:
+            return [[float(v) if math.isfinite(float(v)) else None for v in row] for row in a]
+
+        from dataclasses import asdict
+
+        return {
+            "asset_ids": list(self.asset_ids),
+            "event_ids": list(self.event_ids),
+            "assets": [asdict(a) for a in self.assets],
+            "k_bar_pk": clean(self.k_bar_pk),
+            "k_bar_tr": clean(self.k_bar_tr),
+            "r_bar": [float(v) if math.isfinite(float(v)) else None for v in self.r_bar],
+            "h_lower": [float(v) for v in self.h_lower],
+            "classes": [[str(v) for v in row] for row in self.classes],
+            "uncertainty": None if self.uncertainty is None else self.uncertainty.to_dict(),
+            "horizon_s": self.horizon_s,
+            "metadata": dict(self.metadata or {}),
+        }
+
+
+def asset_bounds(
+    model: ProtectedOutputModel, uncertainty: UncertaintyIntervals | None
+) -> AssetBounds:
+    unc = uncertainty or UncertaintyIntervals()
+    a = model.asset_id
+    vtrip = _interval_lookup(unc.relay_threshold_pu, a) or (model.pickup_pu, model.pickup_pu)
+    eps = _interval_lookup(unc.reconstruction_error_pu, a) or (0.0, 0.0)
+    dwell = _interval_lookup(unc.relay_dwell_s, a) or (model.dwell_s, model.dwell_s)
+    if model.kind == "reconstructed":
+        taps = _interval_lookup(unc.tap_ratio, a) or (model.tap_nominal, model.tap_nominal)
+        n_lo, n_hi = float(taps[0]), float(taps[1])
+        vt0 = float(model.z0_pu)
+        z0_up = (vt0 / n_lo if vt0 >= 0.0 else vt0 / n_hi) + float(eps[1])
+        s_up, s_lo = 1.0 / n_lo, 1.0 / n_hi
+    else:
+        z0_up = float(model.z0_pu) + float(eps[1])
+        s_up = s_lo = 1.0
+    h_lower = float(vtrip[0]) - z0_up
+    data_limited = not (h_lower > 0.0)
+    return AssetBounds(
+        asset_id=a,
+        h_nominal_pu=float(model.nominal_margin_pu),
+        h_lower_pu=h_lower,
+        z0_upper_pu=z0_up,
+        response_scale_upper=s_up,
+        response_scale_lower=s_lo,
+        dwell_lower_s=float(dwell[0]),
+        data_limited=data_limited,
+        reason="nonpositive_worst_case_margin" if data_limited else "positive_worst_case_margin",
+    )
+
+
+def robust_window_bounds(
+    responses: Sequence[Any],
+    output_models: Sequence[ProtectedOutputModel],
+    uncertainty: UncertaintyIntervals | None = None,
+    *,
+    event_order: Sequence[str] | None = None,
+    failed_events: Mapping[str, str] | None = None,
+    base_erosion: Sequence[float] | None = None,
+    horizon_s: float | None = None,
+    metadata: Mapping[str, Any] | None = None,
+) -> RobustWindowBounds:
+    models = tuple(output_models)
+    assets = tuple(m.asset_id for m in models)
+    p = len(models)
+    by_id = {str(r.event_id): r for r in responses}
+    failed = {str(k): str(v) for k, v in dict(failed_events or {}).items()}
+    events = tuple(str(e) for e in event_order) if event_order is not None else tuple(by_id) + tuple(
+        e for e in failed if e not in by_id
+    )
+    q = len(events)
+    unc = uncertainty or UncertaintyIntervals()
+    ab = tuple(asset_bounds(m, uncertainty) for m in models)
+    h_lower = np.array([b.h_lower_pu for b in ab])
+    r0 = np.zeros(p) if base_erosion is None else np.asarray(base_erosion, dtype=float).reshape(-1)
+    if r0.size != p:
+        raise RobustScreeningError("base_erosion length must match output models")
+    r_bar = np.full(p, np.nan)
+    for i, (m, b) in enumerate(zip(models, ab)):
+        if not b.data_limited:
+            r_bar[i] = r0[i] + float(unc.model_error_pu.get(m.asset_id, unc.model_error_pu.get("*", 0.0))) / b.h_lower_pu
+    s_hi = np.ones(q)
+    s_lo = np.ones(q)
+    for j, e in enumerate(events):
+        iv = _interval_lookup(unc.q_absorption_scale, e)
+        if iv is not None:
+            s_lo[j], s_hi[j] = iv
+    kpk = np.zeros((p, q))
+    ktr = np.zeros((p, q))
+    classes = np.full((p, q), "failed", dtype=object)
+    horizon_used = None
+    for j, e in enumerate(events):
+        resp = by_id.get(e)
+        if resp is None:
+            kpk[:, j] = np.nan
+            ktr[:, j] = np.nan
+            continue
+        disconnected = set(getattr(resp, "disconnects_assets", ()) or ())
+        T = float(resp.times_s[-1] if horizon_s is None else horizon_s)
+        horizon_used = T
+        for i, (m, b) in enumerate(zip(models, ab)):
+            if m.asset_id in disconnected:
+                classes[i, j] = "self"
+                continue
+            if b.data_limited:
+                classes[i, j] = "data_limited"
+                kpk[i, j] = np.nan
+                ktr[i, j] = np.nan
+                continue
+            env = resp.envelopes[m.output_index]
+            if horizon_s is not None and horizon_s < float(env.fine_times_s[-1]) - 1e-12:
+                mp = env.fine_times_s <= T + 1e-12
+                mi = env.fine_times_s[1:] <= T + 1e-12
+                peak = max(
+                    float(np.max(np.concatenate((env.fine_values[mp], env.fine_left_values[mp])))),
+                    float(np.max(env.fine_upper[mi])) if np.any(mi) else -math.inf,
+                )
+            else:
+                peak = float(env.peak_upper)
+            m_tr = _trip_excursion_upper(env, horizon_s=T, dwell_s=b.dwell_lower_s)
+            scale_pk = max(s_hi[j] * peak, s_lo[j] * peak)
+            scale_tr = max(s_hi[j] * m_tr, s_lo[j] * m_tr) if math.isfinite(m_tr) else 0.0
+            kpk[i, j] = b.response_scale_upper * max(scale_pk, 0.0) / b.h_lower_pu
+            ktr[i, j] = b.response_scale_upper * max(scale_tr, 0.0) / b.h_lower_pu
+            classes[i, j] = "certified"
+    return RobustWindowBounds(
+        asset_ids=assets,
+        event_ids=events,
+        assets=ab,
+        k_bar_pk=kpk,
+        k_bar_tr=ktr,
+        r_bar=r_bar,
+        h_lower=h_lower,
+        event_scale_upper=s_hi,
+        event_scale_lower=s_lo,
+        classes=classes,
+        uncertainty=uncertainty,
+        output_models=models,
+        horizon_s=float(horizon_used if horizon_used is not None else (horizon_s or 0.0)),
+        metadata={"formula": "Eq. robust_K from rigorous per-event envelopes", **dict(metadata or {})},
+    )
+
+
+def disturbance_upper_erosion(
+    bounds: RobustWindowBounds,
+    seed_responses: Sequence[Any],
+    *,
+    base_times_s: Sequence[float] | None = None,
+) -> np.ndarray:
+    if not seed_responses:
+        raise RobustScreeningError("at least one seed response is required")
+    times = np.asarray(seed_responses[0].times_s if base_times_s is None else base_times_s, dtype=float)
+    nb = times.size - 1
+    p = len(bounds.asset_ids)
+    total = np.zeros((nb, p))
+    ev_index = {e: j for j, e in enumerate(bounds.event_ids)}
+    for resp in seed_responses:
+        if resp.times_s.size != times.size or not np.allclose(resp.times_s, times, atol=1e-12):
+            raise RobustScreeningError("seed responses must share the base grid")
+        j = ev_index.get(str(resp.event_id))
+        s_hi = bounds.event_scale_upper[j] if j is not None else 1.0
+        s_lo = bounds.event_scale_lower[j] if j is not None else 1.0
+        for i, m in enumerate(bounds.output_models):
+            u = resp.envelopes[m.output_index].upper
+            total[:, i] += np.maximum(s_hi * u, s_lo * u)
+    out = np.full((nb, p), np.nan)
+    for i, b in enumerate(bounds.assets):
+        if not b.data_limited:
+            out[:, i] = b.response_scale_upper * np.maximum(total[:, i], 0.0) / b.h_lower_pu
+    return out
+
+
+def control_lower_authority(
+    bounds: RobustWindowBounds,
+    control_responses: Sequence[Any],
+    *,
+    uncertainty: UncertaintyIntervals | None = None,
+) -> np.ndarray:
+    unc = uncertainty if uncertainty is not None else (bounds.uncertainty or UncertaintyIntervals())
+    if not control_responses:
+        return np.zeros((0, len(bounds.asset_ids), 0))
+    times = np.asarray(control_responses[0].times_s, dtype=float)
+    nb = times.size - 1
+    p = len(bounds.asset_ids)
+    r = len(control_responses)
+    out = np.full((nb, p, r), np.nan)
+    live = [i for i, b in enumerate(bounds.assets) if not b.data_limited]
+    if not live:
+        return out
+    s_lo = np.array([bounds.assets[i].response_scale_lower for i in live], dtype=float)
+    s_up = np.array([bounds.assets[i].response_scale_upper for i in live], dtype=float)
+    h_lo = np.array([bounds.assets[i].h_lower_pu for i in live], dtype=float)
+    out_idx = [bounds.output_models[i].output_index for i in live]
+    for k, resp in enumerate(control_responses):
+        if resp.times_s.size != times.size or not np.allclose(resp.times_s, times, atol=1e-12):
+            raise RobustScreeningError("control responses must share the base grid")
+        cid = str(resp.event_id)
+        gain = _interval_lookup(unc.control_gain_scale, cid) or (1.0, 1.0)
+        delay = _interval_lookup(unc.control_delay_s, cid) or (0.0, 0.0)
+        upper = np.column_stack([np.asarray(resp.envelopes[j].upper, dtype=float) for j in out_idx])
+        a_t = times[:-1] - delay[1]
+        b_t = times[1:] - delay[0]
+        lo_i = np.clip(np.searchsorted(times, a_t, side="right") - 1, 0, nb - 1)
+        hi_i = np.clip(np.searchsorted(times, b_t, side="left") - 1, 0, nb - 1)
+        if np.all(hi_i == lo_i):
+            u = upper[lo_i, :]
+        else:
+            u = np.empty((nb, len(live)))
+            for l in range(nb):
+                u[l, :] = np.max(upper[lo_i[l] : hi_i[l] + 1, :], axis=0)
+        u = np.where((a_t < 0.0)[:, None], np.maximum(u, 0.0), u)
+        u = np.where((b_t <= 0.0)[:, None], 0.0, u)
+        red = -u
+        red = np.where(red >= 0.0, gain[0] * red, gain[1] * red)
+        scale = np.where(red >= 0.0, s_lo[None, :], s_up[None, :])
+        out[:, live, k] = scale * red / h_lo[None, :]
+    return out
+
+
+def _control_lower_authority_reference(
+    bounds: RobustWindowBounds,
+    control_responses: Sequence[Any],
+    *,
+    uncertainty: UncertaintyIntervals | None = None,
+) -> np.ndarray:
+    unc = uncertainty if uncertainty is not None else (bounds.uncertainty or UncertaintyIntervals())
+    if not control_responses:
+        return np.zeros((0, len(bounds.asset_ids), 0))
+    times = np.asarray(control_responses[0].times_s, dtype=float)
+    nb = times.size - 1
+    p = len(bounds.asset_ids)
+    r = len(control_responses)
+    out = np.full((nb, p, r), np.nan)
+    for k, resp in enumerate(control_responses):
+        if resp.times_s.size != times.size or not np.allclose(resp.times_s, times, atol=1e-12):
+            raise RobustScreeningError("control responses must share the base grid")
+        cid = str(resp.event_id)
+        gain = _interval_lookup(unc.control_gain_scale, cid) or (1.0, 1.0)
+        delay = _interval_lookup(unc.control_delay_s, cid) or (0.0, 0.0)
+        for i, (m, b) in enumerate(zip(bounds.output_models, bounds.assets)):
+            if b.data_limited:
+                continue
+            upper = resp.envelopes[m.output_index].upper
+            for l in range(nb):
+                a_t = times[l] - delay[1]
+                b_t = times[l + 1] - delay[0]
+                lo_i = int(np.clip(np.searchsorted(times, a_t, side="right") - 1, 0, nb - 1))
+                hi_i = int(np.clip(np.searchsorted(times, b_t, side="left") - 1, 0, nb - 1))
+                if b_t <= 0.0:
+                    u = 0.0
+                else:
+                    u = float(np.max(upper[lo_i : hi_i + 1]))
+                    if a_t < 0.0:
+                        u = max(u, 0.0)
+                red = -u
+                red = gain[0] * red if red >= 0.0 else gain[1] * red
+                scale = b.response_scale_lower if red >= 0.0 else b.response_scale_upper
+                out[l, i, k] = scale * red / b.h_lower_pu
+    return out
+
+
+@dataclass(frozen=True)
+class SeedAssetClass:
+    asset_id: str
+    asset_class: str
+    score: float
+    layer: int | None
+    reason: str
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "asset_id": self.asset_id,
+            "asset_class": self.asset_class,
+            "score": None if not math.isfinite(self.score) else self.score,
+            "layer": self.layer,
+            "reason": self.reason,
+        }
+
+
+@dataclass(frozen=True)
+class SeedClassification:
+    seed_id: str
+    classes: tuple[SeedAssetClass, ...]
+    excluded_assets: tuple[str, ...]
+    fixed_point: tuple[str, ...]
+    epsilon: float
+
+    def asset(self, asset_id: str) -> SeedAssetClass:
+        for c in self.classes:
+            if c.asset_id == asset_id:
+                return c
+        raise KeyError(asset_id)
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "seed_id": self.seed_id,
+            "classes": [c.to_dict() for c in self.classes],
+            "excluded_assets": list(self.excluded_assets),
+            "fixed_point": list(self.fixed_point),
+            "epsilon": self.epsilon,
+        }
+
+
+def classify_seed(
+    k_bar_pk: np.ndarray,
+    *,
+    asset_ids: Sequence[str],
+    event_ids: Sequence[str],
+    seed_event_id: str,
+    r_bar: Sequence[float] | None = None,
+    h_lower: Sequence[float] | None = None,
+    channel_classes: np.ndarray | None = None,
+    asset_event_map: Mapping[str, str] | None = None,
+    self_assets: Sequence[str] = (),
+    epsilon: float = 0.05,
+    cascade: bool = True,
+) -> SeedClassification:
+    assets = tuple(str(a) for a in asset_ids)
+    events = tuple(str(e) for e in event_ids)
+    p = len(assets)
+    k = np.asarray(k_bar_pk, dtype=float)
+    if k.shape != (p, len(events)):
+        raise RobustScreeningError("k_bar_pk shape must be (assets, events)")
+    eps = _epsilon(epsilon)
+    if seed_event_id not in events:
+        raise RobustScreeningError(f"unknown seed event {seed_event_id!r}")
+    r = np.zeros(p) if r_bar is None else np.asarray(r_bar, dtype=float).reshape(-1)
+    h = np.ones(p) if h_lower is None else np.asarray(h_lower, dtype=float).reshape(-1)
+    cls = np.full(k.shape, "certified", dtype=object) if channel_classes is None else np.asarray(channel_classes, dtype=object)
+    amap = {str(a): str(e) for a, e in dict(asset_event_map or {}).items()}
+    excluded = set(str(a) for a in self_assets)
+    col = {e: j for j, e in enumerate(events)}
+    seed_col = col[seed_event_id]
+    for i, a in enumerate(assets):
+        if cls[i, seed_col] == "self":
+            excluded.add(a)
+    unusable = {
+        i for i, a in enumerate(assets)
+        if a not in excluded and (not (h[i] > 0.0) or not math.isfinite(float(r[i])))
+    }
+    reasons: dict[int, str] = {i: "nonpositive_worst_case_margin" for i in unusable}
+
+    def column_ok(i: int, j: int) -> bool:
+        return str(cls[i, j]) in {"certified", "self"}
+
+    def scores(active_cols: Sequence[int]) -> np.ndarray:
+        out = r.copy()
+        for j in active_cols:
+            colv = np.where(np.isfinite(k[:, j]), k[:, j], 0.0)
+            out = out + colv
+        return out
+
+    active = [seed_col]
+    reached: dict[str, int] = {}
+    layer = 0
+    while True:
+        sc = scores(active)
+        new = [
+            a for i, a in enumerate(assets)
+            if a not in excluded and i not in unusable and a not in reached and sc[i] >= 1.0
+        ]
+        if not new:
+            break
+        layer += 1
+        for a in new:
+            reached[a] = layer
+        if not cascade:
+            break
+        for a in new:
+            ev = amap.get(a)
+            if ev is not None and ev in col and col[ev] not in active:
+                active.append(col[ev])
+    final = scores(active)
+    out: list[SeedAssetClass] = []
+    for i, a in enumerate(assets):
+        if a in excluded:
+            continue
+        if i in unusable:
+            out.append(SeedAssetClass(a, "data_limited", float("nan"), None, reasons[i]))
+            continue
+        bad_cols = [events[j] for j in active if not column_ok(i, j)]
+        if a in reached:
+            out.append(SeedAssetClass(a, "pickup_predicted", float(final[i]), reached[a], "score>=1"))
+        elif bad_cols:
+            out.append(
+                SeedAssetClass(a, "data_limited", float(final[i]), None, "channel_not_certified:" + ",".join(bad_cols))
+            )
+        elif final[i] >= 1.0 - eps:
+            out.append(SeedAssetClass(a, "risky", float(final[i]), None, "1-eps<=score<1"))
+        else:
+            out.append(SeedAssetClass(a, "certified", float(final[i]), None, "score<1-eps"))
+    return SeedClassification(
+        seed_id=str(seed_event_id),
+        classes=tuple(out),
+        excluded_assets=tuple(sorted(excluded)),
+        fixed_point=tuple(a for a in assets if a in reached),
+        epsilon=eps,
+    )

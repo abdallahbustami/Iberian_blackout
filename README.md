@@ -1,214 +1,119 @@
-# PA-DVSA: Protection-Aware Dynamic Voltage Security Assessment
+# Protection-aware dynamic voltage security assessment
 
-PA-DVSA is a research codebase for screening overvoltage protection cascades
-before committing operator actions to full nonlinear time-domain simulation. It
-combines ANDES dynamic models, protected-side voltage reconstruction, finite
-relay-window response maps, robust uncertainty envelopes, cascade fixed-point
-prediction, mitigation LPs, and nonlinear TDS validation.
+Code and results of the paper *The Iberian Blackout: A Black Swan or a Gray Rhino? A Protection-Aware Dynamic
+Voltage Security Assessment* (A. Alalem Albustami and A. F. Taha).
 
-The repository has two public paths:
-
-- an installable Python package, `pa_dvsa`, for the screening method and ANDES
-  integration;
-- a paper-reproduction path containing scripts that regenerate the case-study
-  datasets, figures, and tables locally.
-
-## What This Repository Contains
-
-- Core PA-DVSA algorithms for protected-voltage margins, event-to-margin
-  erosion matrices, finite-window relay assessment, robust screening, cascade
-  fixed points, and mitigation LPs.
-- An ANDES adapter for benchmark loading, DAE/Jacobian access, and nonlinear TDS
-  protection replay.
-- A modified ACTIVSg2000 academic mechanism replica of the Iberian-style
-  overvoltage cascade.
-- Reproducible paper case-study scripts for Kundur, IEEE 39, NPCC, GBnetwork,
-  and the ACTIVSg2000 replica.
-
-## What This Repository Does Not Claim
-
-- The ACTIVSg2000 case is not a forensic dynamic equivalent of Spain and
-  Portugal.
-- The project is not an official ENTSO-E reproduction.
-- The sparse screen is not a replacement for RMS/TDS validation.
-- The replica is a modified academic benchmark used to study a mechanism:
-  high-voltage operating points, loss of reactive absorption, collector-side
-  overvoltage protection, AC/HVDC separation logic, and island viability.
-
-## Method Overview
-
-For each operating mode, PA-DVSA evaluates protected-side relay voltages and the
-available margin to pickup. Candidate events are converted into signed
-disturbance channels and mapped to normalized finite-window margin erosion
-values,
-
-```math
-K_{ij}^{\mathrm{pk}}
-=
-\frac{\max_{0 \le t \le T_i} [\Delta z_i(t)]_+}{h_i}.
-```
-
-where $h_i$ is the protected-side margin to pickup. The resulting $K$ matrix
-is used to rank events, compute additive cascade fixed points, and decide which
-scenarios should be certified, flagged, sent to nonlinear validation, or
-mitigated.
-
-The mitigation LP uses time-resolved lower bounds on control authority, not
-nameplate MVAr alone. Slow controls that do not act inside the relay window
-therefore contribute little to the certificate.
-
-## Modeling Assumptions
-
-The main case studies use the following assumptions.
-
-- **Protected-side voltage matters.** Relays may monitor collector-side or
-  transformer-side voltages that are not equal to the upstream transmission bus
-  voltage.
-- **Tap reconstruction is conservative.** If collector telemetry is unavailable,
-  protected voltage is reconstructed through a fixed tap and error envelope.
-- **Reactive absorption loss is the key positive feedback.** A trip can remove
-  active generation and inductive absorption; the latter can raise nearby
-  voltages and trigger additional protection.
-- **Fixed-power-factor RES behavior couples MW schedules to MVAr absorption.**
-  A fixed-PF ramp can remove reactive absorption when the system is already near
-  protected-voltage limits.
-- **Relay timing is finite-window.** Pickup, dwell, and reset/hysteresis are
-  evaluated over the relay-relevant time window.
-- **Missing protected-side data is data-limited, not safe.** If the uncertainty
-  envelope cannot certify a positive protected-side margin, the screen reports a
-  data-limited verdict.
-
-See `docs/modeling_assumptions.md` for more detail.
+The method screens candidate events (trips, ramps, topology actions, shunt switching) for overvoltage cascades.
+For each event it computes the voltage at every overvoltage relay over the relay time window from a linear model
+of the network, its controls and its relays, predicts which relays trip after a first trip, certifies the relays
+that cannot pick up, identifies the relays whose data are insufficient for a conclusion, and computes the
+least-cost fast reactive power actions that keep the relay voltages below pickup. The results are validated
+against nonlinear time-domain simulation (TDS) in ANDES on four benchmark systems and on a 2000-bus system.
 
 ## Installation
 
-Use Python 3.10 or newer. The paper runs here used Python 3.13.
+Python 3.10 or later (tested with 3.11).
 
 ```bash
+git clone https://github.com/abdallahbustami/Iberian_blackout.git
+cd Iberian_blackout
 python -m venv .venv
 source .venv/bin/activate
-python -m pip install --upgrade pip
-python -m pip install -e .
+pip install -r requirements.txt
+pip install -e .
 ```
 
-ANDES is required for dynamic simulations and is installed through
-`pyproject.toml`. LaTeX and Ghostscript are optional; they improve paper figure
-text rendering and outlined PDF export.
+`requirements.txt` pins the versions used for the paper. ANDES must be 1.9.3, since the results depend on its
+models. `kvxopt` provides the sparse LU factorization used for the 2000-bus system. The figures use LaTeX fonts
+when a LaTeX installation is found (for example [TinyTeX](https://yihui.org/tinytex/)) and matplotlib's fonts
+otherwise.
 
-## Quick Start
-
-Run the test suite:
+## Quick start
 
 ```bash
-PYTHONPATH=src .venv/bin/python -m pytest -q
+pytest -m "not slow"                  # tests, about 2 min
+python scripts/make_paper_figures.py  # Figs. 5-13 from the stored results, about 1 min
 ```
 
-Generate traceability and environment artifacts:
+The figures are written to `results/revised/figures/`. The slow tests (`pytest -m slow`) run longer comparisons
+with TDS (about 20 min).
+
+## Reproducing the paper
+
+The commands run from the repository root and write to `results/revised/`, replacing the stored files. Runtimes
+are approximate, for a 12-core laptop.
+
+| Paper | Command | Runtime |
+|---|---|---|
+| Sections 7.4-7.9, Table 4, Tables A.1, A.2 and A.4, Figs. 7-13 | `python scripts/run_revised_studies.py --jobs 6` | 20-30 min |
+| Section 7.4, results with a 2 s window | `python scripts/run_revised_studies.py --horizon 2 --jobs 6` | 30-40 min |
+| Section 7.2, base state of the 2000-bus system | `python -m pa_dvsa.replication.academic_replica --jobs 6` | 8 min |
+| Section 7.2, base-state variants | `python -m pa_dvsa.replication.commitment_study --jobs 5` | 25 min |
+| Table A.3, components of the 2000-bus system | `python -m pa_dvsa.replication.inventory` | 1 min |
+| Section 7.2, stressed state, Fig. 5 | `python scripts/run_iberian_sequence.py --jobs 3` | 20-25 min |
+| Table 3 and the facts of the main run | `python scripts/report_iberian_sequence.py` | 1 min |
+| Reactive balance of the stressed state | `python scripts/report_iberian_sequence_balance.py` | 2 min |
+| Inter-area modes for k = 10, 12 and 15 | `python scripts/report_iberian_sequence_modes.py` | 5 min |
+| Section 7.3, screening of the base state, Fig. 6 | see below | 1 h |
+| Section 7.3, screening of the stressed state | `python scripts/run_sequence_screen.py --jobs 6` | 75 min |
+| Figs. 5-13 | `python scripts/make_paper_figures.py` | 1 min |
+
+The screening of the base state builds four variants (case-data or reduced commitment, initial margin 0.02 or
+0.01 pu), screens them, validates them with 50 ms relays in all four and with 1 s relays in the two 0.02 pu
+variants, and measures the single-core runtimes:
 
 ```bash
-PYTHONPATH=src .venv/bin/python -m pa_dvsa.phase0
+python scripts/run_replica_screen.py --stages build,screen --jobs 2
+python scripts/run_replica_screen.py --stages tds --relays fast --jobs 4
+python scripts/run_replica_screen.py --stages tds --margins 0.02 --relays ov1 --jobs 4
+python scripts/run_replica_screen.py --stages report
+OPENBLAS_NUM_THREADS=1 python scripts/run_replica_screen.py --stages screen,report --jobs 1 --blas-threads 1
+OPENBLAS_NUM_THREADS=1 python scripts/time_replica_screen_vs_tds.py --slugs stock_m0p02,C1p5_m0p02
+OPENBLAS_NUM_THREADS=1 python scripts/verify_replica_krylov_engine.py --slug stock_m0p02
 ```
 
-Run the supported ACTIVSg2000 academic mechanism replica:
+## Repository
 
-```bash
-PYTHONPATH=src .venv/bin/python -m pa_dvsa.replication.academic_replica --plot
+```
+src/pa_dvsa/              the method
+  event_response.py         relay voltage response of each event and control (exact jump, linear model)
+  linearization.py          linear model of a mode
+  finite_window.py          window responses and the upper bound on their maximum
+  cascade_certificate.py    threshold cascade map and trip check
+  robust_screening.py       robust screening over the uncertainty set and the classes of the plants
+  mitigation.py             mitigation LP
+  protected_outputs.py      relay voltages and margins (measured, from the tap, or from measured P and Q)
+  krylov_response.py        sparse and Krylov linear algebra for large systems
+  tds_runner.py             nonlinear TDS with definite-time overvoltage relays
+  benchmarks.py             the four benchmark systems, their events and controls
+  revised_studies/          benchmark studies (screening, validation, mitigation, observability, uncertainty)
+  replication/              the 2000-bus system (base state, stressed state, screening)
+  revised_figures/          paper figures
+scripts/                  entry points listed above
+tests/                    tests (pytest)
+data/activsg2000_stable/  ACTIVSg2000 case (RAW and DYR files)
+results/revised/          stored results
 ```
 
-The convenience launcher is equivalent:
+## Stored results
 
-```bash
-PYTHONPATH=src .venv/bin/python replication.py --plot
-```
+`results/revised/` holds the result files behind every number, table and figure of the paper (60 MB). The traces
+of individual simulations and the caches are not stored, and the scripts regenerate them.
 
-## Reproducing Paper Artifacts
+| Folder | Contents |
+|---|---|
+| `kundur/`, `ieee39/`, `npcc/`, `gbnetwork/` | case design, screening (`screen_k.csv`), predicted cascades (`cascade_predictions.csv`), validation (`tds_seeds.csv`, `tds_validation.csv`), mitigation, observability, uncertainty, ranking, runtimes and figure data of each benchmark; `horizon_2s/` for the 2 s window |
+| `summary/` | pooled tables over the four benchmarks (`headline_validation.csv` is Table 4) |
+| `activsg2000/` | base state (`baseline/`, variants, `commitment_sweep/`, `condition_buildup.json`, `inventory.json`), its screening (`screen/`) and the screening of the stressed state (`screen_sequence/`) |
+| `iberian_sequence/` | stressed-state runs (`final_*/`), Table 3 (`final_table.json`), reactive balance (`initial_balance.json`) and inter-area modes (`modes.json`) |
 
-Generated outputs are intentionally not committed. To rebuild the supported
-paper artifacts from a clean checkout, run:
+`scripts/report_iberian_sequence.py` needs the traces of all 16 stressed-state runs, so it runs only after
+`scripts/run_iberian_sequence.py`.
 
-```bash
-PYTHONPATH=src .venv/bin/python scripts/reproduce_paper_artifacts.py --clean
-```
+## License
 
-This runs the benchmark case studies, the ACTIVSg2000 academic replica, the
-multi-scenario paper sweep, the main figure/table renderer, the replication
-subsection figures, the quantitative tables, and the finite-window proxy
-figure.
-
-To inspect the commands without launching TDS jobs:
-
-```bash
-PYTHONPATH=src .venv/bin/python scripts/reproduce_paper_artifacts.py --dry-run --clean
-```
-
-The individual commands used by the orchestrator are:
-
-```bash
-PYTHONPATH=src .venv/bin/python scripts/run_kundur_case_study.py
-
-PYTHONPATH=src .venv/bin/python scripts/run_load_shedding_case_study.py ieee39
-
-PYTHONPATH=src .venv/bin/python scripts/run_load_shedding_case_study.py npcc_full
-
-PYTHONPATH=src .venv/bin/python scripts/run_load_shedding_case_study.py gbnetwork
-
-PYTHONPATH=src .venv/bin/python -m pa_dvsa.replication.academic_replica --plot
-
-PYTHONPATH=src .venv/bin/python scripts/run_paper_case_sweep.py \
-  --out results/paper_case_studies/dataset
-
-PYTHONPATH=src .venv/bin/python run_case_studies.py --skip-derive --strict
-
-PYTHONPATH=src .venv/bin/python scripts/make_quantitative_case_elements.py
-
-PYTHONPATH=src .venv/bin/python scripts/generate_finite_window_proxy_figure.py
-```
-
-Expected outputs:
-
-- paper figures in the configured figure output directory;
-- generated tables in the configured table output directory;
-- normalized case-study datasets in `results/paper_case_studies/dataset/`;
-- quantitative table inputs in
-  `results/paper_case_studies/quantitative_elements/`;
-- ACTIVSg2000 replica artifacts in
-  `results/activsg2000_iberian_replication/`;
-- finite-window proxy traces in `results/figures/finite_window_proxy/`.
-
-The original manuscript source is not included in this public tree. Some
-reproduction scripts keep the default output paths
-`LaTeX/figures/generated/` and `LaTeX/tables/generated/` for compatibility with
-the paper workflow; those directories are created on demand. Use `--out-fig`
-and `--out-table` if you want generated artifacts elsewhere.
-
-## Repository Map
-
-- `src/pa_dvsa/`: maintained package code.
-- `src/pa_dvsa/replication/`: supported ACTIVSg2000 academic replica.
-- `src/pa_dvsa/paper_case_studies/`: paper figure/table generation.
-- `scripts/`: reproducibility and case-study scripts.
-- `tests/`: unit and integration tests.
-- `data/activsg2000_stable/`: modified ACTIVSg2000 RAW/DYR input used by
-  the supported academic mechanism replica.
-- `data/`: small benchmark modifications needed by the supported runs.
-- `results/`: local generated artifacts recreated by the reproduction scripts
-  and ignored by Git.
-- `docs/`: modeling, reproducibility, and developer notes.
-
-## Supported Public Commands
-
-```bash
-python -m pa_dvsa.phase0
-python -m pa_dvsa.replication.academic_replica --plot
-python replication.py --plot
-python replication.py engine --plot
-python replication.py calibration --use-existing-baseline
-```
-
-Legacy exploratory commands are archived under `archive/legacy_experiments/`
-and are not part of the supported public workflow.
-
-## Citation And License
-
-Add a `CITATION.cff` and an explicit license before public release. Until a
-license is added, treat the repository as all-rights-reserved research code.
+The code is released under the MIT License (see `LICENSE`). The ACTIVSg2000 case in `data/activsg2000_stable/`
+is the synthetic grid of the Texas A&M University Electric Grid Test Case Repository (A. B. Birchfield et al.,
+"Grid structural characteristics as validation criteria for synthetic networks," IEEE Transactions on Power
+Systems, 2017) and is distributed with its original terms. The benchmark systems are built from the cases that
+ship with ANDES.

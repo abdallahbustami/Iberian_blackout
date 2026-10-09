@@ -1,0 +1,405 @@
+{
+  "source_files": {
+    "raw": "data/activsg2000_stable/ACTIVSg2000.RAW",
+    "dyr": "data/activsg2000_stable/ACTIVSg2000_dynamics.dyr"
+  },
+  "raw_record_counts": {
+    "BUS": 2000,
+    "LOAD": 1350,
+    "FIXED SHUNT": 4,
+    "GENERATOR": 544,
+    "BRANCH": 2345,
+    "TRANSFORMER": 861,
+    "AREA": 8,
+    "TWO-TERMINAL DC": 0,
+    "VOLTAGE SOURCE CONVERTER": 0,
+    "IMPEDANCE CORRECTION": 0,
+    "MULTI-TERMINAL DC": 0,
+    "MULTI-SECTION LINE": 0,
+    "ZONE": 28,
+    "INTER-AREA TRANSFER": 0,
+    "OWNER": 1,
+    "FACTS CONTROL DEVICE": 0,
+    "SWITCHED SHUNT": 153,
+    "GNE DEVICE": 0,
+    "END": 0,
+    "TRANSFORMER_RECORD_LINES": 3444
+  },
+  "dyr_model_counts": {
+    "GENROU": 410,
+    "GGOV1": 367,
+    "EXPIC1": 61,
+    "IEEEST": 61,
+    "ESAC6A": 7,
+    "GENSAL": 25,
+    "SCRX": 5,
+    "ESDC1A": 12,
+    "IEEET1": 23
+  },
+  "dyr_to_andes": {
+    "GENROU": {
+      "count": 410,
+      "andes_model": "GENROU",
+      "note": "native"
+    },
+    "GENSAL": {
+      "count": 25,
+      "andes_model": "GENROU",
+      "note": "salient-pole machine mapped to round-rotor GENROU with xq'=xd', xq''=xd'', Tq0'=Td0'"
+    },
+    "ESDC1A": {
+      "count": 12,
+      "andes_model": "ESDC1A",
+      "note": "native (limiter references repaired by pa_dvsa.andes_adapter)"
+    },
+    "IEEET1": {
+      "count": 23,
+      "andes_model": "IEEET1",
+      "note": "native"
+    },
+    "ESAC6A": {
+      "count": 7,
+      "andes_model": "SEXS",
+      "note": "not implemented in ANDES; mapped to SEXS with ALL parameters at ANDES defaults (TA/TB=0.4, TB=5 s, K=20, TE=1 s, EMIN/EMAX=-99/99)"
+    },
+    "EXPIC1": {
+      "count": 61,
+      "andes_model": "SEXS",
+      "note": "not implemented in ANDES; mapped to SEXS with default parameters (K=20, TE=1 s, EMIN/EMAX=-99/99)"
+    },
+    "SCRX": {
+      "count": 5,
+      "andes_model": "SEXS",
+      "note": "not implemented in ANDES; mapped to SEXS with default parameters"
+    },
+    "GGOV1": {
+      "count": 367,
+      "andes_model": "TGOV1",
+      "note": "not implemented in ANDES; mapped to TGOV1 keeping only R (VMAX=1.2, VMIN=0, T1=0.1 s, T2=0.2 s, T3=10 s, Dt=0 defaults)"
+    },
+    "IEEEST": {
+      "count": 61,
+      "andes_model": "IEEEST",
+      "note": "native; F2 regularized where improper (see REPLICA.md)"
+    }
+  },
+  "buses": {
+    "total": 2000,
+    "by_kV": {
+      "13.2": 21,
+      "13.8": 278,
+      "18": 96,
+      "20": 20,
+      "22": 14,
+      "24": 20,
+      "115": 826,
+      "161": 453,
+      "230": 152,
+      "500": 120
+    },
+    "areas": 8
+  },
+  "branches": {
+    "lines": 2345,
+    "transformers": 861,
+    "total": 3206,
+    "in_service": 3206
+  },
+  "synchronous_machines": {
+    "GENROU_records_in_andes": 435,
+    "online": 334,
+    "offline_in_data": 101,
+    "online_with_exciter": 84,
+    "online_without_exciter_constant_field": 250,
+    "online_with_governor": 288,
+    "online_without_governor": 46,
+    "online_with_pss": 52,
+    "online_capacity_mva": 84540.7999999999,
+    "online_in_affected_area": 137,
+    "online_in_affected_area_with_exciter": 24
+  },
+  "exciters_andes": {
+    "ESDC1A": 12,
+    "IEEET1": 23,
+    "SEXS": 73
+  },
+  "exciters_disabled_nonequilibrium": [
+    "ESDC1A:ESDC1A_8",
+    "IEEET1:IEEET1_21"
+  ],
+  "governors_andes": {
+    "TGOV1": 367
+  },
+  "pss_andes": {
+    "IEEEST": 61
+  },
+  "pss_improper_F2_regularized_replica_local": 61,
+  "shared_regularization_records": [
+    {
+      "model": "IEEEST",
+      "block": "F2",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)"
+    },
+    {
+      "model": "IEEEST",
+      "block": "F2",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)"
+    },
+    {
+      "model": "IEEEST",
+      "block": "F2",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)"
+    }
+  ],
+  "shared_regularization_record_count": 61,
+  "loads": {
+    "count": 1350,
+    "p_mw_in_data": 67109.235,
+    "p_mw_after_affected_area_light_load_scaling": 60387.58782,
+    "q_mvar_after_scaling": 17109.81041,
+    "tds_model": "constant impedance (ANDES PQ pq2z=1: p2z=1, q2z=1)",
+    "affected_area_count": 241,
+    "affected_area_p_mw_after_light_load_scaling": 11444.966820000003
+  },
+  "shunts": {
+    "count": 157,
+    "capacitors": 148,
+    "reactors": 7,
+    "capacitor_mvar_at_1pu": 17846.670000000002,
+    "reactor_mvar_at_1pu": 482.19599999999997,
+    "note": "RAW fixed shunts (4) + switched shunts (153) are both fixed Shunt devices in ANDES (no switched-shunt control)"
+  },
+  "static_generators_without_dynamic_model": {
+    "count": 109,
+    "p_mw": 9364.421999999995,
+    "in_affected_area": 10,
+    "converted_to_PVD1_in_affected_area": 8,
+    "outside_affected_area": 99,
+    "outside_tds_behaviour": "ideal voltage source (PV equations stay active in TDS; PV/PQ status frozen at the power-flow result)"
+  },
+  "hvdc": {
+    "two_terminal": 0,
+    "vsc": 0,
+    "multi_terminal": 0,
+    "facts": 0,
+    "note": "ACTIVSg2000 contains no HVDC; the replica has no HVDC model or HVDC-blocking stage"
+  },
+  "affected_area": {
+    "acitvsg_area": 7,
+    "name": "Coast",
+    "buses": 431,
+    "fragments_left_outside": [
+      7432
+    ],
+    "cut_set_branches": 21
+  },
+  "renewable_blocks": [
+    {
+      "name": "Granada355",
+      "hv_bus": 7042,
+      "hv_kV": 500.0,
+      "p_mw": 355.0,
+      "q_mvar": -165.0,
+      "q_source": "report",
+      "sn_mva": 408.24999999999994,
+      "gsu_tap": 0.92087,
+      "gsu_x_pu_sys": 0.0293937538273117,
+      "z0_pu": 1.0452559178721519
+    },
+    {
+      "name": "Badajoz582",
+      "hv_bus": 7186,
+      "hv_kV": 500.0,
+      "p_mw": 582.0,
+      "q_mvar": -165.0,
+      "q_source": "report",
+      "sn_mva": 669.3,
+      "gsu_tap": 0.92087,
+      "gsu_x_pu_sys": 0.017929179740026894,
+      "z0_pu": 1.089984112854939
+    },
+    {
+      "name": "Badajoz145",
+      "hv_bus": 7341,
+      "hv_kV": 500.0,
+      "p_mw": 145.0,
+      "q_mvar": -37.0,
+      "q_source": "report",
+      "sn_mva": 166.75,
+      "gsu_tap": 0.92087,
+      "gsu_x_pu_sys": 0.07196401799100449,
+      "z0_pu": 1.0897766615216404
+    },
+    {
+      "name": "Segovia23",
+      "hv_bus": 7029,
+      "hv_kV": 230.0,
+      "p_mw": 23.0,
+      "q_mvar": -7.559734419113854,
+      "q_source": "PF 0.95 absorbing (assumption)",
+      "sn_mva": 26.45,
+      "gsu_tap": 0.92087,
+      "gsu_x_pu_sys": 0.45368620037807184,
+      "z0_pu": 1.0557769616465125
+    },
+    {
+      "name": "Seville550",
+      "hv_bus": 7058,
+      "hv_kV": 500.0,
+      "p_mw": 550.0,
+      "q_mvar": -180.77625784837477,
+      "q_source": "PF 0.95 absorbing (assumption)",
+      "sn_mva": 632.5,
+      "gsu_tap": 0.92087,
+      "gsu_x_pu_sys": 0.018972332015810278,
+      "z0_pu": 1.0579882090027108
+    },
+    {
+      "name": "Segovia94",
+      "hv_bus": 7305,
+      "hv_kV": 230.0,
+      "p_mw": 94.0,
+      "q_mvar": -30.896305886813142,
+      "q_source": "PF 0.95 absorbing (assumption)",
+      "sn_mva": 108.1,
+      "gsu_tap": 0.92087,
+      "gsu_x_pu_sys": 0.11100832562442184,
+      "z0_pu": 1.0845724689432867
+    },
+    {
+      "name": "Badajoz118",
+      "hv_bus": 7043,
+      "hv_kV": 230.0,
+      "p_mw": 118.0,
+      "q_mvar": -38.784724411105856,
+      "q_source": "PF 0.95 absorbing (assumption)",
+      "sn_mva": 135.7,
+      "gsu_tap": 0.92087,
+      "gsu_x_pu_sys": 0.08843036109064113,
+      "z0_pu": 1.0561540174031043
+    },
+    {
+      "name": "Huelva34",
+      "hv_bus": 7019,
+      "hv_kV": 230.0,
+      "p_mw": 34.0,
+      "q_mvar": -11.175259576081348,
+      "q_source": "PF 0.95 absorbing (assumption)",
+      "sn_mva": 39.099999999999994,
+      "gsu_tap": 0.92087,
+      "gsu_x_pu_sys": 0.30690537084398983,
+      "z0_pu": 1.055770673368311
+    },
+    {
+      "name": "Caceres38",
+      "hv_bus": 7059,
+      "hv_kV": 230.0,
+      "p_mw": 38.0,
+      "q_mvar": -12.489995996796802,
+      "q_source": "PF 0.95 absorbing (assumption)",
+      "sn_mva": 43.699999999999996,
+      "gsu_tap": 0.92087,
+      "gsu_x_pu_sys": 0.2745995423340961,
+      "z0_pu": 1.0577043254818186
+    },
+    {
+      "name": "Badajoz72",
+      "hv_bus": 7274,
+      "hv_kV": 230.0,
+      "p_mw": 72.0,
+      "q_mvar": -23.665255572878152,
+      "q_source": "PF 0.95 absorbing (assumption)",
+      "sn_mva": 82.8,
+      "gsu_tap": 0.92087,
+      "gsu_x_pu_sys": 0.14492753623188406,
+      "z0_pu": 1.0577262779059615
+    },
+    {
+      "name": "Badajoz16",
+      "hv_bus": 7415,
+      "hv_kV": 230.0,
+      "p_mw": 16.0,
+      "q_mvar": -5.258945682861811,
+      "q_source": "PF 0.95 absorbing (assumption)",
+      "sn_mva": 18.4,
+      "gsu_tap": 0.92087,
+      "gsu_x_pu_sys": 0.6521739130434783,
+      "z0_pu": 1.0560159837010108
+    },
+    {
+      "name": "Caceres41",
+      "hv_bus": 7407,
+      "hv_kV": 230.0,
+      "p_mw": 41.0,
+      "q_mvar": -13.476048312333392,
+      "q_source": "PF 0.95 absorbing (assumption)",
+      "sn_mva": 47.15,
+      "gsu_tap": 0.92087,
+      "gsu_x_pu_sys": 0.25450689289501593,
+      "z0_pu": 1.0572565617931444
+    },
+    {
+      "name": "Cadiz26",
+      "hv_bus": 7096,
+      "hv_kV": 230.0,
+      "p_mw": 26.0,
+      "q_mvar": -8.545786734650443,
+      "q_source": "PF 0.95 absorbing (assumption)",
+      "sn_mva": 29.9,
+      "gsu_tap": 0.92087,
+      "gsu_x_pu_sys": 0.4013377926421405,
+      "z0_pu": 1.066848337523589
+    },
+    {
+      "name": "Cadiz128",
+      "hv_bus": 7304,
+      "hv_kV": 500.0,
+      "p_mw": 128.0,
+      "q_mvar": -42.07156546289449,
+      "q_source": "PF 0.95 absorbing (assumption)",
+      "sn_mva": 147.2,
+      "gsu_tap": 0.92087,
+      "gsu_x_pu_sys": 0.08152173913043478,
+      "z0_pu": 1.0802172135701977
+    },
+    {
+      "name": "Malaga154",
+      "hv_bus": 7095,
+      "hv_kV": 500.0,
+      "p_mw": 154.0,
+      "q_mvar": -50.61735219754493,
+      "q_source": "PF 0.95 absorbing (assumption)",
+      "sn_mva": 177.1,
+      "gsu_tap": 0.92087,
+      "gsu_x_pu_sys": 0.06775832862789384,
+      "z0_pu": 1.05927233261502
+    },
+    {
+      "name": "Cuenca530",
+      "hv_bus": 7018,
+      "hv_kV": 500.0,
+      "p_mw": 530.0,
+      "q_mvar": -174.20257574479749,
+      "q_source": "PF 0.95 absorbing (assumption)",
+      "sn_mva": 609.5,
+      "gsu_tap": 0.92087,
+      "gsu_x_pu_sys": 0.019688269073010665,
+      "z0_pu": 1.0599893619994383
+    }
+  ],
+  "added_devices": {
+    "collector_buses": 16,
+    "gsu_transformers": 16,
+    "pv_placeholders": 16,
+    "pvd1_blocks": 16,
+    "pvd1_gnet": 8,
+    "busfreq_auto": 78,
+    "meshing_circuits_u0_in_base": 2,
+    "candidate_circuits_u0": 2,
+    "candidate_capacitors_u0": 2
+  },
+  "tds_frequency_base_hz": 60.0
+}

@@ -1,24 +1,4 @@
-r"""Mitigation LP for protection-aware voltage security.
-
-This module implements the LP form of ``LaTeX/root.tex`` equation
-``eq:mitigation_qp``:
-
-.. math::
-
-   \min_{\alpha,\eta} c^\top\alpha+\rho\eta
-
-subject to time-grid constraints
-
-.. math::
-
-   \bar r_i^{0,m}+\bar m_i^S(t_\ell)
-   -\sum_k \underline H_{ik}^m(t_\ell)\alpha_k
-   \le 1-\epsilon+\eta.
-
-The implementation intentionally requires time-resolved
-``TimeGridControlAuthority`` matrices.  Scalar control rankings are useful for
-sorting controls but are not accepted as mitigation certificate constraints.
-"""
+"""Mitigation LP: the least-cost fast control actions that keep the relay voltages below pickup over the window."""
 
 from __future__ import annotations
 
@@ -44,13 +24,11 @@ from .robust_screening import RobustScreenResult
 
 
 class MitigationError(RuntimeError):
-    """Raised when the mitigation LP cannot be formed consistently."""
+    pass
 
 
 @dataclass(frozen=True, slots=True)
 class DisturbanceMarginProfile:
-    """Time-resolved normalized disturbance erosion ``m_i^S(t_l)``."""
-
     times_s: tuple[float, ...]
     upper_erosion: Matrix
 
@@ -80,8 +58,6 @@ class DisturbanceMarginProfile:
 
 @dataclass(frozen=True, slots=True)
 class MitigationLPDetails:
-    """Detailed LP artifacts plus the public ``MitigationResult``."""
-
     mitigation_result: MitigationResult
     protected_asset_ids: tuple[str, ...]
     control_ids: tuple[str, ...]
@@ -131,9 +107,8 @@ def solve_mitigation_lp(
     binding_tolerance: float = 1.0e-7,
     authority_tolerance: float = 1.0e-12,
     metadata: Mapping[str, Any] | None = None,
+    clip_negative_authority: bool = False,
 ) -> MitigationLPDetails:
-    """Solve the mitigation LP using time-resolved ``H(t_l)``."""
-
     window, finite_response, robust_r = _unwrap_window(window_result)
     response = disturbance_response or finite_response
     protected = tuple(window.protected_asset_ids)
@@ -151,6 +126,7 @@ def solve_mitigation_lp(
         window.control_authority_lower,
         len(protected),
         len(controls),
+        clip_negative=clip_negative_authority,
     )
     r = _base_vector(
         r_bar if r_bar is not None else robust_r if robust_r is not None else base_erosion,
@@ -308,6 +284,8 @@ def _authority_stack(
     authorities: Sequence[TimeGridControlAuthority],
     n_assets: int,
     n_controls: int,
+    *,
+    clip_negative: bool = False,
 ) -> tuple[np.ndarray, np.ndarray]:
     ordered = sorted(authorities, key=lambda item: item.time_s)
     times = np.asarray([item.time_s for item in ordered], dtype=float)
@@ -323,7 +301,7 @@ def _authority_stack(
             )
         if not np.all(np.isfinite(matrix)):
             raise MitigationError("control authority contains non-finite values")
-        matrices.append(np.maximum(matrix, 0.0))
+        matrices.append(np.maximum(matrix, 0.0) if clip_negative else matrix)
     return times, np.asarray(matrices, dtype=float)
 
 
@@ -605,3 +583,104 @@ def _positive(value: float, name: str) -> float:
 
 def _matrix_tuple(array: np.ndarray) -> Matrix:
     return tuple(tuple(float(item) for item in row) for row in np.asarray(array, dtype=float))
+
+
+def solve_mitigation_from_responses(
+    seed_responses: Sequence[Any],
+    control_responses: Sequence[Any],
+    output_models: Sequence[Any],
+    *,
+    controls: Sequence[Any] | None = None,
+    uncertainty: Any = None,
+    excluded_assets: Sequence[str] = (),
+    r_bar: Sequence[float] | None = None,
+    epsilon: float = 0.05,
+    slack_penalty: float = 1.0e6,
+    continuous_time: bool = True,
+    mode_id: str = "pre_event",
+    metadata: Mapping[str, Any] | None = None,
+) -> MitigationLPDetails:
+    from .robust_screening import (
+        control_lower_authority,
+        disturbance_upper_erosion,
+        robust_window_bounds,
+    )
+
+    if not seed_responses:
+        raise MitigationError("at least one seed response is required")
+    if not control_responses:
+        raise MitigationError("mitigation requires at least one control response")
+    bounds = robust_window_bounds(seed_responses, output_models, uncertainty)
+    times = np.asarray(seed_responses[0].times_s, dtype=float)
+    p = len(bounds.asset_ids)
+    if continuous_time:
+        dist = disturbance_upper_erosion(bounds, seed_responses)
+        auth = control_lower_authority(bounds, control_responses, uncertainty=uncertainty)
+        grid = times[:-1]
+    else:
+        dist = np.full((times.size, p), np.nan)
+        auth = np.full((times.size, p, len(control_responses)), np.nan)
+        for i, (m, b) in enumerate(zip(bounds.output_models, bounds.assets)):
+            if b.data_limited:
+                continue
+            total = sum(np.asarray(r.values_pu[:, m.output_index]) for r in seed_responses)
+            dist[:, i] = b.response_scale_upper * np.maximum(total, 0.0) / b.h_lower_pu
+            for k, r in enumerate(control_responses):
+                red = -np.asarray(r.values_pu[:, m.output_index])
+                scale = np.where(red >= 0.0, b.response_scale_lower, b.response_scale_upper)
+                auth[:, i, k] = scale * red / b.h_lower_pu
+        grid = times
+    excluded = set(str(a) for a in excluded_assets)
+    for resp in seed_responses:
+        excluded.update(str(a) for a in getattr(resp, "disconnects_assets", ()) or ())
+    data_limited = [a for a, b in zip(bounds.asset_ids, bounds.assets) if b.data_limited and a not in excluded]
+    skip = excluded | set(data_limited)
+    dist = np.where(np.isfinite(dist), dist, 0.0)
+    auth = np.where(np.isfinite(auth), auth, 0.0)
+    control_ids = tuple(str(r.event_id) for r in control_responses)
+    window = WindowMapResult(
+        mode_id=mode_id,
+        protected_asset_ids=tuple(bounds.asset_ids),
+        event_ids=tuple(str(r.event_id) for r in seed_responses),
+        control_ids=control_ids,
+        horizons_s=tuple(float(times[-1]) for _ in bounds.asset_ids),
+        k_pickup_upper=tuple(tuple(0.0 for _ in seed_responses) for _ in bounds.asset_ids),
+        k_trip_upper=tuple(tuple(0.0 for _ in seed_responses) for _ in bounds.asset_ids),
+        control_authority_lower=tuple(
+            TimeGridControlAuthority(float(t), _matrix_tuple(auth[l])) for l, t in enumerate(grid)
+        ),
+        channel_assessments=(),
+        data_limited_assets=tuple(data_limited),
+        status=AssessmentStatus.CERTIFIED,
+        metadata={},
+    )
+    profile = DisturbanceMarginProfile(times_s=tuple(float(t) for t in grid), upper_erosion=_matrix_tuple(dist))
+    specs = {str(c.control_id): c for c in (controls or ())}
+    alpha_upper = [float(specs[c].alpha_max) if c in specs else 1.0 for c in control_ids]
+    costs = [float(specs[c].cost) if c in specs else 1.0 for c in control_ids]
+    mvar = None
+    if specs and all(c in specs and specs[c].mvar_per_unit is not None for c in control_ids):
+        mvar = [float(specs[c].mvar_per_unit) for c in control_ids]
+    rb = np.nan_to_num(np.asarray(bounds.r_bar if r_bar is None else r_bar, dtype=float), nan=0.0)
+    details = solve_mitigation_lp(
+        window,
+        seed_assets=tuple(a for a in bounds.asset_ids if a in skip),
+        disturbance_profile=profile,
+        r_bar=rb,
+        alpha_upper=alpha_upper,
+        control_costs=costs,
+        control_mvar=mvar,
+        epsilon=epsilon,
+        slack_penalty=slack_penalty,
+        metadata={
+            "source": "solve_mitigation_from_responses",
+            "continuous_time": bool(continuous_time),
+            "disturbance_bound": "rigorous_interval_upper_envelope" if continuous_time else "grid_values",
+            "control_bound": "rigorous_interval_lower_envelope" if continuous_time else "grid_values",
+            "excluded_assets": sorted(excluded),
+            "data_limited_assets": data_limited,
+            "uncertainty": None if uncertainty is None else uncertainty.to_dict(),
+            **dict(metadata or {}),
+        },
+    )
+    return details

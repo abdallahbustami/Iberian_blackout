@@ -1,0 +1,12 @@
+system,control_id,control_class,mvar_per_unit,alpha_max,cost,delay_s,tau_s,envelope,status,failure_reason,min_collector_dz_pu,argmin_asset,runtime_s,description
+kundur,statcom:STATCOM01,statcom,50.0,1.0,1.0,0.02,0.03,"delay 0.02 s, first-order tau 0.03 s",ok,,-0.02004084401691834,RES02,0.023645124994800426,50 Mvar STATCOM (absorbing) at bus 5 as controlled susceptance
+kundur,plant_q_command:RES01,plant_q_command,10.121377121926258,1.0,1.0,0.1,0.0,"delay 0.1 s, first-order tau 0 s",ok,,-0.02163420754429779,RES01,0.02372879200265743,additional absorption command of RES01 up to PF 0.9 at S_n
+kundur,plant_q_command:RES02,plant_q_command,6.440876350283416,1.0,1.0,0.1,0.0,"delay 0.1 s, first-order tau 0 s",ok,,-0.02035710489151333,RES02,0.023453125002561137,additional absorption command of RES02 up to PF 0.9 at S_n
+kundur,plant_q_command:RES03,plant_q_command,11.961627463574523,1.0,1.0,0.1,0.0,"delay 0.1 s, first-order tau 0 s",ok,,-0.022918335060704332,RES03,0.023826624994399026,additional absorption command of RES03 up to PF 0.9 at S_n
+kundur,plant_q_command:RES04,plant_q_command,8.281126736766389,1.0,1.0,0.1,0.0,"delay 0.1 s, first-order tau 0 s",ok,,-0.020748245490642876,RES04,0.02359579199401196,additional absorption command of RES04 up to PF 0.9 at S_n
+kundur,avr_vref:1,avr_vref,,1.0,1.0,0.05,0.0,"delay 0.05 s, first-order tau 0 s",ok,,-0.010338487530770477,RES02,0.0236423750029644,AVR set-point reduction -0.03 pu on EXDC2 1 (1)
+kundur,avr_vref:2,avr_vref,,1.0,1.0,0.05,0.0,"delay 0.05 s, first-order tau 0 s",ok,,-0.009635979363165488,RES01,0.023599249994731508,AVR set-point reduction -0.03 pu on EXDC2 2 (2)
+kundur,avr_vref:4,avr_vref,,1.0,1.0,0.05,0.0,"delay 0.05 s, first-order tau 0 s",ok,,-0.010377850446528407,RES03,0.02375995799957309,AVR set-point reduction -0.03 pu on EXDC2 4 (4)
+kundur,avr_vref:3,avr_vref,,1.0,1.0,0.05,0.0,"delay 0.05 s, first-order tau 0 s",ok,,-0.009237066011277623,RES04,0.023617667000507936,AVR set-point reduction -0.03 pu on EXDC2 3 (3)
+kundur,fast_reactor:FASTR01,fast_reactor,50.0,1.0,1.0,0.15,0.0,"delay 0.15 s, first-order tau 0 s",ok,,-0.017290784139671563,RES01,0.023172040993813425,50 Mvar breaker-switched reactor at bus 6 (150 ms)
+kundur,manual_reactor:MANR01,manual_reactor,100.0,1.0,1.0,30.0,0.0,"delay 30 s, first-order tau 0 s",ok,,0.0,RES01,0.007021833007456735,100 Mvar operator-switched reactor at bus 6 (30 s)

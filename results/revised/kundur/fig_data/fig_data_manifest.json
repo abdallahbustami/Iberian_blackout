@@ -1,0 +1,10 @@
+{
+ "system": "kundur",
+ "files": {
+  "fig3_event_kmax_sorted.csv": "S10: every event, sorted by max non-self K^pk (nominal telemetry screen)",
+  "fig3_cascade_edges.csv": "S10: designated seed load_disconnection:PQ_1: K edges source event -> pickup asset (non-self)",
+  "fig3_cascade_nodes.csv": "S10: designated seed load_disconnection:PQ_1: every asset with screen class/layer/time and TDS trip time",
+  "fig5_family_summary.csv": "S11: per family worst non-self K^pk, counts >= 1, TDS-dangerous seeds"
+ },
+ "schema": "docs/revision/RESULTS_SCHEMA.md"
+}

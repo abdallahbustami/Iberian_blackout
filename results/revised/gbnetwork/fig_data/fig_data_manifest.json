@@ -1,0 +1,14 @@
+{
+ "system": "gbnetwork",
+ "files": {
+  "fig3_event_kmax_sorted.csv": "S10: every event, sorted by max non-self K^pk (nominal telemetry screen)",
+  "fig3_cascade_edges.csv": "S10: designated seed fixed_pf_ramp:RES07: K edges source event -> pickup asset (non-self)",
+  "fig3_cascade_nodes.csv": "S10: designated seed fixed_pf_ramp:RES07: every asset with screen class/layer/time and TDS trip time",
+  "fig5_family_summary.csv": "S11: per family worst non-self K^pk, counts >= 1, TDS-dangerous seeds",
+  "fig6_erosion_screen.csv": "S12: seed fixed_pf_ramp:RES07, most affected non-seed asset RES07: normalized erosion dz/h sampled and rigorous per-interval upper bound (LP residual), without/with LP",
+  "fig6_tds_traces.csv": "S12: TDS collector voltages for seed fixed_pf_ramp:RES07 without mitigation (S3 run) and with the all-controls LP actions (S4 verification); t_rel_s relative to the seed; t_rel_s=0 appears twice (pre-event and post-jump solution)",
+  "fig6_control_envelopes.csv": "S12: ControlSpec.envelope samples (normalized) of one control per class, as used by screen and TDS",
+  "fig6_lp_actions.csv": "S12: LP (all controls) actions applied in the mitigated TDS"
+ },
+ "schema": "docs/revision/RESULTS_SCHEMA.md"
+}

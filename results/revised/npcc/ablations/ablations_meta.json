@@ -1,0 +1,63 @@
+{
+ "system": "npcc",
+ "designated_seed": "load_disconnection:PQ_48",
+ "designated_rule": "largest predicted fixed point of the baseline (paper cascade: pickups propagate); ties: largest non-self max K^pk",
+ "cascade_definition": "primary (core screen_seed, Eq. cascade_map)",
+ "baseline_fingerprint": "8f92522ce289d0c592c3d3ef77f632a36afa8597",
+ "variants": {
+  "no_ov_protection": {
+   "fingerprint": "d3637836177702b06db1133a561e14a9507b8ff6",
+   "design_variant": {
+    "name": "no_ov_protection",
+    "relays_disabled": true,
+    "relay_pickup_pu": 1.1,
+    "relay_dwell_s": 0.05,
+    "plant_control": "fixed power factor",
+    "plant_trip_preserves_absorption": false,
+    "description": "relays disabled (blocks flagged relays_disabled)"
+   }
+  },
+  "delayed_protection": {
+   "fingerprint": "f709706d055f94f38bba63af8e095473bfb7b539",
+   "design_variant": {
+    "name": "delayed_protection",
+    "relays_disabled": false,
+    "relay_pickup_pu": 1.1,
+    "relay_dwell_s": 0.2,
+    "plant_control": "fixed power factor",
+    "plant_trip_preserves_absorption": false,
+    "description": "relay dwell 0.20 s"
+   }
+  },
+  "preserved_absorption": {
+   "fingerprint": "5afb94f26c76b60f17bec7bfed6afe250fa4c560",
+   "design_variant": {
+    "name": "preserved_absorption",
+    "relays_disabled": false,
+    "relay_pickup_pu": 1.1,
+    "relay_dwell_s": 0.05,
+    "plant_control": "fixed power factor",
+    "plant_trip_preserves_absorption": true,
+    "description": "plant_trip also switches in a collector reactor b = Q0/z0^2 (absorbs Q0 at z0)"
+   }
+  },
+  "voltage_mode_res": {
+   "fingerprint": "414d397aba5db59bf350e931c0c3e89cc6b54d35",
+   "design_variant": {
+    "name": "voltage_mode_res",
+    "relays_disabled": false,
+    "relay_pickup_pu": 1.1,
+    "relay_dwell_s": 0.05,
+    "plant_control": "voltage droop (over-voltage branch)",
+    "plant_trip_preserves_absorption": false,
+    "description": "PVD1 proportional over-voltage volt-var droop active at the operating point (no dead band): v1 = z0 - 1e-4 pu, dqdv = -Q0/(2W+d) (W = 0.05), qmn = qref0/2, qref0 = Q0 + dqdv d (gammaq); initial Q and operating point unchanged"
+   }
+  }
+ },
+ "settings": {
+  "T_window_s": 1.0,
+  "tds_t_end_s": 2.0,
+  "epsilon": 0.05
+ },
+ "anomalies": []
+}

@@ -1,0 +1,180 @@
+{
+  "hv_median_t0_pu": 1.0242404959458695,
+  "first_trip": {
+    "plant": "Seville550",
+    "t_s": 15.18,
+    "pickup_start_s": 14.18,
+    "lost_q_absorption_mvar": 173.35738844580953
+  },
+  "hv_median_at_pickup_start_pu": 1.0336287293786048,
+  "hv_median_at_first_trip_pu": 1.0345035675444172,
+  "burst": {
+    "n_plants": 15,
+    "mw": 2869.8522935804763,
+    "last_s": 16.92,
+    "plants": [
+      "Seville550",
+      "Badajoz145",
+      "RES05",
+      "Cadiz128",
+      "RES04",
+      "Segovia94",
+      "Caceres38",
+      "Badajoz16",
+      "RES07",
+      "Badajoz582",
+      "Cadiz26",
+      "Badajoz118",
+      "RES06",
+      "Huelva34",
+      "RES03"
+    ]
+  },
+  "hv_online_range_after_burst_pu": [
+    1.036062408035019,
+    1.059597699405783
+  ],
+  "embedded_pv_lost_2s_after_first_trip_mw": 339.7342094999999,
+  "first_swing_peak": {
+    "t_s": 17.663737837,
+    "angle_deg": 94.55825398220912
+  },
+  "hv_median_min_before_separation_pu": 0.8485689784431382,
+  "hv_median_min_first_swing_pu": 0.9134981019138022,
+  "frequency_at_separation_hz": 49.475118416538194,
+  "trips_before_separation": [
+    {
+      "plant": "Seville550",
+      "t_s": 15.18,
+      "trigger": "plant_OV1",
+      "mw": 527.4285726456774
+    },
+    {
+      "plant": "Badajoz145",
+      "t_s": 15.79,
+      "trigger": "plant_OV1",
+      "mw": 138.87154822649433
+    },
+    {
+      "plant": "RES05",
+      "t_s": 16.19,
+      "trigger": "plant_OV1",
+      "mw": 382.4078789583825
+    },
+    {
+      "plant": "Cadiz128",
+      "t_s": 16.52,
+      "trigger": "plant_OV1",
+      "mw": 122.25857120521258
+    },
+    {
+      "plant": "RES04",
+      "t_s": 16.58,
+      "trigger": "plant_OV1",
+      "mw": 305.7754757354495
+    },
+    {
+      "plant": "Segovia94",
+      "t_s": 16.8,
+      "trigger": "plant_OV1",
+      "mw": 89.71888667393812
+    },
+    {
+      "plant": "Caceres38",
+      "t_s": 16.8,
+      "trigger": "plant_OV1",
+      "mw": 36.27047505714306
+    },
+    {
+      "plant": "Badajoz16",
+      "t_s": 16.8,
+      "trigger": "plant_OV1",
+      "mw": 15.271313929595323
+    },
+    {
+      "plant": "RES07",
+      "t_s": 16.8,
+      "trigger": "plant_OV1",
+      "mw": 171.79438731098065
+    },
+    {
+      "plant": "Badajoz582",
+      "t_s": 16.81,
+      "trigger": "plant_OV1",
+      "mw": 556.4034829021906
+    },
+    {
+      "plant": "Cadiz26",
+      "t_s": 16.81,
+      "trigger": "plant_OV1",
+      "mw": 25.003902395516302
+    },
+    {
+      "plant": "Badajoz118",
+      "t_s": 16.88,
+      "trigger": "plant_OV1",
+      "mw": 112.682218779131
+    },
+    {
+      "plant": "RES06",
+      "t_s": 16.88,
+      "trigger": "plant_OV1",
+      "mw": 114.59223560195602
+    },
+    {
+      "plant": "Huelva34",
+      "t_s": 16.89,
+      "trigger": "plant_OV1",
+      "mw": 32.57731616057759
+    },
+    {
+      "plant": "RES03",
+      "t_s": 16.92,
+      "trigger": "plant_OV1",
+      "mw": 238.79602799823124
+    },
+    {
+      "plant": "Granada355",
+      "t_s": 18.302154116,
+      "trigger": "plant_OVI",
+      "mw": 339.0727064536086
+    }
+  ],
+  "separation_s": 19.245387493,
+  "angle_at_separation_deg": 124.30766445940306,
+  "ufls": {
+    "n": 6,
+    "first_s": 19.688193408,
+    "last_s": 20.164662262,
+    "shed_mw": 6568.974327942342
+  },
+  "plants_after_separation": {
+    "n": 10,
+    "triggers": [
+      "plant_OV2"
+    ]
+  },
+  "relay_side_v_max_after_separation_pu": 1.306489063397347,
+  "hv_max_online_after_separation_pu": 1.2365703744521648,
+  "generator_trips": {
+    "n": 9,
+    "by_trigger": {
+      "generator_OV2": 8,
+      "generator_UF": 1
+    },
+    "first_s": 19.973223283,
+    "terminal_v_pu": [
+      1.278629105256933,
+      1.2685956076066958,
+      1.2574762418441832,
+      1.297766309190079,
+      1.2949648585704532,
+      1.3153998758389087,
+      1.2717608702718612,
+      1.2824019620271099
+    ]
+  },
+  "units_online_at_end": 3,
+  "f_min_hz": 46.3125666802797,
+  "final_time_s": 20.283697911
+}

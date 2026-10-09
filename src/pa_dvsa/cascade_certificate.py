@@ -1,17 +1,4 @@
-r"""Threshold-cascade certificates.
-
-This module implements the additive pickup map from ``LaTeX/root.tex``:
-
-.. math::
-
-   \Phi_m(S)=S\cup\{i\in\mathcal C\setminus S:
-   \bar r_i^{0,m}+\sum_{j\in S}\bar K_{ij}^{m,\mathrm{pk}}\ge 1\}.
-
-The map uses the pickup matrix, not the trip matrix.  For delayed relays, the
-predicted pickup set can be checked against combined finite-window waveforms so
-that dwell logic is applied to the aggregate voltage trace rather than to a sum
-of individual dwell metrics.
-"""
+"""Threshold cascade map, its fixed point, and the trip check of delayed relays on the combined waveform."""
 
 from __future__ import annotations
 
@@ -27,13 +14,11 @@ from .protected_outputs import ProtectedOutputEvaluation
 
 
 class CascadeCertificateError(RuntimeError):
-    """Raised when a cascade certificate cannot be computed consistently."""
+    pass
 
 
 @dataclass(frozen=True, slots=True)
 class DelayedTripConfirmation:
-    """Layer-wise delayed-trip check from a combined disturbance waveform."""
-
     seed_id: str
     asset_id: str
     layer_index: int
@@ -70,8 +55,6 @@ class DelayedTripConfirmation:
 
 @dataclass(frozen=True, slots=True)
 class SeedRanking:
-    """Operator-facing seed ranking entry."""
-
     seed_id: str
     rank: int
     first_secondary_pickup: tuple[str, ...]
@@ -98,8 +81,6 @@ class SeedRanking:
 
 @dataclass(frozen=True, slots=True)
 class CascadeCertificateResult:
-    """Cascade results, delayed-trip checks, and ranked seed summary."""
-
     mode_id: str
     seed_results: tuple[CascadeResult, ...]
     seed_rankings: tuple[SeedRanking, ...]
@@ -112,8 +93,6 @@ class CascadeCertificateResult:
 
     @property
     def cascade_result(self) -> CascadeResult | None:
-        """Return the highest-ranked seed result, if any."""
-
         if not self.seed_rankings:
             return None
         top_seed = self.seed_rankings[0].seed_id
@@ -146,14 +125,6 @@ def phi_m(
     asset_event_map: Mapping[str, str] | None = None,
     threshold: float = 1.0,
 ) -> tuple[str, ...]:
-    """Evaluate the additive threshold map ``Phi_m(S)``.
-
-    ``active_assets`` is the set ``S`` of already-tripped protected elements.
-    The contribution of each active element is read from the event column given
-    by ``asset_event_map``.  If no mapping is supplied, identity event IDs and
-    ``trip_<asset_id>`` event IDs are inferred when present.
-    """
-
     context = _window_context(window_result, base_erosion, asset_event_map, threshold=threshold)
     active = _asset_set(active_assets, context.protected_index)
     missing = sorted(asset for asset in active if asset not in context.asset_event_map)
@@ -170,7 +141,7 @@ def phi_m(
 
 
 def compute_cascade_certificate(
-    window_result: WindowMapResult | FiniteWindowMapsResult,
+    window_result: Any,
     *,
     seed_ids: Sequence[str] | None = None,
     base_erosion: Sequence[float] | None = None,
@@ -182,14 +153,14 @@ def compute_cascade_certificate(
     threshold: float = 1.0,
     metadata: Mapping[str, Any] | None = None,
 ) -> CascadeCertificateResult:
-    """Compute cascade fixed points and rank seed events.
+    from .finite_window import RigorousWindowMaps
 
-    The pickup prediction uses ``WindowMapResult.k_pickup_upper``.  If
-    ``finite_response`` or a ``FiniteWindowMapsResult`` disturbance response is
-    available, delayed trips are checked using combined source waveforms and the
-    supplied relay dwell times.
-    """
-
+    if isinstance(window_result, RigorousWindowMaps):
+        if dwell_times_s is None:
+            dwell_times_s = tuple(float(v) for v in window_result.dwell_s)
+        if margins_pu is None and protected_outputs is None:
+            margins_pu = tuple(float(v) for v in window_result.margins_pu)
+        window_result = window_result.to_window_result()
     finite_window = window_result if isinstance(window_result, FiniteWindowMapsResult) else None
     window = finite_window.window_result if finite_window is not None else window_result
     response = finite_response or (None if finite_window is None else finite_window.disturbance_response)
@@ -860,3 +831,175 @@ def _rank_seeds(inputs: Sequence[_RankingInput]) -> tuple[SeedRanking, ...]:
         )
         for index, item in enumerate(ordered)
     )
+
+
+from .finite_window import dwell_excursion_upper
+
+
+@dataclass(frozen=True, slots=True)
+class CombinedTripCheck:
+    seed_id: str
+    asset_id: str
+    source_event_ids: tuple[str, ...]
+    pickup_excursion_pu: float
+    trip_excursion_upper_pu: float
+    margin_pu: float
+    dwell_s: float
+    trip_possible: bool
+    trip_time_estimate_s: float | None
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "seed_id": self.seed_id,
+            "asset_id": self.asset_id,
+            "source_event_ids": list(self.source_event_ids),
+            "pickup_excursion_pu": self.pickup_excursion_pu,
+            "trip_excursion_upper_pu": self.trip_excursion_upper_pu
+            if math.isfinite(self.trip_excursion_upper_pu)
+            else None,
+            "margin_pu": self.margin_pu,
+            "dwell_s": self.dwell_s,
+            "trip_possible": self.trip_possible,
+            "trip_time_estimate_s": self.trip_time_estimate_s,
+        }
+
+
+def combined_trip_check(
+    responses: Mapping[str, Any],
+    source_event_ids: Sequence[str],
+    *,
+    seed_id: str,
+    asset_id: str,
+    output_index: int,
+    margin_pu: float,
+    dwell_s: float,
+    horizon_s: float | None = None,
+    response_scale: float = 1.0,
+) -> CombinedTripCheck:
+    first = responses[source_event_ids[0]]
+    times = np.asarray(first.times_s, dtype=float)
+    combined = np.zeros(times.size)
+    upper = np.zeros(times.size - 1)
+    for ev in source_event_ids:
+        resp = responses[ev]
+        if resp.times_s.size != times.size or not np.allclose(resp.times_s, times, atol=1e-12):
+            raise CascadeCertificateError("combined waveforms require a common base grid")
+        combined += response_scale * np.asarray(resp.values_pu[:, output_index], dtype=float)
+        upper += response_scale * np.asarray(resp.envelopes[output_index].upper, dtype=float)
+    T = float(times[-1] if horizon_s is None else horizon_s)
+    mask = times <= T + 1e-12
+    pk = float(max(np.max(combined[mask]), np.max(upper[mask[1:]]) if np.any(mask[1:]) else -math.inf))
+    left = combined.copy()
+    left[0] = 0.0
+    m_tr = dwell_excursion_upper(times, combined, left, upper, horizon_s=T, dwell_s=float(dwell_s))
+    t_est = None
+    if dwell_s >= 0.0 and math.isfinite(m_tr) and m_tr >= margin_pu:
+        above = combined >= margin_pu
+        for k0 in range(times.size):
+            if not above[k0]:
+                continue
+            k1 = int(np.searchsorted(times, times[k0] + dwell_s - 1e-12, side="left"))
+            if k1 < times.size and np.all(above[k0 : k1 + 1]):
+                t_est = float(times[k1])
+                break
+    return CombinedTripCheck(
+        seed_id=str(seed_id),
+        asset_id=str(asset_id),
+        source_event_ids=tuple(str(e) for e in source_event_ids),
+        pickup_excursion_pu=pk,
+        trip_excursion_upper_pu=float(m_tr),
+        margin_pu=float(margin_pu),
+        dwell_s=float(dwell_s),
+        trip_possible=bool(math.isfinite(m_tr) and m_tr >= margin_pu - 1e-12),
+        trip_time_estimate_s=t_est,
+    )
+
+
+@dataclass(frozen=True)
+class SeedCascadeScreen:
+    classification: Any
+    trip_checks: tuple[CombinedTripCheck, ...]
+
+    @property
+    def seed_id(self) -> str:
+        return self.classification.seed_id
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "classification": self.classification.to_dict(),
+            "trip_checks": [c.to_dict() for c in self.trip_checks],
+        }
+
+
+def screen_seed(
+    maps: Any,
+    seed_event_id: str,
+    *,
+    asset_event_map: Mapping[str, str],
+    r_bar: Sequence[float] | None = None,
+    epsilon: float = 0.05,
+    responses: Sequence[Any] | None = None,
+    output_index: Mapping[str, int] | None = None,
+    cascade: bool = True,
+) -> SeedCascadeScreen:
+    from .robust_screening import RobustWindowBounds, classify_seed
+
+    if isinstance(maps, RobustWindowBounds):
+        k = maps.k_bar_pk
+        h = maps.h_lower
+        rb = maps.r_bar if r_bar is None else np.asarray(r_bar, dtype=float)
+        classes = maps.classes
+        dwell = np.array([a.dwell_lower_s for a in maps.assets])
+        scales = np.array([a.response_scale_upper for a in maps.assets])
+        out_idx = {m.asset_id: m.output_index for m in maps.output_models}
+        horizon = maps.horizon_s
+    else:
+        k = maps.k_pickup
+        h = maps.margins_pu
+        rb = np.zeros(len(maps.asset_ids)) if r_bar is None else np.asarray(r_bar, dtype=float)
+        classes = maps.classes
+        dwell = np.asarray(maps.dwell_s, dtype=float)
+        scales = np.ones(len(maps.asset_ids))
+        out_idx = dict(output_index or {a: i for i, a in enumerate(maps.asset_ids)})
+        horizon = maps.horizon_s
+    cls = classify_seed(
+        k,
+        asset_ids=maps.asset_ids,
+        event_ids=maps.event_ids,
+        seed_event_id=seed_event_id,
+        r_bar=rb,
+        h_lower=h,
+        channel_classes=classes,
+        asset_event_map=asset_event_map,
+        epsilon=epsilon,
+        cascade=cascade,
+    )
+    checks: list[CombinedTripCheck] = []
+    if responses is not None:
+        by_id = {str(r.event_id): r for r in responses}
+        a_index = {a: i for i, a in enumerate(maps.asset_ids)}
+        layers = {c.asset_id: c.layer for c in cls.classes if c.asset_class == "pickup_predicted"}
+        for asset, layer in sorted(layers.items(), key=lambda kv: (kv[1] or 0, kv[0])):
+            sources = [seed_event_id] + [
+                asset_event_map[a]
+                for a, lay in layers.items()
+                if lay is not None and layer is not None and lay < layer and a in asset_event_map
+            ]
+            sources = [e for e in dict.fromkeys(sources) if e in by_id]
+            if not sources:
+                continue
+            i = a_index[asset]
+            checks.append(
+                combined_trip_check(
+                    by_id,
+                    sources,
+                    seed_id=seed_event_id,
+                    asset_id=asset,
+                    output_index=int(out_idx[asset]),
+                    margin_pu=float(h[i]),
+                    dwell_s=float(dwell[i]),
+                    horizon_s=horizon,
+                    response_scale=float(scales[i]),
+                )
+            )
+    return SeedCascadeScreen(classification=cls, trip_checks=tuple(checks))

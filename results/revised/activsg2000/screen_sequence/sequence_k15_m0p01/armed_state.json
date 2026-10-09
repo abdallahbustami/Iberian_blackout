@@ -1,0 +1,816 @@
+{
+  "slug": "sequence_k15_m0p01",
+  "level": "sequence_k15",
+  "margin_pu": 0.01,
+  "tap": 0.92732,
+  "method": "dynamic_equilibrium",
+  "settle_s": 40.0,
+  "build_s": 46.03793837502599,
+  "disabled_exciters": [
+    "ESDC1A:ESDC1A_8",
+    "IEEET1:IEEET1_21"
+  ],
+  "polish": {
+    "iterations": 1,
+    "max_abs_f": 9.71022589845603e-12,
+    "max_abs_g": 8.86313245018755e-12,
+    "final_h": 400.0,
+    "converged": true,
+    "frozen_variables": 8231,
+    "note": "residuals over variables of in-service devices (out-of-service devices are decoupled)",
+    "secondary_control_mw": -2.4849496131661654e-07
+  },
+  "plateau_max_abs_dv_pu": 1.9945378681995862e-11,
+  "equilibrium_omega_range_pu": [
+    1.0000000000000209,
+    1.0000000000000258
+  ],
+  "assets": [
+    {
+      "asset_id": "Granada355",
+      "collector_bus": "8161",
+      "hv_bus": "7187",
+      "z0_pu": 1.064722995197603,
+      "p_mw": 354.9999999999986,
+      "q_mvar": -164.99999999999935,
+      "margin_fast_pu": 0.03527700480239715,
+      "margin_ov1_pu": 0.03527700480239715,
+      "margin_ov2_pu": 0.13527700480239702
+    },
+    {
+      "asset_id": "Badajoz582",
+      "collector_bus": "8162",
+      "hv_bus": "7346",
+      "z0_pu": 1.0849969912715147,
+      "p_mw": 581.9999999999982,
+      "q_mvar": -164.9999999999995,
+      "margin_fast_pu": 0.015003008728485367,
+      "margin_ov1_pu": 0.015003008728485367,
+      "margin_ov2_pu": 0.11500300872848523
+    },
+    {
+      "asset_id": "Badajoz145",
+      "collector_bus": "8163",
+      "hv_bus": "7042",
+      "z0_pu": 1.085940319888399,
+      "p_mw": 144.99999999999952,
+      "q_mvar": -36.999999999999886,
+      "margin_fast_pu": 0.01405968011160108,
+      "margin_ov1_pu": 0.01405968011160108,
+      "margin_ov2_pu": 0.11405968011160095
+    },
+    {
+      "asset_id": "Segovia23",
+      "collector_bus": "8164",
+      "hv_bus": "7261",
+      "z0_pu": 1.0662711078284015,
+      "p_mw": 22.999999999999925,
+      "q_mvar": -7.55973441911383,
+      "margin_fast_pu": 0.03372889217159858,
+      "margin_ov1_pu": 0.03372889217159858,
+      "margin_ov2_pu": 0.13372889217159845
+    },
+    {
+      "asset_id": "Seville550",
+      "collector_bus": "8165",
+      "hv_bus": "7366",
+      "z0_pu": 1.089992460033697,
+      "p_mw": 549.9999999999982,
+      "q_mvar": -180.77625784837414,
+      "margin_fast_pu": 0.010007539966303103,
+      "margin_ov1_pu": 0.010007539966303103,
+      "margin_ov2_pu": 0.11000753996630297
+    },
+    {
+      "asset_id": "Segovia94",
+      "collector_bus": "8166",
+      "hv_bus": "7043",
+      "z0_pu": 1.0714158778129532,
+      "p_mw": 93.99999999999969,
+      "q_mvar": -30.896305886813035,
+      "margin_fast_pu": 0.028584122187046868,
+      "margin_ov1_pu": 0.028584122187046868,
+      "margin_ov2_pu": 0.12858412218704673
+    },
+    {
+      "asset_id": "Badajoz118",
+      "collector_bus": "8167",
+      "hv_bus": "7059",
+      "z0_pu": 1.0672239884887225,
+      "p_mw": 117.99999999999962,
+      "q_mvar": -38.78472441110573,
+      "margin_fast_pu": 0.032776011511277625,
+      "margin_ov1_pu": 0.032776011511277625,
+      "margin_ov2_pu": 0.1327760115112775
+    },
+    {
+      "asset_id": "Huelva34",
+      "collector_bus": "8168",
+      "hv_bus": "7274",
+      "z0_pu": 1.0623864476918696,
+      "p_mw": 33.99999999999991,
+      "q_mvar": -11.175259576081316,
+      "margin_fast_pu": 0.03761355230813046,
+      "margin_ov1_pu": 0.03761355230813046,
+      "margin_ov2_pu": 0.13761355230813033
+    },
+    {
+      "asset_id": "Caceres38",
+      "collector_bus": "8169",
+      "hv_bus": "7019",
+      "z0_pu": 1.0680869673491582,
+      "p_mw": 37.999999999999886,
+      "q_mvar": -12.489995996796763,
+      "margin_fast_pu": 0.03191303265084189,
+      "margin_ov1_pu": 0.03191303265084189,
+      "margin_ov2_pu": 0.13191303265084176
+    },
+    {
+      "asset_id": "Badajoz72",
+      "collector_bus": "8170",
+      "hv_bus": "7096",
+      "z0_pu": 1.0608046935733875,
+      "p_mw": 71.99999999999977,
+      "q_mvar": -23.66525557287808,
+      "margin_fast_pu": 0.03919530642661262,
+      "margin_ov1_pu": 0.03919530642661262,
+      "margin_ov2_pu": 0.1391953064266125
+    },
+    {
+      "asset_id": "Badajoz16",
+      "collector_bus": "8171",
+      "hv_bus": "7415",
+      "z0_pu": 1.0700350125440592,
+      "p_mw": 15.99999999999995,
+      "q_mvar": -5.258945682861794,
+      "margin_fast_pu": 0.029964987455940895,
+      "margin_ov1_pu": 0.029964987455940895,
+      "margin_ov2_pu": 0.12996498745594076
+    },
+    {
+      "asset_id": "Caceres41",
+      "collector_bus": "8172",
+      "hv_bus": "7327",
+      "z0_pu": 1.06974280028844,
+      "p_mw": 40.99999999999985,
+      "q_mvar": -13.476048312333344,
+      "margin_fast_pu": 0.030257199711560157,
+      "margin_ov1_pu": 0.030257199711560157,
+      "margin_ov2_pu": 0.13025719971156002
+    },
+    {
+      "asset_id": "Cadiz26",
+      "collector_bus": "8173",
+      "hv_bus": "7029",
+      "z0_pu": 1.0680013826758248,
+      "p_mw": 25.999999999999922,
+      "q_mvar": -8.545786734650417,
+      "margin_fast_pu": 0.031998617324175305,
+      "margin_ov1_pu": 0.031998617324175305,
+      "margin_ov2_pu": 0.13199861732417517
+    },
+    {
+      "asset_id": "Cadiz128",
+      "collector_bus": "8174",
+      "hv_bus": "7018",
+      "z0_pu": 1.081713894133479,
+      "p_mw": 127.99999999999957,
+      "q_mvar": -42.07156546289435,
+      "margin_fast_pu": 0.01828610586652113,
+      "margin_ov1_pu": 0.01828610586652113,
+      "margin_ov2_pu": 0.118286105866521
+    },
+    {
+      "asset_id": "Malaga154",
+      "collector_bus": "8175",
+      "hv_bus": "7304",
+      "z0_pu": 1.0606132853087056,
+      "p_mw": 153.9999999999995,
+      "q_mvar": -50.61735219754476,
+      "margin_fast_pu": 0.03938671469129451,
+      "margin_ov1_pu": 0.03938671469129451,
+      "margin_ov2_pu": 0.13938671469129438
+    },
+    {
+      "asset_id": "Cuenca530",
+      "collector_bus": "8176",
+      "hv_bus": "7125",
+      "z0_pu": 1.0800425955078776,
+      "p_mw": 529.9999999999984,
+      "q_mvar": -174.20257574479695,
+      "margin_fast_pu": 0.019957404492122466,
+      "margin_ov1_pu": 0.019957404492122466,
+      "margin_ov2_pu": 0.11995740449212233
+    },
+    {
+      "asset_id": "RES01",
+      "collector_bus": "8177",
+      "hv_bus": "7305",
+      "z0_pu": 1.0679556414314708,
+      "p_mw": 119.99999999999955,
+      "q_mvar": -39.442092621463445,
+      "margin_fast_pu": 0.032044358568529274,
+      "margin_ov1_pu": 0.032044358568529274,
+      "margin_ov2_pu": 0.13204435856852914
+    },
+    {
+      "asset_id": "RES02",
+      "collector_bus": "8178",
+      "hv_bus": "7095",
+      "z0_pu": 1.0575419599437146,
+      "p_mw": 179.99999999999952,
+      "q_mvar": -59.163138932195224,
+      "margin_fast_pu": 0.042458040056285506,
+      "margin_ov1_pu": 0.042458040056285506,
+      "margin_ov2_pu": 0.14245804005628537
+    },
+    {
+      "asset_id": "RES03",
+      "collector_bus": "8179",
+      "hv_bus": "7342",
+      "z0_pu": 1.079812394899132,
+      "p_mw": 249.99999999999912,
+      "q_mvar": -82.1710262947155,
+      "margin_fast_pu": 0.020187605100868034,
+      "margin_ov1_pu": 0.020187605100868034,
+      "margin_ov2_pu": 0.1201876051008679
+    },
+    {
+      "asset_id": "RES04",
+      "collector_bus": "8180",
+      "hv_bus": "7409",
+      "z0_pu": 1.0841369795155313,
+      "p_mw": 319.9999999999989,
+      "q_mvar": -105.17891365723584,
+      "margin_fast_pu": 0.01586302048446875,
+      "margin_ov1_pu": 0.01586302048446875,
+      "margin_ov2_pu": 0.11586302048446862
+    },
+    {
+      "asset_id": "RES05",
+      "collector_bus": "8181",
+      "hv_bus": "7331",
+      "z0_pu": 1.0882022901859982,
+      "p_mw": 399.9999999999987,
+      "q_mvar": -131.47364207154484,
+      "margin_fast_pu": 0.011797709814001855,
+      "margin_ov1_pu": 0.011797709814001855,
+      "margin_ov2_pu": 0.11179770981400172
+    },
+    {
+      "asset_id": "RES06",
+      "collector_bus": "8182",
+      "hv_bus": "7407",
+      "z0_pu": 1.067120626946204,
+      "p_mw": 119.9999999999996,
+      "q_mvar": -39.44209262146346,
+      "margin_fast_pu": 0.03287937305379618,
+      "margin_ov1_pu": 0.03287937305379618,
+      "margin_ov2_pu": 0.13287937305379605
+    },
+    {
+      "asset_id": "RES07",
+      "collector_bus": "8183",
+      "hv_bus": "7058",
+      "z0_pu": 1.0735973615389502,
+      "p_mw": 179.99999999999946,
+      "q_mvar": -59.16313893219519,
+      "margin_fast_pu": 0.026402638461049843,
+      "margin_ov1_pu": 0.026402638461049843,
+      "margin_ov2_pu": 0.1264026384610497
+    },
+    {
+      "asset_id": "RES08",
+      "collector_bus": "8184",
+      "hv_bus": "7341",
+      "z0_pu": 1.063429784140338,
+      "p_mw": 249.99999999999915,
+      "q_mvar": -82.17102629471552,
+      "margin_fast_pu": 0.036570215859662136,
+      "margin_ov1_pu": 0.036570215859662136,
+      "margin_ov2_pu": 0.136570215859662
+    },
+    {
+      "asset_id": "RES09",
+      "collector_bus": "8185",
+      "hv_bus": "7347",
+      "z0_pu": 1.0794603022132394,
+      "p_mw": 319.999999999999,
+      "q_mvar": -105.17891365723587,
+      "margin_fast_pu": 0.02053969778676068,
+      "margin_ov1_pu": 0.02053969778676068,
+      "margin_ov2_pu": 0.12053969778676055
+    },
+    {
+      "asset_id": "RES10",
+      "collector_bus": "8186",
+      "hv_bus": "7186",
+      "z0_pu": 1.0710356142123143,
+      "p_mw": 399.9999999999987,
+      "q_mvar": -131.47364207154482,
+      "margin_fast_pu": 0.028964385787685787,
+      "margin_ov1_pu": 0.028964385787685787,
+      "margin_ov2_pu": 0.12896438578768565
+    }
+  ],
+  "no_margin_assets": {
+    "fast": [],
+    "ov1": [],
+    "ov2": []
+  },
+  "n_events": 74,
+  "families": {
+    "capacitor_switching": 2,
+    "fixed_pf_ramp": 27,
+    "generation_redispatch": 3,
+    "generator_trip": 6,
+    "line_energization": 2,
+    "load_disconnection": 8,
+    "plant_trip": 26
+  },
+  "extra_events": [],
+  "library_corrections": [
+    {
+      "event_id": "generator_trip:GENROU_279",
+      "correction": "controllers ue = 0 (events.generator_trip_mutations)",
+      "old": [
+        [
+          "GENROU",
+          "GENROU_279",
+          "u",
+          0.0
+        ],
+        [
+          "IEEET1",
+          "IEEET1_30",
+          "u",
+          0.0
+        ],
+        [
+          "IEEET1",
+          "IEEET1_30",
+          "ue",
+          0.0
+        ]
+      ],
+      "new": [
+        [
+          "GENROU",
+          "GENROU_279",
+          "u",
+          0.0
+        ],
+        [
+          "IEEET1",
+          "IEEET1_30",
+          "u",
+          0.0
+        ],
+        [
+          "IEEET1",
+          "IEEET1_30",
+          "ue",
+          0.0
+        ]
+      ]
+    },
+    {
+      "event_id": "generator_trip:GENROU_322",
+      "correction": "controllers ue = 0 (events.generator_trip_mutations)",
+      "old": [
+        [
+          "GENROU",
+          "GENROU_322",
+          "u",
+          0.0
+        ],
+        [
+          "SEXS",
+          "SEXSC_GENROU_322",
+          "u",
+          0.0
+        ],
+        [
+          "SEXS",
+          "SEXSC_GENROU_322",
+          "ue",
+          0.0
+        ],
+        [
+          "TGOV1",
+          "TGOV1_272",
+          "u",
+          0.0
+        ],
+        [
+          "TGOV1",
+          "TGOV1_272",
+          "ue",
+          0.0
+        ]
+      ],
+      "new": [
+        [
+          "GENROU",
+          "GENROU_322",
+          "u",
+          0.0
+        ],
+        [
+          "SEXS",
+          "SEXSC_GENROU_322",
+          "u",
+          0.0
+        ],
+        [
+          "SEXS",
+          "SEXSC_GENROU_322",
+          "ue",
+          0.0
+        ],
+        [
+          "TGOV1",
+          "TGOV1_272",
+          "u",
+          0.0
+        ],
+        [
+          "TGOV1",
+          "TGOV1_272",
+          "ue",
+          0.0
+        ]
+      ]
+    },
+    {
+      "event_id": "generator_trip:GENROU_321",
+      "correction": "controllers ue = 0 (events.generator_trip_mutations)",
+      "old": [
+        [
+          "GENROU",
+          "GENROU_321",
+          "u",
+          0.0
+        ],
+        [
+          "SEXS",
+          "SEXSC_GENROU_321",
+          "u",
+          0.0
+        ],
+        [
+          "SEXS",
+          "SEXSC_GENROU_321",
+          "ue",
+          0.0
+        ],
+        [
+          "TGOV1",
+          "TGOV1_271",
+          "u",
+          0.0
+        ],
+        [
+          "TGOV1",
+          "TGOV1_271",
+          "ue",
+          0.0
+        ]
+      ],
+      "new": [
+        [
+          "GENROU",
+          "GENROU_321",
+          "u",
+          0.0
+        ],
+        [
+          "SEXS",
+          "SEXSC_GENROU_321",
+          "u",
+          0.0
+        ],
+        [
+          "SEXS",
+          "SEXSC_GENROU_321",
+          "ue",
+          0.0
+        ],
+        [
+          "TGOV1",
+          "TGOV1_271",
+          "u",
+          0.0
+        ],
+        [
+          "TGOV1",
+          "TGOV1_271",
+          "ue",
+          0.0
+        ]
+      ]
+    },
+    {
+      "event_id": "generator_trip:GENROU_349",
+      "correction": "controllers ue = 0 (events.generator_trip_mutations)",
+      "old": [
+        [
+          "GENROU",
+          "GENROU_349",
+          "u",
+          0.0
+        ],
+        [
+          "SEXS",
+          "SEXSC_GENROU_349",
+          "u",
+          0.0
+        ],
+        [
+          "SEXS",
+          "SEXSC_GENROU_349",
+          "ue",
+          0.0
+        ],
+        [
+          "TGOV1",
+          "TGOV1_297",
+          "u",
+          0.0
+        ],
+        [
+          "TGOV1",
+          "TGOV1_297",
+          "ue",
+          0.0
+        ]
+      ],
+      "new": [
+        [
+          "GENROU",
+          "GENROU_349",
+          "u",
+          0.0
+        ],
+        [
+          "SEXS",
+          "SEXSC_GENROU_349",
+          "u",
+          0.0
+        ],
+        [
+          "SEXS",
+          "SEXSC_GENROU_349",
+          "ue",
+          0.0
+        ],
+        [
+          "TGOV1",
+          "TGOV1_297",
+          "u",
+          0.0
+        ],
+        [
+          "TGOV1",
+          "TGOV1_297",
+          "ue",
+          0.0
+        ]
+      ]
+    },
+    {
+      "event_id": "generator_trip:GENROU_351",
+      "correction": "controllers ue = 0 (events.generator_trip_mutations)",
+      "old": [
+        [
+          "GENROU",
+          "GENROU_351",
+          "u",
+          0.0
+        ],
+        [
+          "SEXS",
+          "SEXSC_GENROU_351",
+          "u",
+          0.0
+        ],
+        [
+          "SEXS",
+          "SEXSC_GENROU_351",
+          "ue",
+          0.0
+        ],
+        [
+          "TGOV1",
+          "TGOV1_299",
+          "u",
+          0.0
+        ],
+        [
+          "TGOV1",
+          "TGOV1_299",
+          "ue",
+          0.0
+        ]
+      ],
+      "new": [
+        [
+          "GENROU",
+          "GENROU_351",
+          "u",
+          0.0
+        ],
+        [
+          "SEXS",
+          "SEXSC_GENROU_351",
+          "u",
+          0.0
+        ],
+        [
+          "SEXS",
+          "SEXSC_GENROU_351",
+          "ue",
+          0.0
+        ],
+        [
+          "TGOV1",
+          "TGOV1_299",
+          "u",
+          0.0
+        ],
+        [
+          "TGOV1",
+          "TGOV1_299",
+          "ue",
+          0.0
+        ]
+      ]
+    },
+    {
+      "event_id": "generator_trip:GENROU_350",
+      "correction": "controllers ue = 0 (events.generator_trip_mutations)",
+      "old": [
+        [
+          "GENROU",
+          "GENROU_350",
+          "u",
+          0.0
+        ],
+        [
+          "SEXS",
+          "SEXSC_GENROU_350",
+          "u",
+          0.0
+        ],
+        [
+          "SEXS",
+          "SEXSC_GENROU_350",
+          "ue",
+          0.0
+        ],
+        [
+          "TGOV1",
+          "TGOV1_298",
+          "u",
+          0.0
+        ],
+        [
+          "TGOV1",
+          "TGOV1_298",
+          "ue",
+          0.0
+        ]
+      ],
+      "new": [
+        [
+          "GENROU",
+          "GENROU_350",
+          "u",
+          0.0
+        ],
+        [
+          "SEXS",
+          "SEXSC_GENROU_350",
+          "u",
+          0.0
+        ],
+        [
+          "SEXS",
+          "SEXSC_GENROU_350",
+          "ue",
+          0.0
+        ],
+        [
+          "TGOV1",
+          "TGOV1_298",
+          "u",
+          0.0
+        ],
+        [
+          "TGOV1",
+          "TGOV1_298",
+          "ue",
+          0.0
+        ]
+      ]
+    },
+    {
+      "event_id": "line_energization:PAR_Line_1766",
+      "correction": "series admittance ghk/bhk set with u (ANDES yhk is a ConstService)",
+      "ghk_before": 0.0,
+      "bhk_before": 0.0,
+      "ghk": 10.692876368336593,
+      "bhk": -128.81389935882066
+    },
+    {
+      "event_id": "line_energization:PAR_Line_1723",
+      "correction": "series admittance ghk/bhk set with u (ANDES yhk is a ConstService)",
+      "ghk_before": 0.0,
+      "bhk_before": 0.0,
+      "ghk": 11.153377949951349,
+      "bhk": -135.88324252583098
+    }
+  ],
+  "fingerprint": "dc8c697027aea1a31ca2f3b0954e4c006b0b4571",
+  "factory_verification": {
+    "factory_build_s": 2.134259666025173,
+    "n_arrays": 6428,
+    "fingerprint": "dc8c697027aea1a31ca2f3b0954e4c006b0b4571",
+    "factory_fingerprint": "dc8c697027aea1a31ca2f3b0954e4c006b0b4571",
+    "arrays_identical": true,
+    "arrays_differing": {},
+    "arrays_identical_after_residual_evaluation": true,
+    "arrays_differing_after_residual_evaluation": {},
+    "max_abs_df": 0.0,
+    "max_abs_dg": 0.0,
+    "residuals_bitwise_identical": true
+  },
+  "reuse_vs_factory_tds": {
+    "seed": "plant_trip:Badajoz582",
+    "status": [
+      "ok",
+      "ok"
+    ],
+    "trip_order": [
+      [
+        "Seville550",
+        "RES05",
+        "Cuenca530",
+        "RES04",
+        "RES09",
+        "RES03"
+      ],
+      [
+        "Seville550",
+        "RES05",
+        "Cuenca530",
+        "RES04",
+        "RES09",
+        "RES03"
+      ]
+    ],
+    "n_samples": [
+      6904,
+      6904
+    ],
+    "max_abs_trace_diff_pu": 0.0,
+    "bitwise_identical": true,
+    "runtime_s": [
+      349.85680649999995,
+      317.5760190419969
+    ]
+  },
+  "oa1_finding": {},
+  "sequence_record": {
+    "area_load_mw": 11444.966820000001,
+    "res_share": 0.45,
+    "fleet_blocks": 26,
+    "fleet_mw": 5446.0,
+    "commitment_c": 1.5,
+    "export_target_mw": 870.0,
+    "export_reduction_mw": 3300.5,
+    "export_base_case_mw": 860.3010227111514,
+    "tie_scale": 15.0,
+    "exciter_completion": "all",
+    "export_counterpart": "rest_load",
+    "pre_cascade_actions": [
+      "OA1a",
+      "OA1b",
+      "OA3"
+    ],
+    "initiating_block": null,
+    "initiating_time_s": 15.0,
+    "voltage_control": "q_control",
+    "q_control_tc_s": 10.0,
+    "tap_margin_pu": 0.01,
+    "initial_mesh_closed": 2,
+    "granada_instantaneous": true,
+    "documented_settings": false,
+    "actions": [
+      "RES500"
+    ],
+    "tf_s": 100.0,
+    "ehv_surplus_mvar": 1600.0,
+    "uel_tc_s": 1.0
+  }
+}

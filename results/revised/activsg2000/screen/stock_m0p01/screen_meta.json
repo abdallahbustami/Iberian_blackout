@@ -1,0 +1,216 @@
+{
+  "slug": "stock_m0p01",
+  "relays": {
+    "fast": {
+      "name": "fast",
+      "pickup_pu": 1.1,
+      "dwell_s": 0.05,
+      "horizon_s": 1.0,
+      "description": "benchmark fast relay: 1.10 pu, definite time 50 ms (primary)"
+    },
+    "ov1": {
+      "name": "ov1",
+      "pickup_pu": 1.1,
+      "dwell_s": 1.0,
+      "horizon_s": 2.0,
+      "description": "standard plant OV1: 1.10 pu / 1.0 s (NERC PRC-024-3)"
+    },
+    "ov2": {
+      "name": "ov2",
+      "pickup_pu": 1.2,
+      "dwell_s": 0.16,
+      "horizon_s": 1.0,
+      "description": "plant OV2: 1.20 pu / 0.16 s (IEEE 1547-2018)"
+    }
+  },
+  "epsilon": 0.05,
+  "engine": {
+    "n_x": 4273,
+    "n_y": 16375,
+    "warnings": [
+      "operating_point_not_equilibrium: max|f0|=6.130e-11, max|g0|=2.281e-04 (responses are relative to the baseline residual)",
+      "antiwindup_pegged_states_frozen_in_linearization:87:LAG_y TGOV1 1,LAG_y TGOV1 103,LAG_y TGOV1 104,LAG_y TGOV1 112,LAG_y TGOV1 13,LAG_y TGOV1 136,LAG_y TGOV1 137,LAG_y TGOV1 138,LAG_y TGOV1 139,LAG_y TGOV1 14"
+    ],
+    "pegged_states": [
+      "LAG_y TGOV1 1",
+      "LAG_y TGOV1 103",
+      "LAG_y TGOV1 104",
+      "LAG_y TGOV1 112",
+      "LAG_y TGOV1 13",
+      "LAG_y TGOV1 136",
+      "LAG_y TGOV1 137",
+      "LAG_y TGOV1 138",
+      "LAG_y TGOV1 139",
+      "LAG_y TGOV1 14",
+      "LAG_y TGOV1 142",
+      "LAG_y TGOV1 146",
+      "LAG_y TGOV1 150",
+      "LAG_y TGOV1 151",
+      "LAG_y TGOV1 152",
+      "LAG_y TGOV1 153",
+      "LAG_y TGOV1 154",
+      "LAG_y TGOV1 160",
+      "LAG_y TGOV1 166",
+      "LAG_y TGOV1 170",
+      "LAG_y TGOV1 18",
+      "LAG_y TGOV1 186",
+      "LAG_y TGOV1 19",
+      "LAG_y TGOV1 191",
+      "LAG_y TGOV1 194",
+      "LAG_y TGOV1 196",
+      "LAG_y TGOV1 197",
+      "LAG_y TGOV1 199",
+      "LAG_y TGOV1 2",
+      "LAG_y TGOV1 20",
+      "LAG_y TGOV1 200",
+      "LAG_y TGOV1 201",
+      "LAG_y TGOV1 202",
+      "LAG_y TGOV1 203",
+      "LAG_y TGOV1 206",
+      "LAG_y TGOV1 21",
+      "LAG_y TGOV1 212",
+      "LAG_y TGOV1 217",
+      "LAG_y TGOV1 239",
+      "LAG_y TGOV1 240",
+      "LAG_y TGOV1 25",
+      "LAG_y TGOV1 26",
+      "LAG_y TGOV1 263",
+      "LAG_y TGOV1 27",
+      "LAG_y TGOV1 270",
+      "LAG_y TGOV1 28",
+      "LAG_y TGOV1 281",
+      "LAG_y TGOV1 282",
+      "LAG_y TGOV1 285",
+      "LAG_y TGOV1 29",
+      "LAG_y TGOV1 349",
+      "LAG_y TGOV1 351",
+      "LAG_y TGOV1 352",
+      "LAG_y TGOV1 353",
+      "LAG_y TGOV1 354",
+      "LAG_y TGOV1 356",
+      "LAG_y TGOV1 359",
+      "LAG_y TGOV1 36",
+      "LAG_y TGOV1 360",
+      "LAG_y TGOV1 363",
+      "LAG_y TGOV1 365",
+      "LAG_y TGOV1 366",
+      "LAG_y TGOV1 367",
+      "LAG_y TGOV1 37",
+      "LAG_y TGOV1 38",
+      "LAG_y TGOV1 39",
+      "LAG_y TGOV1 40",
+      "LAG_y TGOV1 41",
+      "LAG_y TGOV1 47",
+      "LAG_y TGOV1 50",
+      "LAG_y TGOV1 59",
+      "LAG_y TGOV1 6",
+      "LAG_y TGOV1 63",
+      "LAG_y TGOV1 64",
+      "LAG_y TGOV1 65",
+      "LAG_y TGOV1 68",
+      "LAG_y TGOV1 7",
+      "LAG_y TGOV1 71",
+      "LAG_y TGOV1 72",
+      "LAG_y TGOV1 78",
+      "LAG_y TGOV1 79",
+      "LAG_y TGOV1 8",
+      "LAG_y TGOV1 80",
+      "LAG_y TGOV1 81",
+      "LAG_y TGOV1 89",
+      "LAG_y TGOV1 92",
+      "LA_y ESDC1A 8"
+    ],
+    "baseline_residual": [
+      6.129763363560414e-11,
+      0.000228073176427257
+    ],
+    "residual_split": {
+      "max_abs_f_all": 6.129763363560414e-11,
+      "argmax_f_all": "LL_x TGOV1 194",
+      "max_abs_f_in_service": 6.129763363560414e-11,
+      "argmax_f_in_service": "LL_x TGOV1 194",
+      "max_abs_g_all": 0.000228073176427257,
+      "argmax_g_all": "v IEEET1 21",
+      "max_abs_g_in_service": 3.2711611197555612e-12,
+      "argmax_g_in_service": "LL_y TGOV1 194"
+    },
+    "horizon_s": 2.0,
+    "dt_s": 0.005
+  },
+  "timing_s": {
+    "factory_build_s": 1.4270752079901285,
+    "engine_baseline_s": 0.007882500009145588,
+    "pre_mode_s": 7.690953416982666,
+    "events_total_s": 101.05893166630995,
+    "jump_checks_s": 112.2880934170098
+  },
+  "failed_events": {},
+  "pre_mode": {
+    "mode_id": "pre_event",
+    "n_states": 3133,
+    "n_algebraic": 14532,
+    "max_real_eigenvalue": 8.613445748520198e-12,
+    "stability": "marginal",
+    "gy_condition_estimate": 56072073.08462706,
+    "log_norm_mu": 77.8666605583705,
+    "removed_algebraic": 1937,
+    "unstable_flag": false,
+    "warnings": [
+      "operating_point_not_equilibrium: max|f0|=6.130e-11, max|g0|=2.281e-04 (responses are relative to the baseline residual)",
+      "antiwindup_pegged_states_frozen_in_linearization:87:LAG_y TGOV1 1,LAG_y TGOV1 103,LAG_y TGOV1 104,LAG_y TGOV1 112,LAG_y TGOV1 13,LAG_y TGOV1 136,LAG_y TGOV1 137,LAG_y TGOV1 138,LAG_y TGOV1 139,LAG_y TGOV1 14",
+      "reduced_state_matrix_marginal_max_real=8.61345e-12",
+      "operating_point_not_equilibrium: max|f0|=6.130e-11, max|g0|=2.281e-04 (responses are relative to the baseline residual)",
+      "antiwindup_pegged_states_frozen_in_linearization:87:LAG_y TGOV1 1,LAG_y TGOV1 103,LAG_y TGOV1 104,LAG_y TGOV1 112,LAG_y TGOV1 13,LAG_y TGOV1 136,LAG_y TGOV1 137,LAG_y TGOV1 138,LAG_y TGOV1 139,LAG_y TGOV1 14",
+      "reduced_state_matrix_marginal_max_real=8.61345e-12"
+    ],
+    "n_states_full": 4179,
+    "n_states_output_reachable": 3133,
+    "max_real_eigenvalue_removed_block": 0.0,
+    "max_real_eigenvalue_full": 8.613445748520198e-12,
+    "unstable_flag_full": false,
+    "top_eigenvalues": [
+      [
+        8.613445748520198e-12,
+        0.0
+      ],
+      [
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0
+      ]
+    ],
+    "eig_method": "dense",
+    "eig_check_radius": null,
+    "timing_s": {
+      "factor": 0.032390167005360126,
+      "reduce": 0.7351125829736702,
+      "eig": 6.141461083025206,
+      "balance": 0.7818747499841265,
+      "balance_only": 0.3085363749996759,
+      "log_norm": 0.3971042920020409
+    }
+  },
+  "uncorrected_generator_trip": {
+    "uncorrected_generator_trip:GENROU_279": {
+      "max_real_eigenvalue": 7.624261465222215e-14,
+      "stability": "marginal",
+      "n_states": 3124,
+      "max_abs_response_diff_vs_corrected_mpu": 0.0
+    }
+  }
+}

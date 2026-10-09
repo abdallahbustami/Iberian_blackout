@@ -1,0 +1,353 @@
+{
+ "system": "gbnetwork",
+ "n_seeds": 68,
+ "n_conclusive": 68,
+ "n_dangerous": 24,
+ "roc_auc": 1.0,
+ "fraction_sent_to_capture_all": 0.35294117647058826,
+ "excluded_inconclusive": [],
+ "scores": {
+  "plant_trip:RES01": [
+   0.4427267457804464,
+   0.4424946211743288
+  ],
+  "plant_trip:RES02": [
+   0.2878975883412854,
+   0.28769101337511915
+  ],
+  "plant_trip:RES03": [
+   0.7153049463917311,
+   0.7149135333702149
+  ],
+  "plant_trip:RES04": [
+   0.09118532357473892,
+   0.0795693232519328
+  ],
+  "plant_trip:RES05": [
+   0.30738078689770115,
+   0.307147868215106
+  ],
+  "plant_trip:RES06": [
+   7.590704226254953,
+   7.359389496319127
+  ],
+  "plant_trip:RES07": [
+   3.309714548526366,
+   3.1923653660592
+  ],
+  "plant_trip:RES08": [
+   6.487666521753415,
+   6.276430114859927
+  ],
+  "plant_trip:RES09": [
+   4.171856630027166,
+   4.017192190546588
+  ],
+  "plant_trip:RES10": [
+   1.312641053084944,
+   1.2569468240558765
+  ],
+  "plant_trip:RES11": [
+   3.111758369996924,
+   3.1107519144929867
+  ],
+  "plant_trip:RES12": [
+   0.9097992423291322,
+   0.9095184724630307
+  ],
+  "plant_trip:RES13": [
+   0.6848720683432912,
+   0.6846968000078492
+  ],
+  "plant_trip:RES14": [
+   0.543723128202467,
+   0.5322017568495564
+  ],
+  "plant_trip:RES15": [
+   0.7065893045991113,
+   0.6943178863918571
+  ],
+  "plant_trip:RES16": [
+   2.3860324533295834,
+   2.3845974866482873
+  ],
+  "plant_trip:RES17": [
+   1.8501314046911352,
+   1.8490285271450153
+  ],
+  "plant_trip:RES18": [
+   1.146259420456586,
+   1.1455611596775
+  ],
+  "plant_trip:RES19": [
+   0.8514343595343041,
+   0.848013280931072
+  ],
+  "plant_trip:RES20": [
+   1.0462250145572687,
+   1.045559273419711
+  ],
+  "fixed_pf_ramp:RES01": [
+   0.6196108172335525,
+   0.6195638503944588
+  ],
+  "fixed_pf_ramp:RES02": [
+   1.2562984563686284,
+   1.2540068782127864
+  ],
+  "fixed_pf_ramp:RES03": [
+   0.5707449716341448,
+   0.5696441860842073
+  ],
+  "fixed_pf_ramp:RES04": [
+   0.9281302729506311,
+   0.928015440578476
+  ],
+  "fixed_pf_ramp:RES05": [
+   0.42435034531810834,
+   0.4237366669294929
+  ],
+  "fixed_pf_ramp:RES06": [
+   2.4610087549145203,
+   2.35147053241219
+  ],
+  "fixed_pf_ramp:RES07": [
+   3.294764369277729,
+   3.2171201527436732
+  ],
+  "fixed_pf_ramp:RES08": [
+   2.2416029602062704,
+   2.1435261648529544
+  ],
+  "fixed_pf_ramp:RES09": [
+   2.1367366081099766,
+   2.089185929455843
+  ],
+  "fixed_pf_ramp:RES10": [
+   0.6398503994148947,
+   0.6328988169210583
+  ],
+  "fixed_pf_ramp:RES11": [
+   1.4599387406114843,
+   1.4596772223169323
+  ],
+  "fixed_pf_ramp:RES12": [
+   2.868033708171571,
+   2.8678358461203954
+  ],
+  "fixed_pf_ramp:RES13": [
+   0.5344490689867593,
+   0.5343068675366269
+  ],
+  "fixed_pf_ramp:RES14": [
+   1.1612266269705256,
+   1.160360522094132
+  ],
+  "fixed_pf_ramp:RES15": [
+   0.5892145566283612,
+   0.5889489486756078
+  ],
+  "fixed_pf_ramp:RES16": [
+   1.7332938101323725,
+   1.7176467243999145
+  ],
+  "fixed_pf_ramp:RES17": [
+   0.7067473177768623,
+   0.6933781847278021
+  ],
+  "fixed_pf_ramp:RES18": [
+   0.7363857295296975,
+   0.73241839175327
+  ],
+  "fixed_pf_ramp:RES19": [
+   1.9736373927421924,
+   1.9637362403806358
+  ],
+  "fixed_pf_ramp:RES20": [
+   0.699520079031391,
+   0.6964080092447371
+  ],
+  "load_disconnection:PQ_25": [
+   1.4550934893159877,
+   1.454133553182873
+  ],
+  "load_disconnection:PQ_296": [
+   0.7739504772084103,
+   0.768146176518322
+  ],
+  "load_disconnection:PQ_189": [
+   2.28748076327537,
+   2.2832979204666994
+  ],
+  "load_disconnection:PQ_249": [
+   0.6820857051216667,
+   0.6674282555018842
+  ],
+  "load_disconnection:PQ_123": [
+   0.7606658301229511,
+   0.7554314609043079
+  ],
+  "load_disconnection:PQ_106": [
+   0.5673115350740612,
+   0.5653533113893378
+  ],
+  "load_disconnection:PQ_188": [
+   0.7905447627957322,
+   0.7855569799395024
+  ],
+  "load_disconnection:PQ_100": [
+   0.6330519736586464,
+   0.6277539765287795
+  ],
+  "load_disconnection:PQ_297": [
+   0.6129068484196567,
+   0.6079127961717534
+  ],
+  "load_disconnection:PQ_103": [
+   0.629601324190093,
+   0.6270235703301952
+  ],
+  "generator_trip:204": [
+   0.0,
+   0.0
+  ],
+  "generator_trip:29": [
+   0.023044190924758217,
+   0.02299319384464526
+  ],
+  "generator_trip:33": [
+   0.012710074526119271,
+   0.012657615424456661
+  ],
+  "generator_trip:30": [
+   0.021643203363203693,
+   0.02158884316248091
+  ],
+  "generator_trip:31": [
+   0.01720074776645401,
+   0.01714637702043926
+  ],
+  "generator_trip:32": [
+   0.01634759768059465,
+   0.01629575786236078
+  ],
+  "generation_redispatch:187->176": [
+   0.0030072409652446043,
+   0.0026882230115977635
+  ],
+  "generation_redispatch:111->177": [
+   0.0010106403532141193,
+   0.0009048195842487724
+  ],
+  "generation_redispatch:104->178": [
+   0.0011093324912362537,
+   0.0009959979056745909
+  ],
+  "shunt_reactor_disconnection:SHR01": [
+   0.1227559868126339,
+   0.12274254520501282
+  ],
+  "shunt_reactor_disconnection:SHR02": [
+   1.2387814713557983,
+   1.2220097735548372
+  ],
+  "shunt_reactor_disconnection:SHR03": [
+   1.2746332692922546,
+   1.2745357156045083
+  ],
+  "shunt_reactor_disconnection:SHR04": [
+   0.8367918521117733,
+   0.836567987478128
+  ],
+  "shunt_reactor_disconnection:SHR05": [
+   0.623187355819431,
+   0.6231446052396196
+  ],
+  "capacitor_switching:SHC01": [
+   0.12071798273357481,
+   0.12050387339437595
+  ],
+  "capacitor_switching:SHC02": [
+   1.7022186695345254,
+   1.6836196729730937
+  ],
+  "line_energization:LPAR01": [
+   0.581589588017795,
+   0.5785632155638797
+  ],
+  "line_energization:LPAR02": [
+   0.5720823191867025,
+   0.5686460025489635
+  ]
+ },
+ "labels": {
+  "plant_trip:RES01": false,
+  "plant_trip:RES02": false,
+  "plant_trip:RES03": false,
+  "plant_trip:RES04": false,
+  "plant_trip:RES05": false,
+  "plant_trip:RES06": true,
+  "plant_trip:RES07": true,
+  "plant_trip:RES08": true,
+  "plant_trip:RES09": true,
+  "plant_trip:RES10": true,
+  "plant_trip:RES11": true,
+  "plant_trip:RES12": false,
+  "plant_trip:RES13": false,
+  "plant_trip:RES14": false,
+  "plant_trip:RES15": false,
+  "plant_trip:RES16": true,
+  "plant_trip:RES17": true,
+  "plant_trip:RES18": true,
+  "plant_trip:RES19": false,
+  "plant_trip:RES20": false,
+  "fixed_pf_ramp:RES01": false,
+  "fixed_pf_ramp:RES02": true,
+  "fixed_pf_ramp:RES03": false,
+  "fixed_pf_ramp:RES04": false,
+  "fixed_pf_ramp:RES05": false,
+  "fixed_pf_ramp:RES06": true,
+  "fixed_pf_ramp:RES07": true,
+  "fixed_pf_ramp:RES08": true,
+  "fixed_pf_ramp:RES09": true,
+  "fixed_pf_ramp:RES10": false,
+  "fixed_pf_ramp:RES11": true,
+  "fixed_pf_ramp:RES12": true,
+  "fixed_pf_ramp:RES13": false,
+  "fixed_pf_ramp:RES14": true,
+  "fixed_pf_ramp:RES15": false,
+  "fixed_pf_ramp:RES16": true,
+  "fixed_pf_ramp:RES17": false,
+  "fixed_pf_ramp:RES18": false,
+  "fixed_pf_ramp:RES19": true,
+  "fixed_pf_ramp:RES20": false,
+  "load_disconnection:PQ_25": true,
+  "load_disconnection:PQ_296": false,
+  "load_disconnection:PQ_189": true,
+  "load_disconnection:PQ_249": false,
+  "load_disconnection:PQ_123": false,
+  "load_disconnection:PQ_106": false,
+  "load_disconnection:PQ_188": false,
+  "load_disconnection:PQ_100": false,
+  "load_disconnection:PQ_297": false,
+  "load_disconnection:PQ_103": false,
+  "generator_trip:204": false,
+  "generator_trip:29": false,
+  "generator_trip:33": false,
+  "generator_trip:30": false,
+  "generator_trip:31": false,
+  "generator_trip:32": false,
+  "generation_redispatch:187->176": false,
+  "generation_redispatch:111->177": false,
+  "generation_redispatch:104->178": false,
+  "shunt_reactor_disconnection:SHR01": false,
+  "shunt_reactor_disconnection:SHR02": true,
+  "shunt_reactor_disconnection:SHR03": true,
+  "shunt_reactor_disconnection:SHR04": false,
+  "shunt_reactor_disconnection:SHR05": false,
+  "capacitor_switching:SHC01": false,
+  "capacitor_switching:SHC02": true,
+  "line_energization:LPAR01": false,
+  "line_energization:LPAR02": false
+ }
+}

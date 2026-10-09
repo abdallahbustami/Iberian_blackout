@@ -1,0 +1,301 @@
+{
+ "system": "npcc",
+ "a_rerun": {
+  "seeds": [
+   "load_disconnection:PQ_48",
+   "plant_trip:RES09",
+   "plant_trip:RES10"
+  ],
+  "runs": [
+   {
+    "seed_id": "load_disconnection:PQ_48",
+    "rerun": "identical",
+    "tstep": 0.002,
+    "status": "ok",
+    "trip_order_ref": [
+     "RES16",
+     "RES15",
+     "RES14",
+     "RES13"
+    ],
+    "trip_order_rerun": [
+     "RES16",
+     "RES15",
+     "RES14",
+     "RES13"
+    ],
+    "same_trip_set_in_window": true,
+    "identical_trip_order": true,
+    "max_abs_trip_time_diff_s": 0.0,
+    "max_v_diff_pu": 0.0,
+    "runtime_s": 5.951016958002583
+   },
+   {
+    "seed_id": "load_disconnection:PQ_48",
+    "rerun": "finer_step",
+    "tstep": 0.001,
+    "status": "ok",
+    "trip_order_ref": [
+     "RES16",
+     "RES15",
+     "RES14",
+     "RES13"
+    ],
+    "trip_order_rerun": [
+     "RES16",
+     "RES15",
+     "RES14",
+     "RES13"
+    ],
+    "same_trip_set_in_window": true,
+    "identical_trip_order": true,
+    "max_abs_trip_time_diff_s": 0.0030000000000000027,
+    "max_v_diff_pu": 3.290919779375123e-05,
+    "runtime_s": 10.409922416001791
+   },
+   {
+    "seed_id": "plant_trip:RES09",
+    "rerun": "identical",
+    "tstep": 0.002,
+    "status": "ok",
+    "trip_order_ref": [
+     "RES10",
+     "RES11",
+     "RES02",
+     "RES12",
+     "RES04",
+     "RES01",
+     "RES03"
+    ],
+    "trip_order_rerun": [
+     "RES10",
+     "RES11",
+     "RES02",
+     "RES12",
+     "RES04",
+     "RES01",
+     "RES03"
+    ],
+    "same_trip_set_in_window": true,
+    "identical_trip_order": true,
+    "max_abs_trip_time_diff_s": 0.0,
+    "max_v_diff_pu": 0.0,
+    "runtime_s": 6.3385303749964805
+   },
+   {
+    "seed_id": "plant_trip:RES09",
+    "rerun": "finer_step",
+    "tstep": 0.001,
+    "status": "ok",
+    "trip_order_ref": [
+     "RES10",
+     "RES11",
+     "RES02",
+     "RES12",
+     "RES04",
+     "RES01",
+     "RES03"
+    ],
+    "trip_order_rerun": [
+     "RES10",
+     "RES11",
+     "RES02",
+     "RES12",
+     "RES04",
+     "RES01",
+     "RES03"
+    ],
+    "same_trip_set_in_window": true,
+    "identical_trip_order": true,
+    "max_abs_trip_time_diff_s": 0.0020000000000000018,
+    "max_v_diff_pu": 0.00010008471918077078,
+    "runtime_s": 10.828674792006495
+   },
+   {
+    "seed_id": "plant_trip:RES10",
+    "rerun": "identical",
+    "tstep": 0.002,
+    "status": "ok",
+    "trip_order_ref": [
+     "RES09",
+     "RES02",
+     "RES11",
+     "RES12",
+     "RES04",
+     "RES01",
+     "RES03"
+    ],
+    "trip_order_rerun": [
+     "RES09",
+     "RES02",
+     "RES11",
+     "RES12",
+     "RES04",
+     "RES01",
+     "RES03"
+    ],
+    "same_trip_set_in_window": true,
+    "identical_trip_order": true,
+    "max_abs_trip_time_diff_s": 0.0,
+    "max_v_diff_pu": 0.0,
+    "runtime_s": 6.140206083990051
+   },
+   {
+    "seed_id": "plant_trip:RES10",
+    "rerun": "finer_step",
+    "tstep": 0.001,
+    "status": "ok",
+    "trip_order_ref": [
+     "RES09",
+     "RES02",
+     "RES11",
+     "RES12",
+     "RES04",
+     "RES01",
+     "RES03"
+    ],
+    "trip_order_rerun": [
+     "RES09",
+     "RES02",
+     "RES11",
+     "RES12",
+     "RES04",
+     "RES01",
+     "RES03"
+    ],
+    "same_trip_set_in_window": true,
+    "identical_trip_order": true,
+    "max_abs_trip_time_diff_s": 0.0020000000000000018,
+    "max_v_diff_pu": 7.73914849430124e-05,
+    "runtime_s": 10.887886917000287
+   }
+  ],
+  "all_identical": true,
+  "finer_step_same_sets": true,
+  "note": "carried over from the original run (rescore)"
+ },
+ "b_no_noop": {
+  "threshold_pu": 0.0001,
+  "n_events": 54,
+  "noop_events": [],
+  "min_max_abs_dv_pu": 0.006446384443488551,
+  "min_event": "shunt_reactor_disconnection:SHR01",
+  "passed": true
+ },
+ "c_self_terms": {
+  "violations": [],
+  "passed": true,
+  "n_self_entries": 16
+ },
+ "d_rigorous_K": {
+  "bound": "balanced_lognorm_interval_bound",
+  "max_abs_diff_K_vs_envelope": 0.0,
+  "n_entries_padding_negative": 0,
+  "n_entries_padding_above_tolerance": 0,
+  "max_k_trip_minus_k_pickup": 0.0,
+  "non_certified_entries": [],
+  "passed": true
+ },
+ "e_mitigation_spot_checks": {
+  "checks": [
+   {
+    "seed_id": "load_disconnection:PQ_48",
+    "tds_status": "ok",
+    "controls": [
+     [
+      "plant_q_command:RES07",
+      0.02071129858855564
+     ],
+     [
+      "plant_q_command:RES15",
+      0.18333629505251403
+     ],
+     [
+      "plant_q_command:RES16",
+      0.5211426639520482
+     ]
+    ],
+    "late_trips_mitigated": [
+     "RES01",
+     "RES02",
+     "RES03",
+     "RES04"
+    ],
+    "max_v_window_mitigated": {
+     "RES01": 1.0729584882232532,
+     "RES02": 1.0880758502195533,
+     "RES03": 1.066541387484135,
+     "RES04": 1.0822247535453453,
+     "RES05": 1.0524027693091842,
+     "RES06": 1.0779716110233772,
+     "RES07": 1.094894453700252,
+     "RES08": 1.071317203346266,
+     "RES09": 1.0875752444018367,
+     "RES10": 1.0666511444890598,
+     "RES11": 1.0612122258593133,
+     "RES12": 1.0704298791243112,
+     "RES13": 1.074103237994191,
+     "RES14": 1.088832822543323,
+     "RES15": 1.0853151109004398,
+     "RES16": 1.0954731341195598
+    },
+    "assets_at_or_above_pickup_mitigated": {},
+    "trips_mitigated": [],
+    "trips_unmitigated": [
+     "RES16",
+     "RES15",
+     "RES14",
+     "RES13"
+    ],
+    "plot": "results/revised/npcc/horizon_2s/sanity/mitigation_check_load_disconnection_PQ_48.png"
+   },
+   {
+    "seed_id": "plant_trip:RES01",
+    "tds_status": "ok",
+    "controls": [
+     [
+      "plant_q_command:RES02",
+      0.08249393150225957
+     ],
+     [
+      "statcom:STATCOM01",
+      0.0860847050062609
+     ]
+    ],
+    "late_trips_mitigated": [],
+    "max_v_window_mitigated": {
+     "RES02": 1.0993579219607543,
+     "RES03": 1.0895316634810994,
+     "RES04": 1.0915061765424752,
+     "RES05": 1.0223009567050831,
+     "RES06": 1.0527133083453364,
+     "RES07": 1.089867998097615,
+     "RES08": 1.0685423390220177,
+     "RES09": 1.0858135751371858,
+     "RES10": 1.0651821317849397,
+     "RES11": 1.0596436285044246,
+     "RES12": 1.069321799617532,
+     "RES13": 1.070971183669924,
+     "RES14": 1.0867605722883742,
+     "RES15": 1.0655391743386329,
+     "RES16": 1.0805026402946605
+    },
+    "assets_at_or_above_pickup_mitigated": {},
+    "trips_mitigated": [],
+    "trips_unmitigated": [
+     "RES02",
+     "RES04",
+     "RES03"
+    ],
+    "plot": "results/revised/npcc/horizon_2s/sanity/mitigation_check_plant_trip_RES01.png"
+   }
+  ]
+ },
+ "f_predicted_times_in_window": {
+  "n_predicted_trips_with_time": 255,
+  "outside_window": [],
+  "predicted_trips_without_time_estimate": [],
+  "passed": true
+ },
+ "anomalies": []
+}

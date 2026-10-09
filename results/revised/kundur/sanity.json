@@ -1,0 +1,42 @@
+{
+ "system": "kundur",
+ "a_rerun": {
+  "seeds": [],
+  "runs": [],
+  "all_identical": true,
+  "finer_step_same_sets": true,
+  "note": "carried over from the original run (rescore)"
+ },
+ "b_no_noop": {
+  "threshold_pu": 0.0001,
+  "n_events": 18,
+  "noop_events": [],
+  "min_max_abs_dv_pu": 0.008920414932420018,
+  "min_event": "line_energization:LPAR02",
+  "passed": true
+ },
+ "c_self_terms": {
+  "violations": [],
+  "passed": true,
+  "n_self_entries": 4
+ },
+ "d_rigorous_K": {
+  "bound": "balanced_lognorm_interval_bound",
+  "max_abs_diff_K_vs_envelope": 0.0,
+  "n_entries_padding_negative": 0,
+  "n_entries_padding_above_tolerance": 0,
+  "max_k_trip_minus_k_pickup": 0.0,
+  "non_certified_entries": [],
+  "passed": true
+ },
+ "e_mitigation_spot_checks": {
+  "checks": []
+ },
+ "f_predicted_times_in_window": {
+  "n_predicted_trips_with_time": 0,
+  "outside_window": [],
+  "predicted_trips_without_time_estimate": [],
+  "passed": true
+ },
+ "anomalies": []
+}

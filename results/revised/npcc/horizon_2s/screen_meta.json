@@ -1,0 +1,289 @@
+{
+ "system": "npcc",
+ "variant": "baseline",
+ "fingerprint": "8f92522ce289d0c592c3d3ef77f632a36afa8597",
+ "settings": {
+  "T_window_s": 2.0,
+  "dt_s": 0.005,
+  "epsilon": 0.05,
+  "t_seed_s": 0.5,
+  "tds_t_end_s": 3.5,
+  "tds_tstep_s": 0.002,
+  "eps_meas_pu": 0.002
+ },
+ "assets": [
+  {
+   "asset_id": "RES01",
+   "collector_bus": 900001,
+   "hv_bus": 74,
+   "z0_pu": 1.0728,
+   "margin_pu": 0.027200000000000113,
+   "tap": 0.9167005946326477,
+   "pickup_pu": 1.1,
+   "dwell_s": 0.05
+  },
+  {
+   "asset_id": "RES02",
+   "collector_bus": 900002,
+   "hv_bus": 73,
+   "z0_pu": 1.0877333333333334,
+   "margin_pu": 0.012266666666666648,
+   "tap": 0.9001645318008468,
+   "pickup_pu": 1.1,
+   "dwell_s": 0.05
+  },
+  {
+   "asset_id": "RES03",
+   "collector_bus": 900003,
+   "hv_bus": 76,
+   "z0_pu": 1.0664,
+   "margin_pu": 0.033600000000000074,
+   "tap": 0.9191959729754643,
+   "pickup_pu": 1.1,
+   "dwell_s": 0.05
+  },
+  {
+   "asset_id": "RES04",
+   "collector_bus": 900004,
+   "hv_bus": 39,
+   "z0_pu": 1.0813333333333335,
+   "margin_pu": 0.01866666666666661,
+   "tap": 0.9097671728469362,
+   "pickup_pu": 1.1,
+   "dwell_s": 0.05
+  },
+  {
+   "asset_id": "RES05",
+   "collector_bus": 900005,
+   "hv_bus": 88,
+   "z0_pu": 1.022288942246042,
+   "margin_pu": 0.07771105775395815,
+   "tap": 0.9,
+   "pickup_pu": 1.1,
+   "dwell_s": 0.05
+  },
+  {
+   "asset_id": "RES06",
+   "collector_bus": 900006,
+   "hv_bus": 85,
+   "z0_pu": 1.0527063704160036,
+   "margin_pu": 0.04729362958399652,
+   "tap": 0.9,
+   "pickup_pu": 1.1,
+   "dwell_s": 0.05
+  },
+  {
+   "asset_id": "RES07",
+   "collector_bus": 900007,
+   "hv_bus": 87,
+   "z0_pu": 1.0898666666666668,
+   "margin_pu": 0.010133333333333328,
+   "tap": 0.9031637963833324,
+   "pickup_pu": 1.1,
+   "dwell_s": 0.05
+  },
+  {
+   "asset_id": "RES08",
+   "collector_bus": 900008,
+   "hv_bus": 117,
+   "z0_pu": 1.0685333333333333,
+   "margin_pu": 0.031466666666666754,
+   "tap": 0.9061903915255033,
+   "pickup_pu": 1.1,
+   "dwell_s": 0.05
+  },
+  {
+   "asset_id": "RES09",
+   "collector_bus": 900009,
+   "hv_bus": 13,
+   "z0_pu": 1.0834666666666668,
+   "margin_pu": 0.01653333333333329,
+   "tap": 0.9092187286229678,
+   "pickup_pu": 1.1,
+   "dwell_s": 0.05
+  },
+  {
+   "asset_id": "RES10",
+   "collector_bus": 900010,
+   "hv_bus": 7,
+   "z0_pu": 1.0621333333333334,
+   "margin_pu": 0.037866666666666715,
+   "tap": 0.9007729399261014,
+   "pickup_pu": 1.1,
+   "dwell_s": 0.05
+  },
+  {
+   "asset_id": "RES11",
+   "collector_bus": 900011,
+   "hv_bus": 15,
+   "z0_pu": 1.0566227483136217,
+   "margin_pu": 0.043377251686378404,
+   "tap": 0.9,
+   "pickup_pu": 1.1,
+   "dwell_s": 0.05
+  },
+  {
+   "asset_id": "RES12",
+   "collector_bus": 900012,
+   "hv_bus": 30,
+   "z0_pu": 1.0649066663616902,
+   "margin_pu": 0.03509333363830991,
+   "tap": 0.9,
+   "pickup_pu": 1.1,
+   "dwell_s": 0.05
+  },
+  {
+   "asset_id": "RES13",
+   "collector_bus": 900013,
+   "hv_bus": 58,
+   "z0_pu": 1.0706666666666667,
+   "margin_pu": 0.029333333333333433,
+   "tap": 0.908865728036594,
+   "pickup_pu": 1.1,
+   "dwell_s": 0.05
+  },
+  {
+   "asset_id": "RES14",
+   "collector_bus": 900014,
+   "hv_bus": 52,
+   "z0_pu": 1.0856000000000001,
+   "margin_pu": 0.014399999999999968,
+   "tap": 0.9179295182633473,
+   "pickup_pu": 1.1,
+   "dwell_s": 0.05
+  },
+  {
+   "asset_id": "RES15",
+   "collector_bus": 900015,
+   "hv_bus": 103,
+   "z0_pu": 1.0642666666666667,
+   "margin_pu": 0.035733333333333395,
+   "tap": 0.9375142315805121,
+   "pickup_pu": 1.1,
+   "dwell_s": 0.05
+  },
+  {
+   "asset_id": "RES16",
+   "collector_bus": 900016,
+   "hv_bus": 102,
+   "z0_pu": 1.0792000000000002,
+   "margin_pu": 0.02079999999999993,
+   "tap": 0.9118614157627238,
+   "pickup_pu": 1.1,
+   "dwell_s": 0.05
+  }
+ ],
+ "outputs": [
+  "V_900001",
+  "V_900002",
+  "V_900003",
+  "V_900004",
+  "V_900005",
+  "V_900006",
+  "V_900007",
+  "V_900008",
+  "V_900009",
+  "V_900010",
+  "V_900011",
+  "V_900012",
+  "V_900013",
+  "V_900014",
+  "V_900015",
+  "V_900016",
+  "V_74",
+  "V_73",
+  "V_76",
+  "V_39",
+  "V_88",
+  "V_85",
+  "V_87",
+  "V_117",
+  "V_13",
+  "V_7",
+  "V_15",
+  "V_30",
+  "V_58",
+  "V_52",
+  "V_103",
+  "V_102"
+ ],
+ "pre_mode": {
+  "mode_id": "pre_event",
+  "n_states": 398,
+  "n_algebraic": 1725,
+  "max_real_eigenvalue": 0.011228583942061925,
+  "stability": "unstable",
+  "gy_condition_estimate": 14834.317930243817,
+  "log_norm_mu": 37.75817087221421,
+  "removed_algebraic": 166,
+  "unstable_flag": true,
+  "warnings": [
+   "reduced_state_matrix_unstable_max_real=0.0112286"
+  ]
+ },
+ "engine_warnings": [],
+ "designated_seed": "load_disconnection:PQ_48",
+ "plot_seed": "load_disconnection:PQ_48",
+ "mitigation_seeds": [
+  "plant_trip:RES01",
+  "plant_trip:RES02",
+  "plant_trip:RES03",
+  "plant_trip:RES04",
+  "plant_trip:RES05",
+  "plant_trip:RES06",
+  "plant_trip:RES08",
+  "plant_trip:RES09",
+  "plant_trip:RES10",
+  "plant_trip:RES11",
+  "plant_trip:RES12",
+  "fixed_pf_ramp:RES02",
+  "fixed_pf_ramp:RES04",
+  "fixed_pf_ramp:RES06",
+  "fixed_pf_ramp:RES07",
+  "fixed_pf_ramp:RES09",
+  "fixed_pf_ramp:RES11",
+  "fixed_pf_ramp:RES12",
+  "fixed_pf_ramp:RES14",
+  "fixed_pf_ramp:RES16",
+  "load_disconnection:PQ_40",
+  "load_disconnection:PQ_48",
+  "load_disconnection:PQ_27",
+  "generator_trip:GENROU_28",
+  "shunt_reactor_disconnection:SHR03"
+ ],
+ "failed_events": {},
+ "failed_controls": {},
+ "requested_studies": [
+  "S1",
+  "S2",
+  "S3",
+  "S4"
+ ],
+ "studies_run": [
+  "S1",
+  "S2",
+  "S3",
+  "S4"
+ ],
+ "scenario": {
+  "name": "light_load",
+  "load_scale": 0.6,
+  "res_share": 0.5,
+  "tap_range": [
+   0.9,
+   1.1
+  ],
+  "dispatch_rule": "proportional_must_run",
+  "must_run_fraction": 0.2,
+  "description": "light load (every PQ load at 60 % of the stock P and Q), RES = 50 % of the scaled load, all synchronous units online with one common dispatch factor and a must-run minimum, stock voltage set points, taps within +/-10 %",
+  "res_share_requested": 0.5,
+  "res_share_capped": false,
+  "res_share_reason": "requested share feasible",
+  "res_share_search": [
+   {
+    "res_share": 0.5,
+    "feasible": true
+   }
+  ]
+ }
+}

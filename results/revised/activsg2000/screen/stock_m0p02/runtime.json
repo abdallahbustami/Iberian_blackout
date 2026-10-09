@@ -1,0 +1,19 @@
+{
+  "slug": "stock_m0p02",
+  "armed_build_s": 121.56020691701269,
+  "factory_build_s": 2.4794975830009207,
+  "engine_baseline_s": 0.0095981250051409,
+  "pre_mode_s": 7.943801500019617,
+  "screen_events_total_s": 99.40829974610824,
+  "screen_event_median_s": 2.5522555829957128,
+  "n_events": 53,
+  "jump_checks_s": 106.8192191249691,
+  "tds_fast_n": 53,
+  "tds_fast_total_s": 902.4171240370924,
+  "tds_fast_median_s": 16.879648041009204,
+  "tds_over_screen_fast": 9.077885109612504,
+  "tds_ov1_n": 53,
+  "tds_ov1_total_s": 1549.6066933310067,
+  "tds_ov1_median_s": 29.75442945898976,
+  "tds_over_screen_ov1": 15.588302961510742
+}

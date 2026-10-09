@@ -1,0 +1,332 @@
+{
+ "label": "final_no_dg",
+ "kwargs": {
+  "tie_scale": 15.0,
+  "voltage_control": "q_control",
+  "q_control_tc_s": 10.0,
+  "ehv_surplus_mvar": 1600.0,
+  "uel_tc_s": 1.0,
+  "load_model": "es",
+  "embedded_pv_share": 0.0,
+  "tap_margin_pu": 0.01,
+  "actions": {
+   "res_reduction_mw": 708.0,
+   "net_load_mw": 0.0
+  }
+ },
+ "record": {
+  "area_load_mw": 11444.966820000001,
+  "res_share": 0.45,
+  "fleet_blocks": 26,
+  "fleet_mw": 5446.0,
+  "commitment_c": 1.5,
+  "export_target_mw": 870.0,
+  "export_reduction_mw": 3300.5,
+  "export_base_case_mw": 860.3010226419675,
+  "tie_scale": 15.0,
+  "exciter_completion": "all",
+  "export_counterpart": "rest_load",
+  "pre_cascade_actions": [
+   "OA1a",
+   "OA1b",
+   "OA3"
+  ],
+  "initiating_block": null,
+  "initiating_time_s": 15.0,
+  "voltage_control": "q_control",
+  "q_control_tc_s": 10.0,
+  "tap_margin_pu": 0.01,
+  "initial_mesh_closed": 2,
+  "granada_instantaneous": true,
+  "documented_settings": false,
+  "actions": [
+   "RES500"
+  ],
+  "tf_s": 100.0,
+  "ehv_surplus_mvar": 1600.0,
+  "uel_tc_s": 1.0
+ },
+ "tds_ok": false,
+ "final_time_s": 21.12935347217885,
+ "stopped_reason": null,
+ "gsu_tap": 0.92732,
+ "block_trips": 26,
+ "lost_block_p_mw": 5189.2822833738,
+ "generator_trips": 10,
+ "ufls_stages_operated": 5,
+ "ufls_shed_mw": 5529.063295313763,
+ "separation": true,
+ "separation_time_s": 20.747194913,
+ "affected_area_collapse": false,
+ "blackout_emerged": false,
+ "max_collector_v_pu": 1.2330451071243662,
+ "area_net_export_t0_mw": 860.1703711562546,
+ "timeline": [
+  [
+   0.0,
+   "operator_action",
+   "RES500"
+  ],
+  [
+   14.77,
+   "plant_trip",
+   "TRIP_Seville550"
+  ],
+  [
+   15.7,
+   "plant_trip",
+   "TRIP_Badajoz145"
+  ],
+  [
+   15.78,
+   "plant_trip",
+   "TRIP_RES05"
+  ],
+  [
+   15.86,
+   "plant_trip",
+   "TRIP_RES04"
+  ],
+  [
+   16.11,
+   "plant_trip",
+   "TRIP_Cadiz128"
+  ],
+  [
+   16.48,
+   "plant_trip",
+   "TRIP_Segovia94"
+  ],
+  [
+   16.71,
+   "plant_trip",
+   "TRIP_Caceres38"
+  ],
+  [
+   16.71,
+   "plant_trip",
+   "TRIP_Badajoz16"
+  ],
+  [
+   16.71,
+   "plant_trip",
+   "TRIP_RES07"
+  ],
+  [
+   16.8,
+   "plant_trip",
+   "TRIP_Badajoz582"
+  ],
+  [
+   16.87,
+   "plant_trip",
+   "TRIP_RES03"
+  ],
+  [
+   16.93,
+   "plant_trip",
+   "TRIP_Cuenca530"
+  ],
+  [
+   17.12,
+   "plant_trip",
+   "TRIP_RES09"
+  ],
+  [
+   18.375,
+   "plant_trip",
+   "TRIP_Granada355"
+  ],
+  [
+   20.269,
+   "plant_trip",
+   "TRIP_Badajoz118"
+  ],
+  [
+   20.269,
+   "plant_trip",
+   "TRIP_RES06"
+  ],
+  [
+   20.278,
+   "plant_trip",
+   "TRIP_Cadiz26"
+  ],
+  [
+   20.331,
+   "plant_trip",
+   "TRIP_Segovia23"
+  ],
+  [
+   20.331,
+   "plant_trip",
+   "TRIP_Huelva34"
+  ],
+  [
+   20.34,
+   "plant_trip",
+   "TRIP_Badajoz72"
+  ],
+  [
+   20.34,
+   "plant_trip",
+   "TRIP_Caceres41"
+  ],
+  [
+   20.34,
+   "plant_trip",
+   "TRIP_RES01"
+  ],
+  [
+   20.34,
+   "plant_trip",
+   "TRIP_RES02"
+  ],
+  [
+   20.35,
+   "plant_trip",
+   "TRIP_Malaga154"
+  ],
+  [
+   20.37,
+   "plant_trip",
+   "TRIP_RES08"
+  ],
+  [
+   20.37,
+   "plant_trip",
+   "TRIP_RES10"
+  ],
+  [
+   20.747,
+   "out_of_step_separation",
+   "SEPARATION"
+  ],
+  [
+   20.747,
+   "numerical",
+   "RETIRE_OTHER_ISLANDS"
+  ],
+  [
+   20.911,
+   "ufls",
+   "UFLS1"
+  ],
+  [
+   20.911,
+   "ufls",
+   "UFLS2"
+  ],
+  [
+   20.949,
+   "ufls",
+   "UFLS3"
+  ],
+  [
+   21.024,
+   "ufls",
+   "UFLS4"
+  ],
+  [
+   21.083,
+   "plant_trip_other",
+   "TRIP_GNET_363"
+  ],
+  [
+   21.083,
+   "plant_trip_other",
+   "TRIP_GNET_364"
+  ],
+  [
+   21.083,
+   "plant_trip_other",
+   "TRIP_GNET_365"
+  ],
+  [
+   21.083,
+   "plant_trip_other",
+   "TRIP_GNET_435"
+  ],
+  [
+   21.083,
+   "plant_trip_other",
+   "TRIP_GNET_436"
+  ],
+  [
+   21.083,
+   "plant_trip_other",
+   "TRIP_GNET_437"
+  ],
+  [
+   21.083,
+   "plant_trip_other",
+   "TRIP_GNET_438"
+  ],
+  [
+   21.083,
+   "plant_trip_other",
+   "TRIP_GNET_439"
+  ],
+  [
+   21.083,
+   "generator_trip",
+   "GTRIP_GENROU_369"
+  ],
+  [
+   21.083,
+   "generator_trip",
+   "GTRIP_GENROU_375"
+  ],
+  [
+   21.083,
+   "ufls",
+   "UFLS5"
+  ],
+  [
+   21.093,
+   "generator_trip",
+   "GTRIP_GENROU_296"
+  ],
+  [
+   21.103,
+   "generator_trip",
+   "GTRIP_GENROU_322"
+  ],
+  [
+   21.103,
+   "generator_trip",
+   "GTRIP_GENROU_344"
+  ],
+  [
+   21.123,
+   "generator_trip",
+   "GTRIP_GENROU_321"
+  ],
+  [
+   21.123,
+   "generator_trip",
+   "GTRIP_GENROU_349"
+  ],
+  [
+   21.123,
+   "generator_trip",
+   "GTRIP_GENROU_350"
+  ],
+  [
+   21.123,
+   "generator_trip",
+   "GTRIP_GENROU_351"
+  ],
+  [
+   21.123,
+   "generator_trip",
+   "GTRIP_GENROU_352"
+  ],
+  [
+   21.129,
+   "tds_nonconvergence",
+   "TDS_STOP"
+  ]
+ ],
+ "wall_s": 385.96080207824707
+}

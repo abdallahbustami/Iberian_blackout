@@ -1,0 +1,101 @@
+[
+  {
+    "code": "pre_1200_1232_voltage_control",
+    "report_time_cest": "09:00-12:32",
+    "model_role": "precondition",
+    "active_power_mw": null,
+    "reactive_absorption_mvar": null,
+    "description": "Line coupling (meshing), shunt-reactor switching and HVDC set-point changes for voltage control.",
+    "source": "ENTSO-E factual report, Sec. 2.1.2 / Table 2-2."
+  },
+  {
+    "code": "E1",
+    "report_time_cest": "12:32:00-12:32:57",
+    "model_role": "pre_trip_drift",
+    "active_power_mw": 317.3,
+    "reactive_absorption_mvar": null,
+    "description": "Net-load increase or embedded-generation loss before the first major trip (not modeled).",
+    "source": "ENTSO-E final report, Ch. 1."
+  },
+  {
+    "code": "E2",
+    "report_time_cest": "12:32:00-12:32:57",
+    "model_role": "fixed_pf_res_change",
+    "active_power_mw": 208.0,
+    "reactive_absorption_mvar": 33.3,
+    "description": "RES operating-point change at fixed power factor (modeled as OA3, 208 MW).",
+    "source": "ENTSO-E final report, Ch. 1."
+  },
+  {
+    "code": "E3_Granada",
+    "report_time_cest": "12:32:57.220",
+    "model_role": "collector_overvoltage_trip",
+    "active_power_mw": 355.0,
+    "reactive_absorption_mvar": 165.0,
+    "description": "Granada 400/220 kV evacuation transformer trips on 220 kV-side overvoltage; 400 kV side ~417.9 kV.",
+    "source": "ENTSO-E final report p.14."
+  },
+  {
+    "code": "E4a_Badajoz",
+    "report_time_cest": "12:33:16.443",
+    "model_role": "collector_overvoltage_trip",
+    "active_power_mw": 582.0,
+    "reactive_absorption_mvar": 165.0,
+    "description": "Badajoz evacuation trip (event 4a).",
+    "source": "ENTSO-E final report, event chronology."
+  },
+  {
+    "code": "E4b_Badajoz",
+    "report_time_cest": "12:33:16.820",
+    "model_role": "collector_overvoltage_trip",
+    "active_power_mw": 145.0,
+    "reactive_absorption_mvar": 37.0,
+    "description": "Second nearby Badajoz trip (event 4b).",
+    "source": "ENTSO-E final report, event chronology."
+  },
+  {
+    "code": "E5_multi_site",
+    "report_time_cest": "12:33:17-12:33:18.020",
+    "model_role": "multi_site_generation_trip_cluster",
+    "active_power_mw": 928.0,
+    "reactive_absorption_mvar": null,
+    "description": "Wind/PV trips across several provinces (the replica's 13 E5 rows sum to 1824 MW; inherited table).",
+    "source": "ENTSO-E final and factual reports, Ch. 1."
+  },
+  {
+    "code": "Morocco_AC",
+    "report_time_cest": "12:33:20.473",
+    "model_role": "underfrequency_ac_trip",
+    "active_power_mw": null,
+    "reactive_absorption_mvar": null,
+    "description": "AC interconnection to Morocco trips on underfrequency (no analogue in the replica).",
+    "source": "ENTSO-E reports."
+  },
+  {
+    "code": "France_AC",
+    "report_time_cest": "12:33:21.535",
+    "model_role": "loss_of_synchronism_ac_trip",
+    "active_power_mw": null,
+    "reactive_absorption_mvar": null,
+    "description": "France-Spain AC lines trip on loss of synchronism (replica: out-of-step relay on the complete cut set).",
+    "source": "ENTSO-E reports."
+  },
+  {
+    "code": "HVDC",
+    "report_time_cest": "12:33:23.960",
+    "model_role": "hvdc_block",
+    "active_power_mw": null,
+    "reactive_absorption_mvar": null,
+    "description": "Santa Llogaia-Baixas HVDC separation (ACTIVSg2000 has no HVDC; not modeled).",
+    "source": "ENTSO-E reports."
+  },
+  {
+    "code": "blackout",
+    "report_time_cest": "near 12:33:27",
+    "model_role": "blackout_endpoint",
+    "active_power_mw": null,
+    "reactive_absorption_mvar": null,
+    "description": "Iberian systems de-energize (replica: per-island collapse criteria only).",
+    "source": "ENTSO-E reports."
+  }
+]

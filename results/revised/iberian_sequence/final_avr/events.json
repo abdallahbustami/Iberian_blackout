@@ -1,0 +1,2093 @@
+[
+  {
+    "time_s": 0.0,
+    "code": "RES500",
+    "category": "operator_action",
+    "description": "Output of the protected plants reduced pro rata at fixed power factor (P and Q together).",
+    "trigger": "scheduled",
+    "device": "",
+    "bus": null,
+    "measured": {},
+    "setting": {
+      "size": 708.0,
+      "duration_s": 48.0
+    },
+    "lost_p_mw": 0.0,
+    "lost_q_absorption_mvar": 0.0,
+    "shed_mw": 0.0,
+    "island": ""
+  },
+  {
+    "time_s": 17.35,
+    "code": "EMBEDDED_PV_TRIP",
+    "category": "embedded_pv_trip",
+    "description": "1 embedded PV tranches disconnected by LV overvoltage protection",
+    "trigger": "embedded_pv_ov",
+    "device": "",
+    "bus": null,
+    "measured": {
+      "tranches": 1.0,
+      "lost_mw": 0.4642028999999999,
+      "v_bus_max_pu": 1.0978054355338223
+    },
+    "setting": {},
+    "lost_p_mw": 0.4642028999999999,
+    "lost_q_absorption_mvar": 0.0,
+    "shed_mw": 0.0,
+    "island": ""
+  },
+  {
+    "time_s": 18.35,
+    "code": "EMBEDDED_PV_TRIP",
+    "category": "embedded_pv_trip",
+    "description": "2 embedded PV tranches disconnected by LV overvoltage protection",
+    "trigger": "embedded_pv_ov",
+    "device": "",
+    "bus": null,
+    "measured": {
+      "tranches": 2.0,
+      "lost_mw": 1.4247575999999995,
+      "v_bus_max_pu": 1.0980857952551433
+    },
+    "setting": {},
+    "lost_p_mw": 1.4247575999999995,
+    "lost_q_absorption_mvar": 0.0,
+    "shed_mw": 0.0,
+    "island": ""
+  },
+  {
+    "time_s": 18.37,
+    "code": "EMBEDDED_PV_TRIP",
+    "category": "embedded_pv_trip",
+    "description": "1 embedded PV tranches disconnected by LV overvoltage protection",
+    "trigger": "embedded_pv_ov",
+    "device": "",
+    "bus": null,
+    "measured": {
+      "tranches": 1.0,
+      "lost_mw": 0.1757700000000002,
+      "v_bus_max_pu": 1.0980927201672228
+    },
+    "setting": {},
+    "lost_p_mw": 0.1757700000000002,
+    "lost_q_absorption_mvar": 0.0,
+    "shed_mw": 0.0,
+    "island": ""
+  },
+  {
+    "time_s": 18.39,
+    "code": "EMBEDDED_PV_TRIP",
+    "category": "embedded_pv_trip",
+    "description": "1 embedded PV tranches disconnected by LV overvoltage protection",
+    "trigger": "embedded_pv_ov",
+    "device": "",
+    "bus": null,
+    "measured": {
+      "tranches": 1.0,
+      "lost_mw": 2.355771599999999,
+      "v_bus_max_pu": 1.0980999284434538
+    },
+    "setting": {},
+    "lost_p_mw": 2.355771599999999,
+    "lost_q_absorption_mvar": 0.0,
+    "shed_mw": 0.0,
+    "island": ""
+  },
+  {
+    "time_s": 19.07,
+    "code": "EMBEDDED_PV_TRIP",
+    "category": "embedded_pv_trip",
+    "description": "1 embedded PV tranches disconnected by LV overvoltage protection",
+    "trigger": "embedded_pv_ov",
+    "device": "",
+    "bus": null,
+    "measured": {
+      "tranches": 1.0,
+      "lost_mw": 0.3022676999999998,
+      "v_bus_max_pu": 1.0984117418486883
+    },
+    "setting": {},
+    "lost_p_mw": 0.3022676999999998,
+    "lost_q_absorption_mvar": 0.0,
+    "shed_mw": 0.0,
+    "island": ""
+  },
+  {
+    "time_s": 19.49,
+    "code": "EMBEDDED_PV_TRIP",
+    "category": "embedded_pv_trip",
+    "description": "3 embedded PV tranches disconnected by LV overvoltage protection",
+    "trigger": "embedded_pv_ov",
+    "device": "",
+    "bus": null,
+    "measured": {
+      "tranches": 3.0,
+      "lost_mw": 0.23150610000000071,
+      "v_bus_max_pu": 1.0985121407523213
+    },
+    "setting": {},
+    "lost_p_mw": 0.23150610000000071,
+    "lost_q_absorption_mvar": 0.0,
+    "shed_mw": 0.0,
+    "island": ""
+  },
+  {
+    "time_s": 19.74,
+    "code": "TRIP_Badajoz145",
+    "category": "plant_trip",
+    "description": "Badajoz145 tripped by plant OV1 relay",
+    "trigger": "plant_OV1",
+    "device": "PVD1_Badajoz145",
+    "bus": 8163,
+    "measured": {
+      "v_pu": 1.1006763658788223,
+      "f_pu": 0.9994548585613465,
+      "p_mw": 137.25636048759495,
+      "q_mvar": -35.02403681406654,
+      "pickup_start_s": 18.74
+    },
+    "setting": {
+      "pickup": 1.1,
+      "delay_s": 1.0
+    },
+    "lost_p_mw": 137.25636048759495,
+    "lost_q_absorption_mvar": 35.02403681406654,
+    "shed_mw": 0.0,
+    "island": "0"
+  },
+  {
+    "time_s": 20.03,
+    "code": "EMBEDDED_PV_TRIP",
+    "category": "embedded_pv_trip",
+    "description": "2 embedded PV tranches disconnected by LV overvoltage protection",
+    "trigger": "embedded_pv_ov",
+    "device": "",
+    "bus": null,
+    "measured": {
+      "tranches": 2.0,
+      "lost_mw": 0.09735389999999988,
+      "v_bus_max_pu": 1.1052421676270074
+    },
+    "setting": {},
+    "lost_p_mw": 0.09735389999999988,
+    "lost_q_absorption_mvar": 0.0,
+    "shed_mw": 0.0,
+    "island": ""
+  },
+  {
+    "time_s": 20.04,
+    "code": "EMBEDDED_PV_TRIP",
+    "category": "embedded_pv_trip",
+    "description": "1 embedded PV tranches disconnected by LV overvoltage protection",
+    "trigger": "embedded_pv_ov",
+    "device": "",
+    "bus": null,
+    "measured": {
+      "tranches": 1.0,
+      "lost_mw": 1.0141928999999994,
+      "v_bus_max_pu": 1.1054184837108831
+    },
+    "setting": {},
+    "lost_p_mw": 1.0141928999999994,
+    "lost_q_absorption_mvar": 0.0,
+    "shed_mw": 0.0,
+    "island": ""
+  },
+  {
+    "time_s": 20.19,
+    "code": "TRIP_Seville550",
+    "category": "plant_trip",
+    "description": "Seville550 tripped by plant OV1 relay",
+    "trigger": "plant_OV1",
+    "device": "PVD1_Seville550",
+    "bus": 8165,
+    "measured": {
+      "v_pu": 1.1091437199593084,
+      "f_pu": 0.9989477765727027,
+      "p_mw": 520.0348365475126,
+      "q_mvar": -170.9271849127628,
+      "pickup_start_s": 19.19
+    },
+    "setting": {
+      "pickup": 1.1,
+      "delay_s": 1.0
+    },
+    "lost_p_mw": 520.0348365475126,
+    "lost_q_absorption_mvar": 170.9271849127628,
+    "shed_mw": 0.0,
+    "island": "0"
+  },
+  {
+    "time_s": 20.21,
+    "code": "EMBEDDED_PV_TRIP",
+    "category": "embedded_pv_trip",
+    "description": "2 embedded PV tranches disconnected by LV overvoltage protection",
+    "trigger": "embedded_pv_ov",
+    "device": "",
+    "bus": null,
+    "measured": {
+      "tranches": 2.0,
+      "lost_mw": 0.7995834000000004,
+      "v_bus_max_pu": 1.1111821788571445
+    },
+    "setting": {},
+    "lost_p_mw": 0.7995834000000004,
+    "lost_q_absorption_mvar": 0.0,
+    "shed_mw": 0.0,
+    "island": ""
+  },
+  {
+    "time_s": 20.75,
+    "code": "TRIP_Cadiz128",
+    "category": "plant_trip",
+    "description": "Cadiz128 tripped by plant OV1 relay",
+    "trigger": "plant_OV1",
+    "device": "PVD1_Cadiz128",
+    "bus": 8174,
+    "measured": {
+      "v_pu": 1.1169557051687578,
+      "f_pu": 0.9975990353772647,
+      "p_mw": 120.8266473480832,
+      "q_mvar": -39.71379846625454,
+      "pickup_start_s": 19.75
+    },
+    "setting": {
+      "pickup": 1.1,
+      "delay_s": 1.0
+    },
+    "lost_p_mw": 120.8266473480832,
+    "lost_q_absorption_mvar": 39.71379846625454,
+    "shed_mw": 0.0,
+    "island": "0"
+  },
+  {
+    "time_s": 20.8,
+    "code": "TRIP_RES05",
+    "category": "plant_trip",
+    "description": "RES05 tripped by plant OV1 relay",
+    "trigger": "plant_OV1",
+    "device": "PVD1_RES05",
+    "bus": 8181,
+    "measured": {
+      "v_pu": 1.1081206138076294,
+      "f_pu": 0.9973500740447621,
+      "p_mw": 377.53390753470535,
+      "q_mvar": -124.08939457243046,
+      "pickup_start_s": 19.8
+    },
+    "setting": {
+      "pickup": 1.1,
+      "delay_s": 1.0
+    },
+    "lost_p_mw": 377.53390753470535,
+    "lost_q_absorption_mvar": 124.08939457243046,
+    "shed_mw": 0.0,
+    "island": "0"
+  },
+  {
+    "time_s": 20.94,
+    "code": "TRIP_RES04",
+    "category": "plant_trip",
+    "description": "RES04 tripped by plant OV1 relay",
+    "trigger": "plant_OV1",
+    "device": "PVD1_RES04",
+    "bus": 8180,
+    "measured": {
+      "v_pu": 1.1052968653780695,
+      "f_pu": 0.9971123988869327,
+      "p_mw": 301.81891029352374,
+      "q_mvar": -99.2030784558862,
+      "pickup_start_s": 19.94
+    },
+    "setting": {
+      "pickup": 1.1,
+      "delay_s": 1.0
+    },
+    "lost_p_mw": 301.81891029352374,
+    "lost_q_absorption_mvar": 99.2030784558862,
+    "shed_mw": 0.0,
+    "island": "0"
+  },
+  {
+    "time_s": 20.97,
+    "code": "TRIP_Segovia94",
+    "category": "plant_trip",
+    "description": "Segovia94 tripped by plant OV1 relay",
+    "trigger": "plant_OV1",
+    "device": "PVD1_Segovia94",
+    "bus": 8166,
+    "measured": {
+      "v_pu": 1.110709422766723,
+      "f_pu": 0.9971607026881183,
+      "p_mw": 88.61493990248962,
+      "q_mvar": -29.126322226931478,
+      "pickup_start_s": 19.97
+    },
+    "setting": {
+      "pickup": 1.1,
+      "delay_s": 1.0
+    },
+    "lost_p_mw": 88.61493990248962,
+    "lost_q_absorption_mvar": 29.126322226931478,
+    "shed_mw": 0.0,
+    "island": "0"
+  },
+  {
+    "time_s": 20.97,
+    "code": "TRIP_RES07",
+    "category": "plant_trip",
+    "description": "RES07 tripped by plant OV1 relay",
+    "trigger": "plant_OV1",
+    "device": "PVD1_RES07",
+    "bus": 8183,
+    "measured": {
+      "v_pu": 1.1077741662414309,
+      "f_pu": 0.9971150470604715,
+      "p_mw": 169.68888183497995,
+      "q_mvar": -55.77403828473226,
+      "pickup_start_s": 19.97
+    },
+    "setting": {
+      "pickup": 1.1,
+      "delay_s": 1.0
+    },
+    "lost_p_mw": 169.68888183497995,
+    "lost_q_absorption_mvar": 55.77403828473226,
+    "shed_mw": 0.0,
+    "island": "0"
+  },
+  {
+    "time_s": 21.04,
+    "code": "TRIP_Badajoz16",
+    "category": "plant_trip",
+    "description": "Badajoz16 tripped by plant OV1 relay",
+    "trigger": "plant_OV1",
+    "device": "PVD1_Badajoz16",
+    "bus": 8171,
+    "measured": {
+      "v_pu": 1.1186665502399362,
+      "f_pu": 0.9965847643647577,
+      "p_mw": 15.093009888799605,
+      "q_mvar": -4.960832449713773,
+      "pickup_start_s": 20.04
+    },
+    "setting": {
+      "pickup": 1.1,
+      "delay_s": 1.0
+    },
+    "lost_p_mw": 15.093009888799605,
+    "lost_q_absorption_mvar": 4.960832449713773,
+    "shed_mw": 0.0,
+    "island": "0"
+  },
+  {
+    "time_s": 21.09,
+    "code": "TRIP_Caceres38",
+    "category": "plant_trip",
+    "description": "Caceres38 tripped by plant OV1 relay",
+    "trigger": "plant_OV1",
+    "device": "PVD1_Caceres38",
+    "bus": 8169,
+    "measured": {
+      "v_pu": 1.1194092114521994,
+      "f_pu": 0.9965835770179843,
+      "p_mw": 35.82853632711717,
+      "q_mvar": -11.776270402544439,
+      "pickup_start_s": 20.09
+    },
+    "setting": {
+      "pickup": 1.1,
+      "delay_s": 1.0
+    },
+    "lost_p_mw": 35.82853632711717,
+    "lost_q_absorption_mvar": 11.776270402544439,
+    "shed_mw": 0.0,
+    "island": "0"
+  },
+  {
+    "time_s": 21.11,
+    "code": "TRIP_Badajoz582",
+    "category": "plant_trip",
+    "description": "Badajoz582 tripped by plant OV1 relay",
+    "trigger": "plant_OV1",
+    "device": "PVD1_Badajoz582",
+    "bus": 8162,
+    "measured": {
+      "v_pu": 1.1070034634083825,
+      "f_pu": 0.9965222754908204,
+      "p_mw": 548.8082064748357,
+      "q_mvar": -155.5899554438967,
+      "pickup_start_s": 20.11
+    },
+    "setting": {
+      "pickup": 1.1,
+      "delay_s": 1.0
+    },
+    "lost_p_mw": 548.8082064748357,
+    "lost_q_absorption_mvar": 155.5899554438967,
+    "shed_mw": 0.0,
+    "island": "0"
+  },
+  {
+    "time_s": 21.12,
+    "code": "TRIP_Cadiz26",
+    "category": "plant_trip",
+    "description": "Cadiz26 tripped by plant OV1 relay",
+    "trigger": "plant_OV1",
+    "device": "PVD1_Cadiz26",
+    "bus": 8173,
+    "measured": {
+      "v_pu": 1.1176031720956512,
+      "f_pu": 0.9964208626165103,
+      "p_mw": 24.509521380639026,
+      "q_mvar": -8.055890103356127,
+      "pickup_start_s": 20.12
+    },
+    "setting": {
+      "pickup": 1.1,
+      "delay_s": 1.0
+    },
+    "lost_p_mw": 24.509521380639026,
+    "lost_q_absorption_mvar": 8.055890103356127,
+    "shed_mw": 0.0,
+    "island": "0"
+  },
+  {
+    "time_s": 21.14,
+    "code": "TRIP_RES03",
+    "category": "plant_trip",
+    "description": "RES03 tripped by plant OV1 relay",
+    "trigger": "plant_OV1",
+    "device": "PVD1_RES03",
+    "bus": 8179,
+    "measured": {
+      "v_pu": 1.112311405891973,
+      "f_pu": 0.9961375330808077,
+      "p_mw": 235.9705975298946,
+      "q_mvar": -77.55978469763505,
+      "pickup_start_s": 20.14
+    },
+    "setting": {
+      "pickup": 1.1,
+      "delay_s": 1.0
+    },
+    "lost_p_mw": 235.9705975298946,
+    "lost_q_absorption_mvar": 77.55978469763505,
+    "shed_mw": 0.0,
+    "island": "0"
+  },
+  {
+    "time_s": 21.19,
+    "code": "TRIP_Badajoz118",
+    "category": "plant_trip",
+    "description": "Badajoz118 tripped by plant OV1 relay",
+    "trigger": "plant_OV1",
+    "device": "PVD1_Badajoz118",
+    "bus": 8167,
+    "measured": {
+      "v_pu": 1.113010343947516,
+      "f_pu": 0.9959554433935456,
+      "p_mw": 111.13462709108131,
+      "q_mvar": -36.528185459818694,
+      "pickup_start_s": 20.19
+    },
+    "setting": {
+      "pickup": 1.1,
+      "delay_s": 1.0
+    },
+    "lost_p_mw": 111.13462709108131,
+    "lost_q_absorption_mvar": 36.528185459818694,
+    "shed_mw": 0.0,
+    "island": "0"
+  },
+  {
+    "time_s": 21.19,
+    "code": "TRIP_RES06",
+    "category": "plant_trip",
+    "description": "RES06 tripped by plant OV1 relay",
+    "trigger": "plant_OV1",
+    "device": "PVD1_RES06",
+    "bus": 8182,
+    "measured": {
+      "v_pu": 1.1131335742223794,
+      "f_pu": 0.9959586689591763,
+      "p_mw": 113.0181880559956,
+      "q_mvar": -37.1472820101214,
+      "pickup_start_s": 20.19
+    },
+    "setting": {
+      "pickup": 1.1,
+      "delay_s": 1.0
+    },
+    "lost_p_mw": 113.0181880559956,
+    "lost_q_absorption_mvar": 37.1472820101214,
+    "shed_mw": 0.0,
+    "island": "0"
+  },
+  {
+    "time_s": 21.2,
+    "code": "TRIP_Granada355",
+    "category": "plant_trip",
+    "description": "Granada355 tripped by plant OVI relay",
+    "trigger": "plant_OVI",
+    "device": "PVD1_Granada355",
+    "bus": 8161,
+    "measured": {
+      "v_pu": 1.1015445498845189,
+      "f_pu": 0.9955930790014083,
+      "p_mw": 335.1550509913821,
+      "q_mvar": -155.77629130585368,
+      "pickup_start_s": 21.2
+    },
+    "setting": {
+      "pickup": 1.1,
+      "delay_s": 0.0
+    },
+    "lost_p_mw": 335.1550509913821,
+    "lost_q_absorption_mvar": 155.77629130585368,
+    "shed_mw": 0.0,
+    "island": "0"
+  },
+  {
+    "time_s": 21.22,
+    "code": "TRIP_Cuenca530",
+    "category": "plant_trip",
+    "description": "Cuenca530 tripped by plant OV1 relay",
+    "trigger": "plant_OV1",
+    "device": "PVD1_Cuenca530",
+    "bus": 8176,
+    "measured": {
+      "v_pu": 1.117507879597835,
+      "f_pu": 0.995225940734306,
+      "p_mw": 500.3544340195494,
+      "q_mvar": -164.45854941705574,
+      "pickup_start_s": 20.22
+    },
+    "setting": {
+      "pickup": 1.1,
+      "delay_s": 1.0
+    },
+    "lost_p_mw": 500.3544340195494,
+    "lost_q_absorption_mvar": 164.45854941705574,
+    "shed_mw": 0.0,
+    "island": "0"
+  },
+  {
+    "time_s": 21.22,
+    "code": "TRIP_RES09",
+    "category": "plant_trip",
+    "description": "RES09 tripped by plant OV1 relay",
+    "trigger": "plant_OV1",
+    "device": "PVD1_RES09",
+    "bus": 8185,
+    "measured": {
+      "v_pu": 1.1169989968987133,
+      "f_pu": 0.9952258527216387,
+      "p_mw": 302.10722641226806,
+      "q_mvar": -99.29784338138454,
+      "pickup_start_s": 20.22
+    },
+    "setting": {
+      "pickup": 1.1,
+      "delay_s": 1.0
+    },
+    "lost_p_mw": 302.10722641226806,
+    "lost_q_absorption_mvar": 99.29784338138454,
+    "shed_mw": 0.0,
+    "island": "0"
+  },
+  {
+    "time_s": 21.24,
+    "code": "EMBEDDED_PV_TRIP",
+    "category": "embedded_pv_trip",
+    "description": "10 embedded PV tranches disconnected by LV overvoltage protection",
+    "trigger": "embedded_pv_ov",
+    "device": "",
+    "bus": null,
+    "measured": {
+      "tranches": 10.0,
+      "lost_mw": 0.9524465999999991,
+      "v_bus_max_pu": 1.1284028001793682
+    },
+    "setting": {},
+    "lost_p_mw": 0.9524465999999991,
+    "lost_q_absorption_mvar": 0.0,
+    "shed_mw": 0.0,
+    "island": ""
+  },
+  {
+    "time_s": 21.27,
+    "code": "EMBEDDED_PV_TRIP",
+    "category": "embedded_pv_trip",
+    "description": "2 embedded PV tranches disconnected by LV overvoltage protection",
+    "trigger": "embedded_pv_ov",
+    "device": "",
+    "bus": null,
+    "measured": {
+      "tranches": 2.0,
+      "lost_mw": 1.1784528000000005,
+      "v_bus_max_pu": 1.1275307631613376
+    },
+    "setting": {},
+    "lost_p_mw": 1.1784528000000005,
+    "lost_q_absorption_mvar": 0.0,
+    "shed_mw": 0.0,
+    "island": ""
+  },
+  {
+    "time_s": 21.28,
+    "code": "EMBEDDED_PV_TRIP",
+    "category": "embedded_pv_trip",
+    "description": "6 embedded PV tranches disconnected by LV overvoltage protection",
+    "trigger": "embedded_pv_ov",
+    "device": "",
+    "bus": null,
+    "measured": {
+      "tranches": 6.0,
+      "lost_mw": 2.6024165999999997,
+      "v_bus_max_pu": 1.1268290464206714
+    },
+    "setting": {},
+    "lost_p_mw": 2.6024165999999997,
+    "lost_q_absorption_mvar": 0.0,
+    "shed_mw": 0.0,
+    "island": ""
+  },
+  {
+    "time_s": 21.29,
+    "code": "EMBEDDED_PV_TRIP",
+    "category": "embedded_pv_trip",
+    "description": "12 embedded PV tranches disconnected by LV overvoltage protection",
+    "trigger": "embedded_pv_ov",
+    "device": "",
+    "bus": null,
+    "measured": {
+      "tranches": 12.0,
+      "lost_mw": 7.568429399999998,
+      "v_bus_max_pu": 1.1259410050151666
+    },
+    "setting": {},
+    "lost_p_mw": 7.568429399999998,
+    "lost_q_absorption_mvar": 0.0,
+    "shed_mw": 0.0,
+    "island": ""
+  },
+  {
+    "time_s": 21.3,
+    "code": "EMBEDDED_PV_TRIP",
+    "category": "embedded_pv_trip",
+    "description": "11 embedded PV tranches disconnected by LV overvoltage protection",
+    "trigger": "embedded_pv_ov",
+    "device": "",
+    "bus": null,
+    "measured": {
+      "tranches": 11.0,
+      "lost_mw": 10.624389299999994,
+      "v_bus_max_pu": 1.1248515663701746
+    },
+    "setting": {},
+    "lost_p_mw": 10.624389299999994,
+    "lost_q_absorption_mvar": 0.0,
+    "shed_mw": 0.0,
+    "island": ""
+  },
+  {
+    "time_s": 21.31,
+    "code": "EMBEDDED_PV_TRIP",
+    "category": "embedded_pv_trip",
+    "description": "21 embedded PV tranches disconnected by LV overvoltage protection",
+    "trigger": "embedded_pv_ov",
+    "device": "",
+    "bus": null,
+    "measured": {
+      "tranches": 21.0,
+      "lost_mw": 36.40168349999999,
+      "v_bus_max_pu": 1.1235151221773012
+    },
+    "setting": {},
+    "lost_p_mw": 36.40168349999999,
+    "lost_q_absorption_mvar": 0.0,
+    "shed_mw": 0.0,
+    "island": ""
+  },
+  {
+    "time_s": 21.32,
+    "code": "EMBEDDED_PV_TRIP",
+    "category": "embedded_pv_trip",
+    "description": "53 embedded PV tranches disconnected by LV overvoltage protection",
+    "trigger": "embedded_pv_ov",
+    "device": "",
+    "bus": null,
+    "measured": {
+      "tranches": 53.0,
+      "lost_mw": 106.07946299999999,
+      "v_bus_max_pu": 1.121829457572679
+    },
+    "setting": {},
+    "lost_p_mw": 106.07946299999999,
+    "lost_q_absorption_mvar": 0.0,
+    "shed_mw": 0.0,
+    "island": ""
+  },
+  {
+    "time_s": 21.33,
+    "code": "EMBEDDED_PV_TRIP",
+    "category": "embedded_pv_trip",
+    "description": "70 embedded PV tranches disconnected by LV overvoltage protection",
+    "trigger": "embedded_pv_ov",
+    "device": "",
+    "bus": null,
+    "measured": {
+      "tranches": 70.0,
+      "lost_mw": 100.85801669999995,
+      "v_bus_max_pu": 1.1194204025370336
+    },
+    "setting": {},
+    "lost_p_mw": 100.85801669999995,
+    "lost_q_absorption_mvar": 0.0,
+    "shed_mw": 0.0,
+    "island": ""
+  },
+  {
+    "time_s": 21.34,
+    "code": "EMBEDDED_PV_TRIP",
+    "category": "embedded_pv_trip",
+    "description": "34 embedded PV tranches disconnected by LV overvoltage protection",
+    "trigger": "embedded_pv_ov",
+    "device": "",
+    "bus": null,
+    "measured": {
+      "tranches": 34.0,
+      "lost_mw": 54.069913799999995,
+      "v_bus_max_pu": 1.116198278909553
+    },
+    "setting": {},
+    "lost_p_mw": 54.069913799999995,
+    "lost_q_absorption_mvar": 0.0,
+    "shed_mw": 0.0,
+    "island": ""
+  },
+  {
+    "time_s": 21.35,
+    "code": "EMBEDDED_PV_TRIP",
+    "category": "embedded_pv_trip",
+    "description": "4 embedded PV tranches disconnected by LV overvoltage protection",
+    "trigger": "embedded_pv_ov",
+    "device": "",
+    "bus": null,
+    "measured": {
+      "tranches": 4.0,
+      "lost_mw": 8.791788600000018,
+      "v_bus_max_pu": 1.112656727906537
+    },
+    "setting": {},
+    "lost_p_mw": 8.791788600000018,
+    "lost_q_absorption_mvar": 0.0,
+    "shed_mw": 0.0,
+    "island": ""
+  },
+  {
+    "time_s": 21.36,
+    "code": "EMBEDDED_PV_TRIP",
+    "category": "embedded_pv_trip",
+    "description": "1 embedded PV tranches disconnected by LV overvoltage protection",
+    "trigger": "embedded_pv_ov",
+    "device": "",
+    "bus": null,
+    "measured": {
+      "tranches": 1.0,
+      "lost_mw": 0.4642028999999752,
+      "v_bus_max_pu": 1.1092456922975804
+    },
+    "setting": {},
+    "lost_p_mw": 0.4642028999999752,
+    "lost_q_absorption_mvar": 0.0,
+    "shed_mw": 0.0,
+    "island": ""
+  },
+  {
+    "time_s": 21.38,
+    "code": "EMBEDDED_PV_TRIP",
+    "category": "embedded_pv_trip",
+    "description": "6 embedded PV tranches disconnected by LV overvoltage protection",
+    "trigger": "embedded_pv_ov",
+    "device": "",
+    "bus": null,
+    "measured": {
+      "tranches": 6.0,
+      "lost_mw": 7.57670760000002,
+      "v_bus_max_pu": 1.1030725862001758
+    },
+    "setting": {},
+    "lost_p_mw": 7.57670760000002,
+    "lost_q_absorption_mvar": 0.0,
+    "shed_mw": 0.0,
+    "island": ""
+  },
+  {
+    "time_s": 21.39,
+    "code": "EMBEDDED_PV_TRIP",
+    "category": "embedded_pv_trip",
+    "description": "1 embedded PV tranches disconnected by LV overvoltage protection",
+    "trigger": "embedded_pv_ov",
+    "device": "",
+    "bus": null,
+    "measured": {
+      "tranches": 1.0,
+      "lost_mw": 0.30226769999995895,
+      "v_bus_max_pu": 1.1001014767217654
+    },
+    "setting": {},
+    "lost_p_mw": 0.30226769999995895,
+    "lost_q_absorption_mvar": 0.0,
+    "shed_mw": 0.0,
+    "island": ""
+  },
+  {
+    "time_s": 21.4,
+    "code": "EMBEDDED_PV_TRIP",
+    "category": "embedded_pv_trip",
+    "description": "1 embedded PV tranches disconnected by LV overvoltage protection",
+    "trigger": "embedded_pv_ov",
+    "device": "",
+    "bus": null,
+    "measured": {
+      "tranches": 1.0,
+      "lost_mw": 3.192720300000019,
+      "v_bus_max_pu": 1.0971179366695203
+    },
+    "setting": {},
+    "lost_p_mw": 3.192720300000019,
+    "lost_q_absorption_mvar": 0.0,
+    "shed_mw": 0.0,
+    "island": ""
+  },
+  {
+    "time_s": 21.910836821,
+    "code": "SEPARATION",
+    "category": "out_of_step_separation",
+    "description": "Out-of-step relay opens the complete cut set (21 branches) of the affected area",
+    "trigger": "coi_angle_change",
+    "device": "",
+    "bus": null,
+    "measured": {
+      "angle_change_deg": 123.43440812913279,
+      "islands_after": 2,
+      "jump_solve_converged": 1.0
+    },
+    "setting": {
+      "threshold_deg": 120.0,
+      "delay_s": 0.05
+    },
+    "lost_p_mw": 0.0,
+    "lost_q_absorption_mvar": 0.0,
+    "shed_mw": 0.0,
+    "island": ""
+  },
+  {
+    "time_s": 21.910836821,
+    "code": "RETIRE_OTHER_ISLANDS",
+    "category": "numerical",
+    "description": "After separation the other island is not simulated: its dynamic states are frozen, its internal branches opened and its devices switched off (the islands are electrically independent, so the affected island's trajectory is unchanged)",
+    "trigger": "separation",
+    "device": "",
+    "bus": null,
+    "measured": {
+      "states_frozen": 3072.0,
+      "branches_opened": 2367.0,
+      "devices_off": 1530.0
+    },
+    "setting": {
+      "unmapped_models": 0.0
+    },
+    "lost_p_mw": 0.0,
+    "lost_q_absorption_mvar": 0.0,
+    "shed_mw": 0.0,
+    "island": ""
+  },
+  {
+    "time_s": 22.476577067,
+    "code": "UFLS1",
+    "category": "ufls",
+    "description": "UFLS stage 1 sheds 7.5% of load in island(s) [0]",
+    "trigger": "island_coi_underfrequency",
+    "device": "",
+    "bus": null,
+    "measured": {
+      "f_pu_min": 0.9734056835022921,
+      "loads": 241
+    },
+    "setting": {
+      "pickup_pu": 0.98,
+      "delay_s": 0.15
+    },
+    "lost_p_mw": 0.0,
+    "lost_q_absorption_mvar": 0.0,
+    "shed_mw": 1036.9917292491316,
+    "island": "0"
+  },
+  {
+    "time_s": 22.556577067,
+    "code": "EMBEDDED_PV_TRIP",
+    "category": "embedded_pv_trip",
+    "description": "2 embedded PV tranches disconnected by LV overvoltage protection",
+    "trigger": "embedded_pv_ov",
+    "device": "",
+    "bus": null,
+    "measured": {
+      "tranches": 2.0,
+      "lost_mw": 0.7995834000000173,
+      "v_bus_max_pu": 1.1995094070627315
+    },
+    "setting": {},
+    "lost_p_mw": 0.7995834000000173,
+    "lost_q_absorption_mvar": 0.0,
+    "shed_mw": 0.0,
+    "island": ""
+  },
+  {
+    "time_s": 22.586077067,
+    "code": "EMBEDDED_PV_TRIP",
+    "category": "embedded_pv_trip",
+    "description": "2 embedded PV tranches disconnected by LV overvoltage protection",
+    "trigger": "embedded_pv_ov",
+    "device": "",
+    "bus": null,
+    "measured": {
+      "tranches": 2.0,
+      "lost_mw": 0.7995834000000173,
+      "v_bus_max_pu": 1.2064067616397074
+    },
+    "setting": {},
+    "lost_p_mw": 0.7995834000000173,
+    "lost_q_absorption_mvar": 0.0,
+    "shed_mw": 0.0,
+    "island": ""
+  },
+  {
+    "time_s": 22.586077067,
+    "code": "UFLS2",
+    "category": "ufls",
+    "description": "UFLS stage 2 sheds 7.5% of load in island(s) [0]",
+    "trigger": "island_coi_underfrequency",
+    "device": "",
+    "bus": null,
+    "measured": {
+      "f_pu_min": 0.9687163822344823,
+      "loads": 241
+    },
+    "setting": {
+      "pickup_pu": 0.976,
+      "delay_s": 0.15
+    },
+    "lost_p_mw": 0.0,
+    "lost_q_absorption_mvar": 0.0,
+    "shed_mw": 1117.5581742872541,
+    "island": "0"
+  },
+  {
+    "time_s": 22.596077067,
+    "code": "EMBEDDED_PV_TRIP",
+    "category": "embedded_pv_trip",
+    "description": "4 embedded PV tranches disconnected by LV overvoltage protection",
+    "trigger": "embedded_pv_ov",
+    "device": "",
+    "bus": null,
+    "measured": {
+      "tranches": 4.0,
+      "lost_mw": 1.2456990000000019,
+      "v_bus_max_pu": 1.2483380386795333
+    },
+    "setting": {},
+    "lost_p_mw": 1.2456990000000019,
+    "lost_q_absorption_mvar": 0.0,
+    "shed_mw": 0.0,
+    "island": ""
+  },
+  {
+    "time_s": 22.606077067,
+    "code": "EMBEDDED_PV_TRIP",
+    "category": "embedded_pv_trip",
+    "description": "5 embedded PV tranches disconnected by LV overvoltage protection",
+    "trigger": "embedded_pv_ov",
+    "device": "",
+    "bus": null,
+    "measured": {
+      "tranches": 5.0,
+      "lost_mw": 1.9863143999999693,
+      "v_bus_max_pu": 1.2531721138434966
+    },
+    "setting": {},
+    "lost_p_mw": 1.9863143999999693,
+    "lost_q_absorption_mvar": 0.0,
+    "shed_mw": 0.0,
+    "island": ""
+  },
+  {
+    "time_s": 22.615577067,
+    "code": "EMBEDDED_PV_TRIP",
+    "category": "embedded_pv_trip",
+    "description": "6 embedded PV tranches disconnected by LV overvoltage protection",
+    "trigger": "embedded_pv_ov",
+    "device": "",
+    "bus": null,
+    "measured": {
+      "tranches": 6.0,
+      "lost_mw": 3.1527468000000454,
+      "v_bus_max_pu": 1.257350185541147
+    },
+    "setting": {},
+    "lost_p_mw": 3.1527468000000454,
+    "lost_q_absorption_mvar": 0.0,
+    "shed_mw": 0.0,
+    "island": ""
+  },
+  {
+    "time_s": 22.624602067,
+    "code": "EMBEDDED_PV_TRIP",
+    "category": "embedded_pv_trip",
+    "description": "8 embedded PV tranches disconnected by LV overvoltage protection",
+    "trigger": "embedded_pv_ov",
+    "device": "",
+    "bus": null,
+    "measured": {
+      "tranches": 8.0,
+      "lost_mw": 2.1426362999999355,
+      "v_bus_max_pu": 1.2609872259273387
+    },
+    "setting": {},
+    "lost_p_mw": 2.1426362999999355,
+    "lost_q_absorption_mvar": 0.0,
+    "shed_mw": 0.0,
+    "island": ""
+  },
+  {
+    "time_s": 22.64132088,
+    "code": "EMBEDDED_PV_TRIP",
+    "category": "embedded_pv_trip",
+    "description": "10 embedded PV tranches disconnected by LV overvoltage protection",
+    "trigger": "embedded_pv_ov",
+    "device": "",
+    "bus": null,
+    "measured": {
+      "tranches": 10.0,
+      "lost_mw": 2.2389696000000185,
+      "v_bus_max_pu": 1.2669884442673907
+    },
+    "setting": {},
+    "lost_p_mw": 2.2389696000000185,
+    "lost_q_absorption_mvar": 0.0,
+    "shed_mw": 0.0,
+    "island": ""
+  },
+  {
+    "time_s": 22.650280449,
+    "code": "TRIP_Huelva34",
+    "category": "plant_trip",
+    "description": "Huelva34 tripped by plant OV2 relay",
+    "trigger": "plant_OV2",
+    "device": "PVD1_Huelva34",
+    "bus": 8168,
+    "measured": {
+      "v_pu": 1.3061348763585894,
+      "f_pu": 0.9710503351687071,
+      "p_mw": 32.09934454317677,
+      "q_mvar": -10.550544338007892,
+      "pickup_start_s": 22.486577067
+    },
+    "setting": {
+      "pickup": 1.2,
+      "delay_s": 0.16
+    },
+    "lost_p_mw": 32.09934454317677,
+    "lost_q_absorption_mvar": 10.550544338007892,
+    "shed_mw": 0.0,
+    "island": "0"
+  },
+  {
+    "time_s": 22.650280449,
+    "code": "EMBEDDED_PV_TRIP",
+    "category": "embedded_pv_trip",
+    "description": "2 embedded PV tranches disconnected by LV overvoltage protection",
+    "trigger": "embedded_pv_ov",
+    "device": "",
+    "bus": null,
+    "measured": {
+      "tranches": 2.0,
+      "lost_mw": 2.8199745000000007,
+      "v_bus_max_pu": 1.270098240322804
+    },
+    "setting": {},
+    "lost_p_mw": 2.8199745000000007,
+    "lost_q_absorption_mvar": 0.0,
+    "shed_mw": 0.0,
+    "island": ""
+  },
+  {
+    "time_s": 22.658792039,
+    "code": "EMBEDDED_PV_TRIP",
+    "category": "embedded_pv_trip",
+    "description": "1 embedded PV tranches disconnected by LV overvoltage protection",
+    "trigger": "embedded_pv_ov",
+    "device": "",
+    "bus": null,
+    "measured": {
+      "tranches": 1.0,
+      "lost_mw": 0.17576999999999998,
+      "v_bus_max_pu": 1.2726672695462125
+    },
+    "setting": {},
+    "lost_p_mw": 0.17576999999999998,
+    "lost_q_absorption_mvar": 0.0,
+    "shed_mw": 0.0,
+    "island": ""
+  },
+  {
+    "time_s": 22.668154788,
+    "code": "EMBEDDED_PV_TRIP",
+    "category": "embedded_pv_trip",
+    "description": "8 embedded PV tranches disconnected by LV overvoltage protection",
+    "trigger": "embedded_pv_ov",
+    "device": "",
+    "bus": null,
+    "measured": {
+      "tranches": 8.0,
+      "lost_mw": 1.4715918000000556,
+      "v_bus_max_pu": 1.2752910209270283
+    },
+    "setting": {},
+    "lost_p_mw": 1.4715918000000556,
+    "lost_q_absorption_mvar": 0.0,
+    "shed_mw": 0.0,
+    "island": ""
+  },
+  {
+    "time_s": 22.668154788,
+    "code": "UFLS3",
+    "category": "ufls",
+    "description": "UFLS stage 3 sheds 7.5% of load in island(s) [0]",
+    "trigger": "island_coi_underfrequency",
+    "device": "",
+    "bus": null,
+    "measured": {
+      "f_pu_min": 0.9654396115308955,
+      "loads": 241
+    },
+    "setting": {
+      "pickup_pu": 0.972,
+      "delay_s": 0.15
+    },
+    "lost_p_mw": 0.0,
+    "lost_q_absorption_mvar": 0.0,
+    "shed_mw": 1193.6501646429435,
+    "island": "0"
+  },
+  {
+    "time_s": 22.6770494,
+    "code": "EMBEDDED_PV_TRIP",
+    "category": "embedded_pv_trip",
+    "description": "3 embedded PV tranches disconnected by LV overvoltage protection",
+    "trigger": "embedded_pv_ov",
+    "device": "",
+    "bus": null,
+    "measured": {
+      "tranches": 3.0,
+      "lost_mw": 1.1115467999999282,
+      "v_bus_max_pu": 1.3164059711758163
+    },
+    "setting": {},
+    "lost_p_mw": 1.1115467999999282,
+    "lost_q_absorption_mvar": 0.0,
+    "shed_mw": 0.0,
+    "island": ""
+  },
+  {
+    "time_s": 22.686833473,
+    "code": "EMBEDDED_PV_TRIP",
+    "category": "embedded_pv_trip",
+    "description": "460 embedded PV tranches disconnected by LV overvoltage protection",
+    "trigger": "embedded_pv_ov",
+    "device": "",
+    "bus": null,
+    "measured": {
+      "tranches": 460.0,
+      "lost_mw": 659.2920642000003,
+      "v_bus_max_pu": 1.3216007181186367
+    },
+    "setting": {},
+    "lost_p_mw": 659.2920642000003,
+    "lost_q_absorption_mvar": 0.0,
+    "shed_mw": 0.0,
+    "island": ""
+  },
+  {
+    "time_s": 22.706128343,
+    "code": "EMBEDDED_PV_TRIP",
+    "category": "embedded_pv_trip",
+    "description": "38 embedded PV tranches disconnected by LV overvoltage protection",
+    "trigger": "embedded_pv_ov",
+    "device": "",
+    "bus": null,
+    "measured": {
+      "tranches": 38.0,
+      "lost_mw": 33.46536059999971,
+      "v_bus_max_pu": 1.3246826589063487
+    },
+    "setting": {},
+    "lost_p_mw": 33.46536059999971,
+    "lost_q_absorption_mvar": 0.0,
+    "shed_mw": 0.0,
+    "island": ""
+  },
+  {
+    "time_s": 22.716128343,
+    "code": "EMBEDDED_PV_TRIP",
+    "category": "embedded_pv_trip",
+    "description": "24 embedded PV tranches disconnected by LV overvoltage protection",
+    "trigger": "embedded_pv_ov",
+    "device": "",
+    "bus": null,
+    "measured": {
+      "tranches": 24.0,
+      "lost_mw": 48.4293411000001,
+      "v_bus_max_pu": 1.326045000740821
+    },
+    "setting": {},
+    "lost_p_mw": 48.4293411000001,
+    "lost_q_absorption_mvar": 0.0,
+    "shed_mw": 0.0,
+    "island": ""
+  },
+  {
+    "time_s": 22.725628343,
+    "code": "EMBEDDED_PV_TRIP",
+    "category": "embedded_pv_trip",
+    "description": "89 embedded PV tranches disconnected by LV overvoltage protection",
+    "trigger": "embedded_pv_ov",
+    "device": "",
+    "bus": null,
+    "measured": {
+      "tranches": 89.0,
+      "lost_mw": 150.67361610000012,
+      "v_bus_max_pu": 1.327523882983512
+    },
+    "setting": {},
+    "lost_p_mw": 150.67361610000012,
+    "lost_q_absorption_mvar": 0.0,
+    "shed_mw": 0.0,
+    "island": ""
+  },
+  {
+    "time_s": 22.734653343,
+    "code": "EMBEDDED_PV_TRIP",
+    "category": "embedded_pv_trip",
+    "description": "66 embedded PV tranches disconnected by LV overvoltage protection",
+    "trigger": "embedded_pv_ov",
+    "device": "",
+    "bus": null,
+    "measured": {
+      "tranches": 66.0,
+      "lost_mw": 100.68190649999997,
+      "v_bus_max_pu": 1.3285293387079589
+    },
+    "setting": {},
+    "lost_p_mw": 100.68190649999997,
+    "lost_q_absorption_mvar": 0.0,
+    "shed_mw": 0.0,
+    "island": ""
+  },
+  {
+    "time_s": 22.743227093,
+    "code": "TRIP_Segovia23",
+    "category": "plant_trip",
+    "description": "Segovia23 tripped by plant OV2 relay",
+    "trigger": "plant_OV2",
+    "device": "PVD1_Segovia23",
+    "bus": 8164,
+    "measured": {
+      "v_pu": 1.3112947064870415,
+      "f_pu": 0.9671331419810348,
+      "p_mw": 21.63044427307014,
+      "q_mvar": -7.109583225626491,
+      "pickup_start_s": 22.576077067
+    },
+    "setting": {
+      "pickup": 1.2,
+      "delay_s": 0.16
+    },
+    "lost_p_mw": 21.63044427307014,
+    "lost_q_absorption_mvar": 7.109583225626491,
+    "shed_mw": 0.0,
+    "island": "0"
+  },
+  {
+    "time_s": 22.743227093,
+    "code": "TRIP_Caceres41",
+    "category": "plant_trip",
+    "description": "Caceres41 tripped by plant OV2 relay",
+    "trigger": "plant_OV2",
+    "device": "PVD1_Caceres41",
+    "bus": 8172,
+    "measured": {
+      "v_pu": 1.3165412101829739,
+      "f_pu": 0.9671877303066064,
+      "p_mw": 38.56929740992032,
+      "q_mvar": -12.677115015771317,
+      "pickup_start_s": 22.576077067
+    },
+    "setting": {
+      "pickup": 1.2,
+      "delay_s": 0.16
+    },
+    "lost_p_mw": 38.56929740992032,
+    "lost_q_absorption_mvar": 12.677115015771317,
+    "shed_mw": 0.0,
+    "island": "0"
+  },
+  {
+    "time_s": 22.743227093,
+    "code": "EMBEDDED_PV_TRIP",
+    "category": "embedded_pv_trip",
+    "description": "30 embedded PV tranches disconnected by LV overvoltage protection",
+    "trigger": "embedded_pv_ov",
+    "device": "",
+    "bus": null,
+    "measured": {
+      "tranches": 30.0,
+      "lost_mw": 27.79519049999999,
+      "v_bus_max_pu": 1.3292996048123547
+    },
+    "setting": {},
+    "lost_p_mw": 27.79519049999999,
+    "lost_q_absorption_mvar": 0.0,
+    "shed_mw": 0.0,
+    "island": ""
+  },
+  {
+    "time_s": 22.751372155,
+    "code": "TRIP_RES01",
+    "category": "plant_trip",
+    "description": "RES01 tripped by plant OV2 relay",
+    "trigger": "plant_OV2",
+    "device": "PVD1_RES01",
+    "bus": 8177,
+    "measured": {
+      "v_pu": 1.315211529137036,
+      "f_pu": 0.9667295090226997,
+      "p_mw": 112.87551818846879,
+      "q_mvar": -37.100388691745614,
+      "pickup_start_s": 22.586077067
+    },
+    "setting": {
+      "pickup": 1.2,
+      "delay_s": 0.16
+    },
+    "lost_p_mw": 112.87551818846879,
+    "lost_q_absorption_mvar": 37.100388691745614,
+    "shed_mw": 0.0,
+    "island": "0"
+  },
+  {
+    "time_s": 22.751372155,
+    "code": "EMBEDDED_PV_TRIP",
+    "category": "embedded_pv_trip",
+    "description": "11 embedded PV tranches disconnected by LV overvoltage protection",
+    "trigger": "embedded_pv_ov",
+    "device": "",
+    "bus": null,
+    "measured": {
+      "tranches": 11.0,
+      "lost_mw": 13.456667700000025,
+      "v_bus_max_pu": 1.330375133571957
+    },
+    "setting": {},
+    "lost_p_mw": 13.456667700000025,
+    "lost_q_absorption_mvar": 0.0,
+    "shed_mw": 0.0,
+    "island": ""
+  },
+  {
+    "time_s": 22.759109964,
+    "code": "TRIP_Badajoz72",
+    "category": "plant_trip",
+    "description": "Badajoz72 tripped by plant OV2 relay",
+    "trigger": "plant_OV2",
+    "device": "PVD1_Badajoz72",
+    "bus": 8170,
+    "measured": {
+      "v_pu": 1.30148034222262,
+      "f_pu": 0.9662408704418141,
+      "p_mw": 67.6917815321585,
+      "q_mvar": -22.24921264086057,
+      "pickup_start_s": 22.596077067
+    },
+    "setting": {
+      "pickup": 1.2,
+      "delay_s": 0.16
+    },
+    "lost_p_mw": 67.6917815321585,
+    "lost_q_absorption_mvar": 22.24921264086057,
+    "shed_mw": 0.0,
+    "island": "0"
+  },
+  {
+    "time_s": 22.759109964,
+    "code": "TRIP_Malaga154",
+    "category": "plant_trip",
+    "description": "Malaga154 tripped by plant OV2 relay",
+    "trigger": "plant_OV2",
+    "device": "PVD1_Malaga154",
+    "bus": 8175,
+    "measured": {
+      "v_pu": 1.3031386989601599,
+      "f_pu": 0.9662631771219736,
+      "p_mw": 144.8214044079319,
+      "q_mvar": -47.60049371792568,
+      "pickup_start_s": 22.596077067
+    },
+    "setting": {
+      "pickup": 1.2,
+      "delay_s": 0.16
+    },
+    "lost_p_mw": 144.8214044079319,
+    "lost_q_absorption_mvar": 47.60049371792568,
+    "shed_mw": 0.0,
+    "island": "0"
+  },
+  {
+    "time_s": 22.759109964,
+    "code": "TRIP_RES02",
+    "category": "plant_trip",
+    "description": "RES02 tripped by plant OV2 relay",
+    "trigger": "plant_OV2",
+    "device": "PVD1_RES02",
+    "bus": 8178,
+    "measured": {
+      "v_pu": 1.2898070559218249,
+      "f_pu": 0.9662391232612709,
+      "p_mw": 169.17302821503583,
+      "q_mvar": -55.60448539532348,
+      "pickup_start_s": 22.596077067
+    },
+    "setting": {
+      "pickup": 1.2,
+      "delay_s": 0.16
+    },
+    "lost_p_mw": 169.17302821503583,
+    "lost_q_absorption_mvar": 55.60448539532348,
+    "shed_mw": 0.0,
+    "island": "0"
+  },
+  {
+    "time_s": 22.759109964,
+    "code": "TRIP_RES08",
+    "category": "plant_trip",
+    "description": "RES08 tripped by plant OV2 relay",
+    "trigger": "plant_OV2",
+    "device": "PVD1_RES08",
+    "bus": 8184,
+    "measured": {
+      "v_pu": 1.308880684345014,
+      "f_pu": 0.9663170790303174,
+      "p_mw": 235.1531291674195,
+      "q_mvar": -77.29109583614353,
+      "pickup_start_s": 22.596077067
+    },
+    "setting": {
+      "pickup": 1.2,
+      "delay_s": 0.16
+    },
+    "lost_p_mw": 235.1531291674195,
+    "lost_q_absorption_mvar": 77.29109583614353,
+    "shed_mw": 0.0,
+    "island": "0"
+  },
+  {
+    "time_s": 22.759109964,
+    "code": "TRIP_RES10",
+    "category": "plant_trip",
+    "description": "RES10 tripped by plant OV2 relay",
+    "trigger": "plant_OV2",
+    "device": "PVD1_RES10",
+    "bus": 8186,
+    "measured": {
+      "v_pu": 1.309097894188316,
+      "f_pu": 0.9663708861793325,
+      "p_mw": 376.2915222684728,
+      "q_mvar": -123.68104227858878,
+      "pickup_start_s": 22.596077067
+    },
+    "setting": {
+      "pickup": 1.2,
+      "delay_s": 0.16
+    },
+    "lost_p_mw": 376.2915222684728,
+    "lost_q_absorption_mvar": 123.68104227858878,
+    "shed_mw": 0.0,
+    "island": "0"
+  },
+  {
+    "time_s": 22.759109964,
+    "code": "TRIP_GNET_363",
+    "category": "plant_trip_other",
+    "description": "GNET_363 tripped by plant OV2 relay",
+    "trigger": "plant_OV2",
+    "device": "GNET_363",
+    "bus": 7031,
+    "measured": {
+      "v_pu": 1.2793189573655395,
+      "f_pu": 0.966271655432501,
+      "p_mw": 29.143070258961153,
+      "q_mvar": 0.0,
+      "pickup_start_s": 22.596077067
+    },
+    "setting": {
+      "pickup": 1.2,
+      "delay_s": 0.16
+    },
+    "lost_p_mw": 29.143070258961153,
+    "lost_q_absorption_mvar": 0.0,
+    "shed_mw": 0.0,
+    "island": "0"
+  },
+  {
+    "time_s": 22.759109964,
+    "code": "TRIP_GNET_364",
+    "category": "plant_trip_other",
+    "description": "GNET_364 tripped by plant OV2 relay",
+    "trigger": "plant_OV2",
+    "device": "GNET_364",
+    "bus": 7032,
+    "measured": {
+      "v_pu": 1.2794075636532316,
+      "f_pu": 0.9663246103423654,
+      "p_mw": 7.51108157807933,
+      "q_mvar": 0.0,
+      "pickup_start_s": 22.596077067
+    },
+    "setting": {
+      "pickup": 1.2,
+      "delay_s": 0.16
+    },
+    "lost_p_mw": 7.51108157807933,
+    "lost_q_absorption_mvar": 0.0,
+    "shed_mw": 0.0,
+    "island": "0"
+  },
+  {
+    "time_s": 22.759109964,
+    "code": "TRIP_GNET_365",
+    "category": "plant_trip_other",
+    "description": "GNET_365 tripped by plant OV2 relay",
+    "trigger": "plant_OV2",
+    "device": "GNET_365",
+    "bus": 7033,
+    "measured": {
+      "v_pu": 1.2793406472407893,
+      "f_pu": 0.9663265090808046,
+      "p_mw": 7.51108303203363,
+      "q_mvar": 0.0,
+      "pickup_start_s": 22.596077067
+    },
+    "setting": {
+      "pickup": 1.2,
+      "delay_s": 0.16
+    },
+    "lost_p_mw": 7.51108303203363,
+    "lost_q_absorption_mvar": 0.0,
+    "shed_mw": 0.0,
+    "island": "0"
+  },
+  {
+    "time_s": 22.759109964,
+    "code": "EMBEDDED_PV_TRIP",
+    "category": "embedded_pv_trip",
+    "description": "20 embedded PV tranches disconnected by LV overvoltage protection",
+    "trigger": "embedded_pv_ov",
+    "device": "",
+    "bus": null,
+    "measured": {
+      "tranches": 20.0,
+      "lost_mw": 38.484614700000066,
+      "v_bus_max_pu": 1.3361516375870768
+    },
+    "setting": {},
+    "lost_p_mw": 38.484614700000066,
+    "lost_q_absorption_mvar": 0.0,
+    "shed_mw": 0.0,
+    "island": ""
+  },
+  {
+    "time_s": 22.759109964,
+    "code": "UFLS4",
+    "category": "ufls",
+    "description": "UFLS stage 4 sheds 7.5% of load in island(s) [0]",
+    "trigger": "island_coi_underfrequency",
+    "device": "",
+    "bus": null,
+    "measured": {
+      "f_pu_min": 0.9618044786588313,
+      "loads": 241
+    },
+    "setting": {
+      "pickup_pu": 0.968,
+      "delay_s": 0.15
+    },
+    "lost_p_mw": 0.0,
+    "lost_q_absorption_mvar": 0.0,
+    "shed_mw": 1262.8196176698018,
+    "island": "0"
+  },
+  {
+    "time_s": 22.767621555,
+    "code": "EMBEDDED_PV_TRIP",
+    "category": "embedded_pv_trip",
+    "description": "57 embedded PV tranches disconnected by LV overvoltage protection",
+    "trigger": "embedded_pv_ov",
+    "device": "",
+    "bus": null,
+    "measured": {
+      "tranches": 57.0,
+      "lost_mw": 103.06086839999989,
+      "v_bus_max_pu": 1.3783674818902532
+    },
+    "setting": {},
+    "lost_p_mw": 103.06086839999989,
+    "lost_q_absorption_mvar": 0.0,
+    "shed_mw": 0.0,
+    "island": ""
+  },
+  {
+    "time_s": 22.776984304,
+    "code": "EMBEDDED_PV_TRIP",
+    "category": "embedded_pv_trip",
+    "description": "51 embedded PV tranches disconnected by LV overvoltage protection",
+    "trigger": "embedded_pv_ov",
+    "device": "",
+    "bus": null,
+    "measured": {
+      "tranches": 51.0,
+      "lost_mw": 78.93779670000004,
+      "v_bus_max_pu": 1.3828700649565115
+    },
+    "setting": {},
+    "lost_p_mw": 78.93779670000004,
+    "lost_q_absorption_mvar": 0.0,
+    "shed_mw": 0.0,
+    "island": ""
+  },
+  {
+    "time_s": 22.786984304,
+    "code": "EMBEDDED_PV_TRIP",
+    "category": "embedded_pv_trip",
+    "description": "34 embedded PV tranches disconnected by LV overvoltage protection",
+    "trigger": "embedded_pv_ov",
+    "device": "",
+    "bus": null,
+    "measured": {
+      "tranches": 34.0,
+      "lost_mw": 57.178037700000004,
+      "v_bus_max_pu": 1.3868762879984133
+    },
+    "setting": {},
+    "lost_p_mw": 57.178037700000004,
+    "lost_q_absorption_mvar": 0.0,
+    "shed_mw": 0.0,
+    "island": ""
+  },
+  {
+    "time_s": 22.786984304,
+    "code": "GTRIP_GENROU_369",
+    "category": "generator_trip",
+    "description": "GENROU_369 tripped by generator OV2",
+    "trigger": "generator_OV2",
+    "device": "GENROU_369",
+    "bus": 7389,
+    "measured": {
+      "value": 1.3086405355272357,
+      "p_mw": 813.4155730785042,
+      "q_mvar": -554.4904085084878
+    },
+    "setting": {
+      "pickup": 1.2,
+      "delay_s": 0.16
+    },
+    "lost_p_mw": 813.4155730785042,
+    "lost_q_absorption_mvar": 554.4904085084878,
+    "shed_mw": 0.0,
+    "island": "0"
+  },
+  {
+    "time_s": 22.796984304,
+    "code": "TRIP_GNET_435",
+    "category": "plant_trip_other",
+    "description": "GNET_435 tripped by plant OV2 relay",
+    "trigger": "plant_OV2",
+    "device": "GNET_435",
+    "bus": 7285,
+    "measured": {
+      "v_pu": 1.32285449385174,
+      "f_pu": 0.9645136038005985,
+      "p_mw": 21.52775992531349,
+      "q_mvar": 0.0,
+      "pickup_start_s": 22.633175817
+    },
+    "setting": {
+      "pickup": 1.2,
+      "delay_s": 0.16
+    },
+    "lost_p_mw": 21.52775992531349,
+    "lost_q_absorption_mvar": 0.0,
+    "shed_mw": 0.0,
+    "island": "0"
+  },
+  {
+    "time_s": 22.796984304,
+    "code": "TRIP_GNET_436",
+    "category": "plant_trip_other",
+    "description": "GNET_436 tripped by plant OV2 relay",
+    "trigger": "plant_OV2",
+    "device": "GNET_436",
+    "bus": 7286,
+    "measured": {
+      "v_pu": 1.3231734216853317,
+      "f_pu": 0.9644651959690772,
+      "p_mw": 21.527783640488966,
+      "q_mvar": 0.0,
+      "pickup_start_s": 22.633175817
+    },
+    "setting": {
+      "pickup": 1.2,
+      "delay_s": 0.16
+    },
+    "lost_p_mw": 21.527783640488966,
+    "lost_q_absorption_mvar": 0.0,
+    "shed_mw": 0.0,
+    "island": "0"
+  },
+  {
+    "time_s": 22.796984304,
+    "code": "TRIP_GNET_437",
+    "category": "plant_trip_other",
+    "description": "GNET_437 tripped by plant OV2 relay",
+    "trigger": "plant_OV2",
+    "device": "GNET_437",
+    "bus": 7287,
+    "measured": {
+      "v_pu": 1.3229269553535732,
+      "f_pu": 0.9644766865944094,
+      "p_mw": 21.52785091234127,
+      "q_mvar": 0.0,
+      "pickup_start_s": 22.633175817
+    },
+    "setting": {
+      "pickup": 1.2,
+      "delay_s": 0.16
+    },
+    "lost_p_mw": 21.52785091234127,
+    "lost_q_absorption_mvar": 0.0,
+    "shed_mw": 0.0,
+    "island": "0"
+  },
+  {
+    "time_s": 22.796984304,
+    "code": "TRIP_GNET_438",
+    "category": "plant_trip_other",
+    "description": "GNET_438 tripped by plant OV2 relay",
+    "trigger": "plant_OV2",
+    "device": "GNET_438",
+    "bus": 7288,
+    "measured": {
+      "v_pu": 1.3231103528504689,
+      "f_pu": 0.9644718855094532,
+      "p_mw": 21.5277812923911,
+      "q_mvar": 0.0,
+      "pickup_start_s": 22.633175817
+    },
+    "setting": {
+      "pickup": 1.2,
+      "delay_s": 0.16
+    },
+    "lost_p_mw": 21.5277812923911,
+    "lost_q_absorption_mvar": 0.0,
+    "shed_mw": 0.0,
+    "island": "0"
+  },
+  {
+    "time_s": 22.796984304,
+    "code": "TRIP_GNET_439",
+    "category": "plant_trip_other",
+    "description": "GNET_439 tripped by plant OV2 relay",
+    "trigger": "plant_OV2",
+    "device": "GNET_439",
+    "bus": 7289,
+    "measured": {
+      "v_pu": 1.3230154491118342,
+      "f_pu": 0.9644919628607787,
+      "p_mw": 43.065631668933214,
+      "q_mvar": 0.0,
+      "pickup_start_s": 22.633175817
+    },
+    "setting": {
+      "pickup": 1.2,
+      "delay_s": 0.16
+    },
+    "lost_p_mw": 43.065631668933214,
+    "lost_q_absorption_mvar": 0.0,
+    "shed_mw": 0.0,
+    "island": "0"
+  },
+  {
+    "time_s": 22.796984304,
+    "code": "EMBEDDED_PV_TRIP",
+    "category": "embedded_pv_trip",
+    "description": "28 embedded PV tranches disconnected by LV overvoltage protection",
+    "trigger": "embedded_pv_ov",
+    "device": "",
+    "bus": null,
+    "measured": {
+      "tranches": 28.0,
+      "lost_mw": 39.81683789999988,
+      "v_bus_max_pu": 1.4037613508024687
+    },
+    "setting": {},
+    "lost_p_mw": 39.81683789999988,
+    "lost_q_absorption_mvar": 0.0,
+    "shed_mw": 0.0,
+    "island": ""
+  },
+  {
+    "time_s": 22.834867929,
+    "code": "GTRIP_GENROU_375",
+    "category": "generator_trip",
+    "description": "GENROU_375 tripped by generator OV2",
+    "trigger": "generator_OV2",
+    "device": "GENROU_375",
+    "bus": 7400,
+    "measured": {
+      "value": 1.3185837952344532,
+      "p_mw": 791.8358906347762,
+      "q_mvar": -508.4694877921136
+    },
+    "setting": {
+      "pickup": 1.2,
+      "delay_s": 0.16
+    },
+    "lost_p_mw": 791.8358906347762,
+    "lost_q_absorption_mvar": 508.4694877921136,
+    "shed_mw": 0.0,
+    "island": "0"
+  },
+  {
+    "time_s": 22.843827498,
+    "code": "GTRIP_GENROU_296",
+    "category": "generator_trip",
+    "description": "GENROU_296 tripped by generator OV2",
+    "trigger": "generator_OV2",
+    "device": "GENROU_296",
+    "bus": 7138,
+    "measured": {
+      "value": 1.3052737289504623,
+      "p_mw": 871.8879959842884,
+      "q_mvar": -566.925961968889
+    },
+    "setting": {
+      "pickup": 1.2,
+      "delay_s": 0.16
+    },
+    "lost_p_mw": 871.8879959842884,
+    "lost_q_absorption_mvar": 566.925961968889,
+    "shed_mw": 0.0,
+    "island": "0"
+  },
+  {
+    "time_s": 22.843827498,
+    "code": "GTRIP_GENROU_322",
+    "category": "generator_trip",
+    "description": "GENROU_322 tripped by generator OV2",
+    "trigger": "generator_OV2",
+    "device": "GENROU_322",
+    "bus": 7209,
+    "measured": {
+      "value": 1.2934999580206306,
+      "p_mw": 1513.9937299399983,
+      "q_mvar": -799.4961337786234
+    },
+    "setting": {
+      "pickup": 1.2,
+      "delay_s": 0.16
+    },
+    "lost_p_mw": 1513.9937299399983,
+    "lost_q_absorption_mvar": 799.4961337786234,
+    "shed_mw": 0.0,
+    "island": "0"
+  },
+  {
+    "time_s": 22.843827498,
+    "code": "GTRIP_GENROU_344",
+    "category": "generator_trip",
+    "description": "GENROU_344 tripped by generator OV2",
+    "trigger": "generator_OV2",
+    "device": "GENROU_344",
+    "bus": 7335,
+    "measured": {
+      "value": 1.2889552802121018,
+      "p_mw": 740.033488064066,
+      "q_mvar": -697.0632083447816
+    },
+    "setting": {
+      "pickup": 1.2,
+      "delay_s": 0.16
+    },
+    "lost_p_mw": 740.033488064066,
+    "lost_q_absorption_mvar": 697.0632083447816,
+    "shed_mw": 0.0,
+    "island": "0"
+  },
+  {
+    "time_s": 22.852339088,
+    "code": "GTRIP_GENROU_321",
+    "category": "generator_trip",
+    "description": "GENROU_321 tripped by generator OV2",
+    "trigger": "generator_OV2",
+    "device": "GENROU_321",
+    "bus": 7208,
+    "measured": {
+      "value": 1.3155772461544037,
+      "p_mw": 1912.1814227479654,
+      "q_mvar": -1094.1722155813916
+    },
+    "setting": {
+      "pickup": 1.2,
+      "delay_s": 0.16
+    },
+    "lost_p_mw": 1912.1814227479654,
+    "lost_q_absorption_mvar": 1094.1722155813916,
+    "shed_mw": 0.0,
+    "island": "0"
+  },
+  {
+    "time_s": 22.869319711,
+    "code": "GTRIP_GENROU_351",
+    "category": "generator_trip",
+    "description": "GENROU_351 tripped by generator OV2",
+    "trigger": "generator_OV2",
+    "device": "GENROU_351",
+    "bus": 7355,
+    "measured": {
+      "value": 1.2835545233725123,
+      "p_mw": 2074.3776544482744,
+      "q_mvar": -562.9961920060284
+    },
+    "setting": {
+      "pickup": 1.2,
+      "delay_s": 0.16
+    },
+    "lost_p_mw": 2074.3776544482744,
+    "lost_q_absorption_mvar": 562.9961920060284,
+    "shed_mw": 0.0,
+    "island": "0"
+  },
+  {
+    "time_s": 22.869319711,
+    "code": "UFLS5",
+    "category": "ufls",
+    "description": "UFLS stage 5 sheds 7.5% of load in island(s) [0]",
+    "trigger": "island_coi_underfrequency",
+    "device": "",
+    "bus": null,
+    "measured": {
+      "f_pu_min": 0.9515409937061289,
+      "loads": 241
+    },
+    "setting": {
+      "pickup_pu": 0.964,
+      "delay_s": 0.15
+    },
+    "lost_p_mw": 0.0,
+    "lost_q_absorption_mvar": 0.0,
+    "shed_mw": 1403.0738070357006,
+    "island": "0"
+  },
+  {
+    "time_s": 22.921157317,
+    "code": "GTRIP_GENROU_350",
+    "category": "generator_trip",
+    "description": "GENROU_350 tripped by generator OV2",
+    "trigger": "generator_OV2",
+    "device": "GENROU_350",
+    "bus": 7354,
+    "measured": {
+      "value": 1.3845269480659208,
+      "p_mw": 3050.410564586959,
+      "q_mvar": -1439.5372310817106
+    },
+    "setting": {
+      "pickup": 1.2,
+      "delay_s": 0.16
+    },
+    "lost_p_mw": 3050.410564586959,
+    "lost_q_absorption_mvar": 1439.5372310817106,
+    "shed_mw": 0.0,
+    "island": "0"
+  },
+  {
+    "time_s": 22.92834951,
+    "code": "GTRIP_GENROU_349",
+    "category": "generator_trip",
+    "description": "GENROU_349 tripped by generator OV2",
+    "trigger": "generator_OV2",
+    "device": "GENROU_349",
+    "bus": 7353,
+    "measured": {
+      "value": 1.2656280447042965,
+      "p_mw": 3130.680667488401,
+      "q_mvar": -978.3755841251793
+    },
+    "setting": {
+      "pickup": 1.2,
+      "delay_s": 0.16
+    },
+    "lost_p_mw": 3130.680667488401,
+    "lost_q_absorption_mvar": 978.3755841251793,
+    "shed_mw": 0.0,
+    "island": "0"
+  },
+  {
+    "time_s": 22.92834951,
+    "code": "GTRIP_GENROU_352",
+    "category": "generator_trip",
+    "description": "GENROU_352 tripped by generator OV2",
+    "trigger": "generator_OV2",
+    "device": "GENROU_352",
+    "bus": 7356,
+    "measured": {
+      "value": 1.3114750234222814,
+      "p_mw": 4904.854744168306,
+      "q_mvar": -58.189995983554134
+    },
+    "setting": {
+      "pickup": 1.2,
+      "delay_s": 0.16
+    },
+    "lost_p_mw": 4904.854744168306,
+    "lost_q_absorption_mvar": 58.189995983554134,
+    "shed_mw": 0.0,
+    "island": "0"
+  },
+  {
+    "time_s": 22.934499,
+    "code": "TDS_STOP",
+    "category": "tds_nonconvergence",
+    "description": "ANDES TDS failed to converge; the run is inconclusive beyond this time.",
+    "trigger": "numerical",
+    "device": "",
+    "bus": null,
+    "measured": {},
+    "setting": {},
+    "lost_p_mw": 0.0,
+    "lost_q_absorption_mvar": 0.0,
+    "shed_mw": 0.0,
+    "island": ""
+  }
+]

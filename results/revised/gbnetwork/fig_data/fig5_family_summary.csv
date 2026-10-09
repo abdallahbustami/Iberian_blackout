@@ -1,0 +1,9 @@
+family,n_events,worst_k_pk_nonself,worst_event,n_events_kmax_ge1,n_pairs_k_pk_ge1,n_tds_dangerous,n_tds_conclusive
+plant_trip,20,7.590704226254953,plant_trip:RES06,10,34,9,20
+fixed_pf_ramp,20,3.294764369277729,fixed_pf_ramp:RES07,10,16,10,20
+load_disconnection,10,2.28748076327537,load_disconnection:PQ_189,2,3,2,10
+generator_trip,6,0.023044190924758217,generator_trip:29,0,0,0,6
+generation_redispatch,3,0.0030072409652446043,generation_redispatch:187->176,0,0,0,3
+shunt_reactor_disconnection,5,1.2746332692922546,shunt_reactor_disconnection:SHR03,2,2,2,5
+capacitor_switching,2,1.7022186695345254,capacitor_switching:SHC02,1,1,1,2
+line_energization,2,0.581589588017795,line_energization:LPAR01,0,0,0,2

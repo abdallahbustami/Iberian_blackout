@@ -1,0 +1,30 @@
+{
+  "blas_threads": "1",
+  "relay": "fast",
+  "states": [
+    {
+      "slug": "stock_m0p02",
+      "screen_factory_s": 2.4794975830009207,
+      "screen_pre_mode_s": 7.943801500019617,
+      "screen_events_s": 99.40829974610824,
+      "screen_total_s": 109.83159882912878,
+      "tds_runs": 53,
+      "tds_total_s": 809.5624409618322,
+      "tds_median_s": 15.285924041992985,
+      "tds_over_screen": 7.370942876114498,
+      "tds_trips_equal_validation": true
+    },
+    {
+      "slug": "C1p5_m0p02",
+      "screen_factory_s": 1.370755750045646,
+      "screen_pre_mode_s": 3.4229337080032565,
+      "screen_events_s": 71.06830325012561,
+      "screen_total_s": 75.86199270817451,
+      "tds_runs": 53,
+      "tds_total_s": 948.2732801261591,
+      "tds_median_s": 17.323861500015482,
+      "tds_over_screen": 12.499978530408125,
+      "tds_trips_equal_validation": true
+    }
+  ]
+}

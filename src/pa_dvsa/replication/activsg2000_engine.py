@@ -1,323 +1,1473 @@
-"""ACTIVSg2000 surrogate replication of the Iberian overvoltage cascade.
-
-This script builds a final-report-constrained academic surrogate on the
-``activsg2000_stable`` ANDES case.  It does not claim geographic equivalence to
-Iberia.  The point is narrower and closer to the paper: on a large dynamic
-benchmark, hidden collector-side overvoltage protection can trip plant blocks
-after voltage-control actions remove reactive absorption, and each trip removes
-more absorption.  The default calibration follows the final report's mechanism:
-a Granada-like first protected transformer/collector trip while the upstream
-transmission voltage is elevated but not yet catastrophic, followed by larger
-Badajoz-like plant blocks and additional loss of reactive absorption.
-
-Default run:
-
-    PYTHONPATH=src python replication.py --plot
-
-Outputs are written to ``results/activsg2000_iberian_replication`` and, when
-``--plot`` is supplied, a figure is also copied into
-``LaTeX/figures/generated/fig_replication_activsg2000.*``.
+"""Simulation engine of the 2000-bus system: builds the ACTIVSg2000 case in ANDES with protected plants, relays,
+underfrequency load shedding and out-of-step separation, runs it, and writes its traces and events.
 """
 
 from __future__ import annotations
 
 import argparse
-from collections import defaultdict, deque
-from contextlib import redirect_stderr, redirect_stdout
 import csv
-from dataclasses import asdict, dataclass, field, replace
+import hashlib
+import heapq
 import io
 import json
-from pathlib import Path
-import shutil
+import math
 import sys
-from typing import Any
+import time
+from collections import defaultdict
+from contextlib import redirect_stderr, redirect_stdout
+from dataclasses import asdict, dataclass, field, replace
+from pathlib import Path
+from typing import Any, Iterable, Sequence
 
 import numpy as np
 
 from pa_dvsa.andes_adapter import AndesCase, AndesCaseSpec
+from pa_dvsa.andes_regularization import regularize_degenerate_blocks
+
+NOMINAL_FREQ_EQ_HZ = 50.0
+DEFAULT_OUT_ROOT = Path(__file__).resolve().parents[3] / "results" / "revised" / "activsg2000"
 
 
 @dataclass(frozen=True, slots=True)
-class OverVoltageRelayStage:
+class DefiniteTimeStage:
     name: str
-    pickup_pu: float
-    dwell_s: float
-    reset_ratio: float = 0.95
+    quantity: str
+    direction: str
+    pickup: float
+    delay_s: float
+    dropout_ratio: float = 0.98
+    basis: str = ""
+
+    def __post_init__(self) -> None:
+        if self.quantity not in {"voltage", "frequency", "angle"}:
+            raise ValueError(f"unknown quantity {self.quantity!r}")
+        if self.direction not in {"over", "under"}:
+            raise ValueError(f"unknown direction {self.direction!r}")
+        if not (0.5 < self.dropout_ratio <= 1.0):
+            raise ValueError("dropout_ratio must be in (0.5, 1]")
+        if self.delay_s < 0:
+            raise ValueError("delay must be nonnegative")
+
+
+FAST_OV_STAGE = DefiniteTimeStage(
+    "OVF", "voltage", "over", 1.10, 0.05, 0.98,
+    "fast definite-time plant OV (1.10 pu, 50 ms) as in the benchmark studies",
+)
+
+
+def plant_ov_stages(mode: str, ov1_delay_s: float = 1.0) -> tuple[DefiniteTimeStage, ...]:
+    if mode == "fast":
+        return (FAST_OV_STAGE,)
+    if mode != "standard":
+        raise ValueError(f"unknown plant OV mode {mode!r}")
+    return tuple(st for st in _plant_stages(ov_enabled=True, ov1_delay_s=ov1_delay_s) if st.name in {"OV1", "OV2"})
+
+
+def _plant_stages(*, ov_enabled: bool, ov1_delay_s: float, ov_mode: str = "standard") -> tuple[DefiniteTimeStage, ...]:
+    stages = []
+    if ov_enabled and ov_mode == "fast":
+        stages.append(FAST_OV_STAGE)
+    elif ov_enabled:
+        stages += [
+            DefiniteTimeStage(
+                "OV1", "voltage", "over", 1.10, float(ov1_delay_s), 0.98,
+                "NERC PRC-024-3 HVRT boundary (>=1.10 pu may trip after 1.0 s); IEEE 2800-2022 continuous limit 1.10 pu",
+            ),
+            DefiniteTimeStage(
+                "OV2", "voltage", "over", 1.20, 0.16, 0.98,
+                "IEEE 1547-2018 OV2 default (1.20 pu, 0.16 s); PRC-024-3 allows instantaneous trip at 1.20 pu",
+            ),
+        ]
+    stages += [
+        DefiniteTimeStage("UV1", "voltage", "under", 0.75, 2.0, 0.98, "NERC PRC-024-3 LVRT boundary point (0.75 pu, 2.0 s)"),
+        DefiniteTimeStage("UV2", "voltage", "under", 0.45, 0.15, 0.98, "NERC PRC-024-3 LVRT boundary point (0.45 pu, 0.15 s)"),
+        DefiniteTimeStage(
+            "UF", "frequency", "under", 0.95, 0.20, 0.999,
+            "ENTSO-E RfG: units may disconnect below 47.5 Hz (0.95 pu); 0.2 s relay+breaker",
+        ),
+        DefiniteTimeStage(
+            "OF", "frequency", "over", 1.03, 0.20, 0.999,
+            "ENTSO-E RfG: units may disconnect above 51.5 Hz (1.03 pu); 0.2 s relay+breaker",
+        ),
+    ]
+    return tuple(stages)
+
+
+def _generator_stages() -> tuple[DefiniteTimeStage, ...]:
+    return (
+        DefiniteTimeStage("OV1", "voltage", "over", 1.10, 1.0, 0.98, "NERC PRC-024-3 HVRT boundary (1.10 pu, 1.0 s)"),
+        DefiniteTimeStage("OV2", "voltage", "over", 1.20, 0.16, 0.98, "1.20 pu, 0.16 s (as plants)"),
+        DefiniteTimeStage("UV1", "voltage", "under", 0.75, 2.0, 0.98, "NERC PRC-024-3 LVRT boundary point (0.75 pu, 2.0 s)"),
+        DefiniteTimeStage("UV2", "voltage", "under", 0.45, 0.15, 0.98, "NERC PRC-024-3 LVRT boundary point (0.45 pu, 0.15 s)"),
+        DefiniteTimeStage("UF", "frequency", "under", 0.95, 0.20, 0.999, "ENTSO-E RfG 47.5 Hz (0.95 pu)"),
+        DefiniteTimeStage("OF", "frequency", "over", 1.03, 0.20, 0.999, "ENTSO-E RfG 51.5 Hz (1.03 pu)"),
+    )
 
 
 @dataclass(frozen=True, slots=True)
-class CollectorSpec:
+class BlockSpec:
     name: str
-    transmission_bus: int
-    tap: float
-    threshold_pu: float
-    dwell_s: float
-    active_power_mw: float
-    q_absorption_mvar: float
-    fixed_pf_q_fraction: float = 0.35
-    base_kv: float = 115.0
-    fast_threshold_pu: float | None = None
-    fast_dwell_s: float | None = None
-    report_cluster: str = "E5 multi-site"
-    report_time_s: float = 15.5
-    min_trip_time_s: float = 0.0
-    relay_stages: tuple[OverVoltageRelayStage, ...] = ()
-    q_absorption_estimated: bool = False
-    visible_trace: bool = False
-
-
-@dataclass(slots=True)
-class CollectorRuntime:
-    spec: CollectorSpec
-    collector_bus: int
-    gsu_line_id: str
-    pq_id: str
-    main_q_shunt_id: str
-    fixed_pf_q_shunt_id: str
-    timer_s: float = 0.0
-    fast_timer_s: float = 0.0
-    tripped: bool = False
-    trip_time_s: float | None = None
-    trip_voltage_pu: float | None = None
-    trip_stage_name: str | None = None
-    last_voltage_pu: float = float("nan")
-    last_transmission_voltage_pu: float = float("nan")
-    max_voltage_pu: float = -float("inf")
-    max_voltage_time_s: float = 0.0
-    stage_timers_s: dict[str, float] = field(default_factory=dict)
-    stage_picked_up: dict[str, bool] = field(default_factory=dict)
-
-    @property
-    def main_q_absorption_mvar(self) -> float:
-        return self.spec.q_absorption_mvar * (1.0 - self.spec.fixed_pf_q_fraction)
-
-    @property
-    def fixed_pf_q_absorption_mvar(self) -> float:
-        return self.spec.q_absorption_mvar * self.spec.fixed_pf_q_fraction
-
-
-@dataclass(frozen=True, slots=True)
-class OperatorAction:
-    code: str
-    time_s: float
-    kind: str
-    description: str
-
-
-@dataclass(frozen=True, slots=True)
-class ReactorSwitchAction:
-    time_s: float
-    bus: int
-    q_mvar: float
-    final_status: int
-    description: str
-
-
-@dataclass(frozen=True, slots=True)
-class BlackoutDisturbanceAction:
-    time_s: float
-    bus: int
     p_mw: float
-    q_mvar: float
-    require_trip_count: int
+    q_report_mvar: float | None
+    report_cluster: str
+    source: str
+
+
+REPORT_BLOCKS: tuple[BlockSpec, ...] = (
+    BlockSpec("Granada355", 355.0, 165.0, "E3", "ENTSO-E final report p.14 (355 MW, 165 MVAr absorbed)"),
+    BlockSpec("Badajoz582", 582.0, 165.0, "E4", "report event chronology (E4a)"),
+    BlockSpec("Badajoz145", 145.0, 37.0, "E4", "report event chronology (E4b)"),
+    BlockSpec("Segovia23", 23.0, None, "E5", "report table MW; PF assumption"),
+    BlockSpec("Seville550", 550.0, None, "E5", "report table MW; PF assumption"),
+    BlockSpec("Segovia94", 94.0, None, "E5", "report table MW; PF assumption"),
+    BlockSpec("Badajoz118", 118.0, None, "E5", "report table MW; PF assumption"),
+    BlockSpec("Huelva34", 34.0, None, "E5", "report table MW; PF assumption"),
+    BlockSpec("Caceres38", 38.0, None, "E5", "report table MW; PF assumption"),
+    BlockSpec("Badajoz72", 72.0, None, "E5", "report table MW; PF assumption"),
+    BlockSpec("Badajoz16", 16.0, None, "E5", "report table MW; PF assumption"),
+    BlockSpec("Caceres41", 41.0, None, "E5", "report table MW; PF assumption"),
+    BlockSpec("Cadiz26", 26.0, None, "E5", "report table MW; PF assumption"),
+    BlockSpec("Cadiz128", 128.0, None, "E5", "report table MW; PF assumption"),
+    BlockSpec("Malaga154", 154.0, None, "E5", "report table MW; PF assumption"),
+    BlockSpec("Cuenca530", 530.0, None, "E5", "report table MW; PF assumption"),
+)
+
+
+@dataclass(frozen=True, slots=True)
+class PreCascadeAction:
+    code: str
+    kind: str
+    start_s: float
+    duration_s: float
+    size: float
+    unit: str
     description: str
+    justification: str
+
+
+def default_pre_cascade_actions() -> tuple[PreCascadeAction, ...]:
+    return (
+        PreCascadeAction(
+            "OA1a", "line_energization", 1.0, 0.0, 1.0, "circuit",
+            "Energize a second circuit in parallel with the 500 kV line of the renewable zone with the largest charging susceptance.",
+            "Report: TSOs coupled (meshed) EHV lines before 12:32, which adds line-charging MVAr and raises voltage.",
+        ),
+        PreCascadeAction(
+            "OA1b", "line_energization", 3.0, 0.0, 1.0, "circuit",
+            "Energize a second circuit in parallel with the zone 500 kV line with the second-largest charging susceptance.",
+            "As OA1a.",
+        ),
+        PreCascadeAction(
+            "OA2", "interchange_reduction", 5.0, 10.0, 1000.0, "MW",
+            "Reduce the affected area's export by 1000 MW through governor set points (area governor units down pro rata; the voltage-regulated governor units of the directly tied areas up, pro rata to dispatch).",
+            "Report: exports to France were reduced (HVDC set-point change); lower EHV loading reduces I^2X absorption and raises voltage. No HVDC exists in ACTIVSg2000, so the exchange change is modeled as a governor redispatch.",
+        ),
+        PreCascadeAction(
+            "OA3", "fixed_pf_res_reduction", 5.0, 10.0, 208.0, "MW",
+            "Reduce the output of all protected plants by 208 MW in total (pro rata) at constant power factor (P and Q scaled together).",
+            "Report event E2: 208 MW RES operating-point change; at fixed power factor the reactive absorption falls with P.",
+        ),
+    )
 
 
 @dataclass(frozen=True, slots=True)
-class HVDCSurrogateSpec:
-    name: str = "IBERIAN_HVDC_SURROGATE"
-    local_bus: int = 7406
-    remote_bus: int = 7058
-    transfer_mw: float = 550.0
-    reactive_support_mvar: float = 420.0
-    min_block_time_s: float = 21.0
-    block_voltage_pu: float = 0.88
-    block_over_voltage_pu: float = 1.135
-    block_frequency_hz: float = 47.5
-    dwell_s: float = 0.08
-    require_collector_trips: int = 6
-    require_france_ac_separation: bool = True
+class ReplicaConfig:
+    case_id: str = "activsg2000_stable"
+    variant: str = "baseline"
+    mode: str = "physics"
+    tf_s: float = 60.0
+    tstep_s: float = 0.01
+    tds_tol: float = 1e-4
+    tds_max_iter: int = 25
+    pflow_tol: float = 1e-8
+    affected_area: int = 7
+    load_scale: float = 0.63
+    blocks: tuple[BlockSpec, ...] = REPORT_BLOCKS
+    fixed_pf: float = 0.95
+    zone_size: int = 16
+    zone_min_kv: float = 230.0
+    gsu_x_on_rating: float = 0.12
+    gsu_rating_factor: float = 1.15
+    gsu_x_over_r: float = 40.0
+    collector_kv: float = 34.5
+    tap_rule: str = "margin"
+    tap_fixed: float = 0.95
+    tap_margin_pu: float = 0.01
+    tap_override: float | None = None
+    pvd1_ialim: float = 1.3
+    plant_ov_enabled: bool = True
+    plant_ov1_delay_s: float = 1.0
+    generator_protection_enabled: bool = True
+    pole_slip_deg: float = 180.0
+    ufls_stages: tuple[tuple[float, float], ...] = (
+        (0.980, 0.075), (0.976, 0.075), (0.972, 0.075), (0.968, 0.075), (0.964, 0.075), (0.960, 0.075),
+    )
+    ufls_delay_s: float = 0.15
+    separation_enabled: bool = True
+    separation_angle_deg: float = 120.0
+    separation_delay_s: float = 0.05
+    collapse_voltage_pu: float = 0.5
+    collapse_f_low_pu: float = 0.95
+    collapse_f_high_pu: float = 1.05
+    collapse_dwell_s: float = 0.5
+    pre_cascade_actions: tuple[PreCascadeAction, ...] = field(default_factory=default_pre_cascade_actions)
+    pre_cascade_enabled: bool = True
+    preserved_absorption: bool = False
+    voltage_mode_res: bool = False
+    volt_var_slope: float = 7.33
+    candidate_capacitors_mvar: tuple[float, ...] = (50.0, 100.0)
+    record_every: int = 2
+    forced_separation_at_s: float | None = None
+    commitment_c: float | None = None
+    dispatch_rule: str = "must_run"
+    must_run_fraction: float = 0.20
+    plant_ov_mode: str = "standard"
+    shadow_plant_ov: bool = False
+    oa2_counterpart: str = "exciter_units"
+    tie_impedance_scale: float = 1.0
+    export_reduction_mw: float = 0.0
+    export_counterpart: str = "rest_generation"
+    exciter_completion: str = "none"
+    completion_sexs: tuple[tuple[str, float], ...] = ()
+    initiating_block: str | None = None
+    initiating_time_s: float = 15.0
+    freeze_other_islands_after_separation: bool = True
+    load_model: str = "z"
+    initial_mesh_closed: int = 0
+    extra_plant_stages: tuple[tuple[str, DefiniteTimeStage], ...] = ()
+    area_q_control_tc_s: float = 0.0
+    q_control_gain: float = 8.0
+    area_ehv_shunt_mvar: float = 0.0
+    area_uel_tc_s: float = 0.0
+    embedded_pv_share: float = 0.0
+    embedded_pv_tranches: tuple[float, ...] = (0.01, 0.02, 0.03, 0.045, 0.06)
+    embedded_pv_ov: tuple[tuple[float, float], ...] = ((1.10, 1.5), (1.148, 0.2))
+    plant_relay_side: str = "collector"
+    block_tap_factor: tuple[tuple[str, float], ...] = ()
+    area_pss_completion: bool = False
+
+    @property
+    def tanphi(self) -> float:
+        return math.tan(math.acos(float(self.fixed_pf)))
+
+    def plant_stages(self) -> tuple[DefiniteTimeStage, ...]:
+        return _plant_stages(ov_enabled=self.plant_ov_enabled, ov1_delay_s=self.plant_ov1_delay_s,
+                             ov_mode=self.plant_ov_mode)
+
+    def generator_stages(self) -> tuple[DefiniteTimeStage, ...]:
+        return _generator_stages()
+
+
+VARIANTS: dict[str, str] = {
+    "baseline": "Physics mode: report-like pre-cascade actions, uniform standard protection, everything after that emergent.",
+    "no_pre_cascade_actions": "Control run: no operator actions (OA1-OA3); checks that the operating point is steady.",
+    "no_ov_protection": "Plant over-voltage relays disabled (OV1/OV2 removed); all other protection unchanged.",
+    "delayed_protection": "Plant OV1 delay 2.0 s (IEEE 1547-2018 default OV1 clearing time) instead of 1.0 s.",
+    "preserved_absorption": "A plant trip removes its MW, but a collector reactor switched in at the trip keeps the pre-trip MVAr absorption.",
+    "voltage_mode_res": "Protected plants in volt-var mode (PVD1 droop dq/dv = 7.33 pu/pu on rating above the operating voltage), same initial operating point.",
+}
+
+
+def variant_config(variant: str = "baseline", **overrides: Any) -> ReplicaConfig:
+    if variant not in VARIANTS:
+        raise ValueError(f"unknown variant {variant!r}; choose from {sorted(VARIANTS)}")
+    cfg = ReplicaConfig(variant=variant)
+    if variant == "no_pre_cascade_actions":
+        cfg = replace(cfg, pre_cascade_enabled=False)
+    elif variant == "no_ov_protection":
+        cfg = replace(cfg, plant_ov_enabled=False)
+    elif variant == "delayed_protection":
+        cfg = replace(cfg, plant_ov1_delay_s=2.0)
+    elif variant == "preserved_absorption":
+        cfg = replace(cfg, preserved_absorption=True)
+    elif variant == "voltage_mode_res":
+        cfg = replace(cfg, voltage_mode_res=True)
+    if overrides:
+        cfg = replace(cfg, **overrides)
+    return cfg
+
+
+class QuietAndes:
+    def __init__(self, quiet: bool) -> None:
+        self.quiet = quiet
+
+    def __enter__(self) -> None:
+        if self.quiet:
+            import logging
+
+            self._buf_out, self._buf_err = io.StringIO(), io.StringIO()
+            self._cm_out, self._cm_err = redirect_stdout(self._buf_out), redirect_stderr(self._buf_err)
+            self._cm_out.__enter__()
+            self._cm_err.__enter__()
+            self._logger = logging.getLogger("andes")
+            self._level = self._logger.level
+            self._logger.setLevel(logging.ERROR + 10)
+        return None
+
+    def __exit__(self, *exc: Any) -> bool:
+        if self.quiet:
+            self._logger.setLevel(self._level)
+            self._cm_err.__exit__(*exc)
+            self._cm_out.__exit__(*exc)
+        return False
+
+
+def _pos(model: Any, idx: Any) -> int:
+    values = list(model.idx.v)
+    try:
+        return values.index(idx)
+    except ValueError:
+        pass
+    s = str(idx)
+    for i, v in enumerate(values):
+        if str(v) == s:
+            return i
+    raise KeyError(f"{model.class_name} has no device {idx!r}")
+
+
+def _n(system: Any, name: str) -> int:
+    return int(getattr(getattr(system, name, None), "n", 0) or 0)
+
+
+def _dijkstra(adj: dict[int, list[tuple[int, float]]], sources: Iterable[int]) -> dict[int, float]:
+    dist: dict[int, float] = {}
+    heap: list[tuple[float, int]] = []
+    for s in sources:
+        dist[int(s)] = 0.0
+        heap.append((0.0, int(s)))
+    heapq.heapify(heap)
+    while heap:
+        d, b = heapq.heappop(heap)
+        if d > dist.get(b, math.inf):
+            continue
+        for nb, w in adj.get(b, ()):
+            nd = d + w
+            if nd < dist.get(nb, math.inf) - 1e-15:
+                dist[nb] = nd
+                heapq.heappush(heap, (nd, nb))
+    return dist
+
+
+def _components(buses: Sequence[int], edges: Iterable[tuple[int, int]]) -> list[set[int]]:
+    parent = {int(b): int(b) for b in buses}
+
+    def find(x: int) -> int:
+        while parent[x] != x:
+            parent[x] = parent[parent[x]]
+            x = parent[x]
+        return x
+
+    for a, b in edges:
+        ra, rb = find(int(a)), find(int(b))
+        if ra != rb:
+            parent[ra] = rb
+    groups: dict[int, set[int]] = defaultdict(set)
+    for b in parent:
+        groups[find(b)].add(b)
+    return sorted(groups.values(), key=lambda s: (-len(s), min(s)))
+
+
+def _write_csv(path: Path, rows: list[dict[str, Any]]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    if not rows:
+        path.write_text("", encoding="utf-8")
+        return
+    fields: list[str] = []
+    for row in rows:
+        for key in row:
+            if key not in fields:
+                fields.append(key)
+    with path.open("w", newline="", encoding="utf-8") as fh:
+        writer = csv.DictWriter(fh, fieldnames=fields)
+        writer.writeheader()
+        writer.writerows(rows)
+
+
+def _jsonable(obj: Any) -> Any:
+    if isinstance(obj, dict):
+        return {str(k): _jsonable(v) for k, v in obj.items()}
+    if isinstance(obj, (list, tuple, set, frozenset)):
+        return [_jsonable(v) for v in obj]
+    if isinstance(obj, (np.integer,)):
+        return int(obj)
+    if isinstance(obj, (np.floating, float)):
+        f = float(obj)
+        return f if math.isfinite(f) else None
+    if isinstance(obj, np.ndarray):
+        return _jsonable(obj.tolist())
+    if isinstance(obj, Path):
+        return str(obj)
+    return obj
+
+
+IEEEST_F2_FAST_POLES = {"A3": 2.0e-3, "A4": 1.0e-6}
+
+
+def regularize_improper_ieeest(system: Any) -> list[dict[str, Any]]:
+    if getattr(system, "is_setup", False):
+        raise RuntimeError("regularize_improper_ieeest must be called before System.setup()")
+    changes: list[dict[str, Any]] = []
+    model = getattr(system, "IEEEST", None)
+    if model is None or not model.n:
+        return changes
+    for i in range(model.n):
+        a3, a4 = float(model.A3.v[i]), float(model.A4.v[i])
+        a5, a6 = float(model.A5.v[i]), float(model.A6.v[i])
+        if a3 == 0.0 and a4 == 0.0 and (a5 != 0.0 or a6 != 0.0):
+            model.A3.v[i] = IEEEST_F2_FAST_POLES["A3"]
+            model.A4.v[i] = IEEEST_F2_FAST_POLES["A4"]
+            changes.append(
+                {
+                    "model": "IEEEST",
+                    "idx": str(model.idx.v[i]),
+                    "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+                    "old": {"A3": a3, "A4": a4},
+                    "new": dict(IEEEST_F2_FAST_POLES),
+                }
+            )
+    return changes
+
+
+def _disable_predefined_events(system: Any) -> None:
+    for name in ("Toggle", "Alter", "Fault"):
+        model = getattr(system, name, None)
+        for i in range(int(getattr(model, "n", 0) or 0)):
+            model.u.v[i] = 0
+
+
+LOAD_P_COMPONENTS = ("Ppf", "Ipeq", "Req")
+EXCITER_MODELS = ("ESDC1A", "IEEET1", "SEXS", "ESST3A", "EXST1", "ESAC1A", "EXDC2", "ESST4B", "AC8B", "IEEEX1")
+GOVERNOR_MODELS = ("TGOV1", "TGOV1N", "IEEEG1", "HYGOV", "GAST")
+PSS_MODELS = ("IEEEST", "ST2CUT", "PSS2A")
+
+GENERIC_SEXS = {"TATB": 0.4, "TB": 5.0, "K": 20.0, "TE": 1.0, "EMIN": -99.0, "EMAX": 99.0}
+SCRX_SEXS = {"TATB": 0.1, "TB": 10.01, "K": 100.0, "TE": 0.05, "EMIN": -4.0, "EMAX": 5.0}
+
+
+LOAD_MODELS = {
+    "z": {"p2p": 0.0, "p2i": 0.0, "p2z": 1.0, "q2q": 0.0, "q2i": 0.0, "q2z": 1.0},
+    "iz": {"p2p": 0.0, "p2i": 1.0, "p2z": 0.0, "q2q": 0.0, "q2i": 0.0, "q2z": 1.0},
+    "es": {"p2p": 0.0, "p2i": 0.8, "p2z": 0.2, "q2q": 0.0, "q2i": 0.0, "q2z": 1.0},
+}
+
+
+def _load_system(cfg: ReplicaConfig, quiet: bool) -> Any:
+    if cfg.load_model not in LOAD_MODELS:
+        raise ValueError(f"unknown load_model {cfg.load_model!r}")
+    spec = AndesCaseSpec(
+        cfg.case_id,
+        setup=False,
+        run_pflow=False,
+        init_tds=False,
+        load_kwargs={"config_option": ["PV.pv2pq=1", "PFlow.max_iter=100"]},
+    )
+    with QuietAndes(quiet):
+        case = AndesCase.load(spec)
+    for key, value in LOAD_MODELS[cfg.load_model].items():
+        setattr(case.system.PQ.config, key, value)
+    return case.system
 
 
 @dataclass(slots=True)
-class HVDCSurrogateRuntime:
-    spec: HVDCSurrogateSpec
-    local_pq_id: str
-    remote_pq_id: str
-    timer_s: float = 0.0
-    blocked: bool = False
-    block_time_s: float | None = None
+class AffectedArea:
+    area_id: int
+    buses: set[int]
+    fragments_moved_out: list[int]
+    cut_branch_ids: list[str]
+    cut_branch_positions: list[int]
+    rest_buses: set[int]
 
 
-@dataclass(frozen=True, slots=True)
-class OutOfStepRelaySpec:
-    min_trip_time_s: float = 19.0
-    dwell_s: float = 0.08
-    angle_threshold_deg: float = 0.35
-    require_collector_trips: int = 6
-    require_morocco_trip: bool = True
-    boundary_line_count: int = 8
-
-
-@dataclass(slots=True)
-class OutOfStepRelayRuntime:
-    spec: OutOfStepRelaySpec
-    line_ids: list[str]
-    timer_s: float = 0.0
-    tripped: bool = False
-    trip_time_s: float | None = None
-
-
-@dataclass(frozen=True, slots=True)
-class UnderFrequencyTieRelaySpec:
-    min_trip_time_s: float = 18.0
-    dwell_s: float = 0.08
-    under_frequency_hz: float = 49.5
-    angle_threshold_deg: float = 0.60
-    require_collector_trips: int = 6
-    require_generator_trip: bool = True
-    boundary_line_count: int = 8
-
-
-@dataclass(slots=True)
-class UnderFrequencyTieRelayRuntime:
-    spec: UnderFrequencyTieRelaySpec
-    line_ids: list[str]
-    timer_s: float = 0.0
-    tripped: bool = False
-    trip_time_s: float | None = None
-
-
-@dataclass(frozen=True, slots=True)
-class GeneratorProtectionRelaySpec:
-    min_trip_time_s: float = 16.35
-    dwell_s: float = 0.08
-    under_voltage_pu: float = 0.93
-    under_frequency_hz: float = 49.8
-    angle_threshold_deg: float = 0.45
-    require_collector_trips: int = 6
-    target_mva: float = 8000.0
-    max_genrou: int = 16
+def select_affected_area(system: Any, area_id: int) -> AffectedArea:
+    buses = [int(b) for b in system.Bus.idx.v]
+    area = {int(b): int(a) for b, a in zip(system.Bus.idx.v, system.Bus.area.v)}
+    line = system.Line
+    online = [i for i in range(line.n) if float(line.u.v[i]) > 0.5]
+    in_area = {b for b in buses if area[b] == int(area_id)}
+    internal = [
+        (int(line.bus1.v[i]), int(line.bus2.v[i]))
+        for i in online
+        if int(line.bus1.v[i]) in in_area and int(line.bus2.v[i]) in in_area
+    ]
+    comps = _components(sorted(in_area), internal)
+    main = set(comps[0])
+    moved = sorted(set().union(*comps[1:])) if len(comps) > 1 else []
+    cut = [i for i in online if (int(line.bus1.v[i]) in main) != (int(line.bus2.v[i]) in main)]
+    cut_set = set(cut)
+    edges = [(int(line.bus1.v[i]), int(line.bus2.v[i])) for i in online if i not in cut_set]
+    gcomps = _components(buses, edges)
+    if len(gcomps) != 2:
+        raise RuntimeError(
+            f"opening the {len(cut)} boundary branches of area {area_id} gives {len(gcomps)} components "
+            f"(sizes {[len(c) for c in gcomps][:6]}); expected exactly two"
+        )
+    rest = set(buses) - main
+    return AffectedArea(
+        area_id=int(area_id),
+        buses=main,
+        fragments_moved_out=moved,
+        cut_branch_ids=[str(line.idx.v[i]) for i in cut],
+        cut_branch_positions=list(cut),
+        rest_buses=rest,
+    )
 
 
 @dataclass(slots=True)
-class GeneratorProtectionRelayRuntime:
-    spec: GeneratorProtectionRelaySpec
-    genrou_ids: list[str]
-    pv_ids: list[str]
-    timer_s: float = 0.0
-    tripped: bool = False
-    trip_time_s: float | None = None
-    tripped_mva: float = 0.0
-
-
-@dataclass(frozen=True, slots=True)
-class UFLSUVLSStageSpec:
-    name: str
-    min_time_s: float
-    load_fraction: float
-    under_voltage_pu: float = 0.90
-    under_frequency_hz: float = 49.0
-    dwell_s: float = 0.08
-    max_shed_mw: float = 1200.0
-
-
-@dataclass(slots=True)
-class UFLSUVLSStageRuntime:
-    spec: UFLSUVLSStageSpec
-    load_ids: list[str]
-    timer_s: float = 0.0
-    armed: bool = False
-    applied: bool = False
-    applied_time_s: float | None = None
-    shed_mw: float = 0.0
-
-
-@dataclass(frozen=True, slots=True)
-class BlackoutCriteriaSpec:
-    voltage_pu: float = 0.75
-    voltage_dwell_s: float = 0.08
-    frequency_hz: float = 47.5
-    frequency_dwell_s: float = 0.08
-    angle_threshold_deg: float = 2.5
-    angle_dwell_s: float = 1.20
-
-
-@dataclass(frozen=True, slots=True)
-class IslandBlackoutCriteriaSpec:
-    min_generation_mw: float = 250.0
-    min_reference_generation_mw: float = 50.0
-    voltage_pu: float = 0.86
-    voltage_dwell_s: float = 0.20
-    frequency_hz: float = 48.5
-    frequency_dwell_s: float = 0.20
-    angle_threshold_deg: float = 10.0
-    angle_dwell_s: float = 0.35
-    imbalance_fraction: float = 0.55
-    imbalance_dwell_s: float = 0.35
-    min_time_after_hvdc_block_s: float = 0.40
+class BlockRuntime:
+    spec: BlockSpec
+    hv_bus: int
+    collector_bus: int
+    gsu_id: str
+    pv_id: str
+    pvd1_id: str
+    p_sched_mw: float
+    q_sched_mvar: float
+    q_source: str
+    sn_mva: float
+    x_sys: float
+    r_sys: float
+    tap: float = float("nan")
+    zth_pu: float = float("nan")
+    preserve_shunt_id: str | None = None
+    z0_pu: float = float("nan")
+    hv_v0_pu: float = float("nan")
 
 
 @dataclass(slots=True)
-class BlackoutCriteriaRuntime:
-    spec: BlackoutCriteriaSpec
-    voltage_timer_s: float = 0.0
-    frequency_timer_s: float = 0.0
-    angle_timer_s: float = 0.0
-    declared: bool = False
-    declared_time_s: float | None = None
-    reason: str | None = None
+class ReplicaSystem:
+    system: Any
+    cfg: ReplicaConfig
+    armed: bool
+    area: AffectedArea
+    blocks: list[BlockRuntime]
+    zone_buses: list[int]
+    zone_center: int
+    gnet_pvd1_ids: list[str]
+    mesh_line_ids: list[str]
+    mesh_source_lines: list[str]
+    candidate_line_ids: list[str]
+    candidate_cap_ids: list[str]
+    physical_bus_count: int
+    disabled_exciters: list[str]
+    regularization: list[dict[str, Any]]
+    redispatch_area_gov: list[tuple[str, float]]
+    redispatch_rest_gov: list[tuple[str, float]]
+    base_notes: dict[str, Any]
+    tap: float
+    pflow_ok: bool = False
+    tds_initialized: bool = False
+    embedded_pv: list[dict[str, Any]] = field(default_factory=list)
+
+
+def _genrou_links(system: Any) -> dict[str, dict[str, list[str]]]:
+    links: dict[str, dict[str, list[str]]] = defaultdict(lambda: {"exciter": [], "governor": [], "pss": []})
+    exc_by_idx: dict[str, str] = {}
+    for kind, names in (("exciter", EXCITER_MODELS), ("governor", GOVERNOR_MODELS)):
+        for name in names:
+            model = getattr(system, name, None)
+            for i in range(int(getattr(model, "n", 0) or 0)):
+                syn = str(model.syn.v[i])
+                links[syn][kind].append(f"{name}:{model.idx.v[i]}")
+                if kind == "exciter":
+                    exc_by_idx[str(model.idx.v[i])] = syn
+    for name in PSS_MODELS:
+        model = getattr(system, name, None)
+        for i in range(int(getattr(model, "n", 0) or 0)):
+            avr = str(model.avr.v[i])
+            syn = exc_by_idx.get(avr)
+            if syn is not None:
+                links[syn]["pss"].append(f"{name}:{model.idx.v[i]}")
+    return links
+
+
+def _set_u(system: Any, ref: str, value: float) -> None:
+    model_name, idx = ref.split(":", 1)
+    model = getattr(system, model_name)
+    model.u.v[_pos(model, idx)] = float(value)
+
+
+def line_series_admittance(system: Any, line_idx: Any) -> complex:
+    p = _pos(system.Line, line_idx)
+    return 1.0 / complex(float(system.Line.r.v[p]) + 1e-8, float(system.Line.x.v[p]) + 1e-8)
+
+
+def set_line_status(system: Any, line_idx: Any, status: float) -> dict[str, float]:
+    line = system.Line
+    p = _pos(line, line_idx)
+    y = line_series_admittance(system, line_idx) * float(status)
+    before = {"ghk": float(line.ghk.v[p]), "bhk": float(line.bhk.v[p])}
+    line.u.v[p] = float(status)
+    line.ghk.v[p] = y.real
+    line.bhk.v[p] = y.imag
+    if hasattr(line, "yhk"):
+        line.yhk.v[p] = y
+    return {"ghk_before": before["ghk"], "bhk_before": before["bhk"], "ghk": y.real, "bhk": y.imag}
+
+
+def trip_machine_mutations(system: Any, gen_idx: Any) -> list[tuple[str, Any, str, float]]:
+    from pa_dvsa.events import generator_trip_mutations
+
+    return [(m.model, m.device_idx, m.attr, float(m.value))
+            for m in generator_trip_mutations(system, gen_idx, include_effective_status=True)]
+
+
+def _apply_attr(system: Any, model_name: str, idx: Any, attr: str, value: float) -> None:
+    model = getattr(system, model_name)
+    getattr(model, attr).v[_pos(model, idx)] = float(value)
+
+
+def _zone_and_assignment(
+    system: Any, cfg: ReplicaConfig, area: AffectedArea
+) -> tuple[int, list[int], dict[str, tuple[int, float]], list[str], dict[str, Any]]:
+    bus_ids = [int(b) for b in system.Bus.idx.v]
+    bpos = {b: i for i, b in enumerate(bus_ids)}
+    vn = {int(b): float(v) for b, v in zip(system.Bus.idx.v, system.Bus.Vn.v)}
+    line = system.Line
+    adj: dict[int, list[tuple[int, float]]] = defaultdict(list)
+    degree: dict[int, set[int]] = defaultdict(set)
+    for i in range(line.n):
+        if float(line.u.v[i]) <= 0.5:
+            continue
+        a, b, x = int(line.bus1.v[i]), int(line.bus2.v[i]), abs(float(line.x.v[i]))
+        adj[a].append((b, x))
+        adj[b].append((a, x))
+        degree[a].add(b)
+        degree[b].add(a)
+    gen_buses = {int(b) for b in system.PV.bus.v} | {int(b) for b in system.Slack.bus.v}
+    genrou_gen = {str(g) for g in system.GENROU.gen.v}
+    links = _genrou_links(system)
+    avr_buses = {
+        int(system.GENROU.bus.v[i])
+        for i in range(system.GENROU.n)
+        if float(system.GENROU.u.v[i]) > 0.5 and links[str(system.GENROU.idx.v[i])]["exciter"]
+    }
+    static_pv_buses = {
+        int(system.PV.bus.v[i])
+        for i in range(system.PV.n)
+        if float(system.PV.u.v[i]) > 0.5 and str(system.PV.idx.v[i]) not in genrou_gen
+        and int(system.PV.bus.v[i]) not in area.buses
+    }
+    candidates = sorted(
+        b for b in area.buses if vn[b] >= cfg.zone_min_kv and b not in gen_buses and len(degree[b]) >= 2
+    )
+    d_src = _dijkstra(adj, avr_buses | static_pv_buses)
+    center = max(candidates, key=lambda b: (round(d_src.get(b, math.inf), 12), -b))
+    d_c = _dijkstra(adj, [center])
+    zone = sorted(candidates, key=lambda b: (round(d_c.get(b, math.inf), 12), b))[: cfg.zone_size]
+    if len(zone) < len(cfg.blocks):
+        raise RuntimeError("not enough candidate buses for the protected blocks")
+
+    from scipy import sparse
+    from scipy.sparse.linalg import splu
+
+    n = len(bus_ids)
+    rows: list[int] = []
+    cols: list[int] = []
+    vals: list[complex] = []
+    for i in range(line.n):
+        if float(line.u.v[i]) <= 0.5:
+            continue
+        a, b = bpos[int(line.bus1.v[i])], bpos[int(line.bus2.v[i])]
+        y = 1.0 / complex(float(line.r.v[i]), float(line.x.v[i]))
+        t = float(line.tap.v[i]) or 1.0
+        bc = 1j * float(line.b.v[i]) / 2.0
+        rows += [a, a, b, b]
+        cols += [a, b, a, b]
+        vals += [(y + bc) / t**2, -y / t, -y / t, y + bc]
+    g = system.GENROU
+    for i in range(g.n):
+        if float(g.u.v[i]) <= 0.5:
+            continue
+        a = bpos[int(g.bus.v[i])]
+        x = float(g.xd2.v[i]) * 100.0 / max(float(g.Sn.v[i]), 1e-6)
+        rows.append(a)
+        cols.append(a)
+        vals.append(1.0 / (1j * x))
+    ybus = sparse.csc_matrix((vals, (rows, cols)), shape=(n, n))
+    lu = splu(ybus)
+    zth: dict[int, float] = {}
+    for b in zone:
+        e = np.zeros(n, dtype=complex)
+        e[bpos[b]] = 1.0
+        zth[b] = float(abs(lu.solve(e)[bpos[b]]))
+    strong_first = sorted(zone, key=lambda b: (zth[b], b))
+    big_first = sorted(cfg.blocks, key=lambda s: (-s.p_mw, s.name))
+    assignment = {spec.name: (bus, zth[bus]) for spec, bus in zip(big_first, strong_first)}
+
+    zone_set = set(zone)
+    zone_lines = [
+        i
+        for i in range(line.n)
+        if float(line.u.v[i]) > 0.5
+        and float(line.trans.v[i]) < 0.5
+        and int(line.bus1.v[i]) in zone_set
+        and int(line.bus2.v[i]) in zone_set
+        and vn[int(line.bus1.v[i])] >= 500.0
+        and vn[int(line.bus2.v[i])] >= 500.0
+    ]
+    zone_lines.sort(key=lambda i: (-float(line.b.v[i]), str(line.idx.v[i])))
+    ordered_lines = [str(line.idx.v[i]) for i in zone_lines]
+    notes = {
+        "candidate_count": len(candidates),
+        "zone_center": center,
+        "zone_center_distance_to_regulation_pu_x": d_src.get(center),
+        "zone_distance_from_center_pu_x": {b: d_c.get(b) for b in zone},
+        "zone_zth_pu": zth,
+        "zone_500kv_lines_by_charging": ordered_lines,
+    }
+    return center, zone, assignment, ordered_lines, notes
+
+
+def build_replica_system(
+    cfg: ReplicaConfig,
+    *,
+    armed: bool = False,
+    quiet: bool = True,
+    disabled_exciters: Sequence[str] | None = None,
+    init_tds: bool = True,
+) -> ReplicaSystem:
+    if disabled_exciters is None:
+        disabled_exciters = detect_nonequilibrium_exciters(cfg, quiet=quiet)
+    tap_value = cfg.tap_override
+    if tap_value is None:
+        tap_value = solve_uniform_tap(cfg, quiet=quiet, disabled_exciters=disabled_exciters)
+    rs = _assemble(cfg, armed=armed, quiet=quiet, disabled_exciters=disabled_exciters, tap=float(tap_value))
+    _setup_and_pflow(rs, quiet=quiet)
+    if cfg.voltage_mode_res:
+        _configure_volt_var(rs)
+    if init_tds:
+        _init_tds(rs, quiet=quiet)
+    return rs
+
+
+_CACHE: dict[str, Any] = {}
+
+
+def _cache_key(cfg: ReplicaConfig, what: str) -> str:
+    relevant = {
+        "case_id": cfg.case_id,
+        "area": cfg.affected_area,
+        "load_scale": cfg.load_scale,
+        "blocks": [asdict(b) for b in cfg.blocks],
+        "fixed_pf": cfg.fixed_pf,
+        "zone": (cfg.zone_size, cfg.zone_min_kv),
+        "gsu": (cfg.gsu_x_on_rating, cfg.gsu_rating_factor, cfg.gsu_x_over_r),
+        "tap": (cfg.tap_rule, cfg.tap_fixed, cfg.tap_margin_pu, cfg.tap_override),
+        "commitment": (cfg.commitment_c, cfg.dispatch_rule, cfg.must_run_fraction),
+        "iberian": (cfg.tie_impedance_scale, cfg.export_reduction_mw, cfg.export_counterpart, cfg.exciter_completion,
+                    cfg.completion_sexs, cfg.load_model),
+        **({"initial_mesh_closed": cfg.initial_mesh_closed} if cfg.initial_mesh_closed else {}),
+        **({"area_ehv_shunt_mvar": cfg.area_ehv_shunt_mvar} if cfg.area_ehv_shunt_mvar else {}),
+        **({"embedded_pv_share": cfg.embedded_pv_share} if cfg.embedded_pv_share else {}),
+        **({"block_tap_factor": list(cfg.block_tap_factor)} if cfg.block_tap_factor else {}),
+        **({"area_pss_completion": True} if cfg.area_pss_completion else {}),
+        "what": what,
+    }
+    return hashlib.sha1(json.dumps(relevant, sort_keys=True, default=str).encode()).hexdigest()
+
+
+def detect_nonequilibrium_exciters(cfg: ReplicaConfig, *, quiet: bool = True, tol: float = 1e-4) -> list[str]:
+    key = _cache_key(cfg, "exciters")
+    if key in _CACHE:
+        return list(_CACHE[key])
+    probe_cfg = replace(cfg, tap_override=cfg.tap_fixed if cfg.tap_override is None else cfg.tap_override)
+    rs = _assemble(probe_cfg, armed=False, quiet=quiet, disabled_exciters=(), tap=float(probe_cfg.tap_override))
+    _setup_and_pflow(rs, quiet=quiet)
+    _init_tds(rs, quiet=quiet)
+    ss = rs.system
+    ss.TDS.fg_update(ss.exist.pflow_tds)
+    f = np.asarray(ss.dae.f, dtype=float)
+    bad: list[str] = []
+    for name in EXCITER_MODELS:
+        model = getattr(ss, name, None)
+        if model is None or not model.n:
+            continue
+        for k in range(model.n):
+            worst = 0.0
+            for state in model.states.values():
+                worst = max(worst, abs(float(f[state.a[k]])))
+            if worst > tol and float(model.u.v[k]) > 0.5:
+                bad.append(f"{name}:{model.idx.v[k]}")
+    _CACHE[key] = list(bad)
+    return bad
+
+
+def solve_uniform_tap(
+    cfg: ReplicaConfig, *, quiet: bool = True, disabled_exciters: Sequence[str] = ()
+) -> float:
+    if cfg.tap_rule == "fixed":
+        return float(cfg.tap_fixed)
+    key = _cache_key(cfg, "tap")
+    if key in _CACHE:
+        return float(_CACHE[key])
+    target = 1.10 - float(cfg.tap_margin_pu)
+
+    def excess(tap: float) -> float:
+        rs = _assemble(replace(cfg, tap_override=tap), armed=False, quiet=quiet,
+                       disabled_exciters=disabled_exciters, tap=float(tap))
+        _setup_and_pflow(rs, quiet=quiet)
+        return float(max(b.z0_pu for b in rs.blocks)) - target
+
+    grid = (0.86, 0.90, 0.94, 0.98, 1.02, 1.06)
+    vals: list[tuple[float, float]] = []
+    for t in grid:
+        vals.append((t, excess(t)))
+        if len(vals) >= 2 and vals[-2][1] > 0.0 >= vals[-1][1]:
+            break
+    pair = next(((a, fa, b, fb) for (a, fa), (b, fb) in zip(vals, vals[1:]) if fa > 0.0 >= fb), None)
+    if pair is None:
+        raise RuntimeError(f"margin target {target:.4f} not bracketed on the tap grid: "
+                           f"{[(t, round(f, 4)) for t, f in vals]}")
+    a, fa, b, fb = pair
+    side = 0
+    for _ in range(40):
+        c = b - fb * (b - a) / (fb - fa)
+        fc = excess(c)
+        if abs(fc) < 5e-5:
+            tap = round(float(c), 5)
+            _CACHE[key] = tap
+            return tap
+        if fc > 0.0:
+            a, fa = c, fc
+            if side == -1:
+                fb *= 0.5
+            side = -1
+        else:
+            b, fb = c, fc
+            if side == 1:
+                fa *= 0.5
+            side = 1
+    raise RuntimeError("GSU tap regula falsi did not converge")
+
+
+def area_commitment_summary(ss: Any, area: AffectedArea) -> dict[str, Any]:
+    g = ss.GENROU
+    links = _genrou_links(ss)
+    on = [i for i in range(g.n) if float(g.u.v[i]) > 0.5 and int(g.bus.v[i]) in area.buses]
+    return {
+        "area_online_sync_units": len(on),
+        "area_online_sync_mva": float(sum(float(g.Sn.v[i]) for i in on)),
+        "area_online_units_with_exciter": int(sum(1 for i in on if links[str(g.idx.v[i])]["exciter"])),
+        "area_online_units_with_governor": int(sum(1 for i in on if links[str(g.idx.v[i])]["governor"])),
+    }
+
+
+def decommit_area_units(ss: Any, area: AffectedArea, c_ratio: float, dispatch_mw: float) -> dict[str, Any]:
+    g = ss.GENROU
+    links = _genrou_links(ss)
+    slack_gens = {str(v) for v in ss.Slack.idx.v}
+    units = [i for i in range(g.n) if float(g.u.v[i]) > 0.5 and int(g.bus.v[i]) in area.buses]
+    cap = float(sum(float(g.Sn.v[i]) for i in units))
+    before = {"units": len(units), "mva": cap}
+    order = sorted((i for i in units if str(g.gen.v[i]) not in slack_gens),
+                   key=lambda i: (float(g.Sn.v[i]), int(g.bus.v[i]), str(g.idx.v[i])))
+    limit = float(c_ratio) * float(dispatch_mw)
+    removed: list[dict[str, Any]] = []
+    for i in order:
+        if cap <= limit + 1e-9:
+            break
+        gid = str(g.idx.v[i])
+        g.u.v[i] = 0.0
+        for ref in links[gid]["exciter"] + links[gid]["governor"] + links[gid]["pss"]:
+            _set_u(ss, ref, 0.0)
+        gen = g.gen.v[i]
+        others = [k for k in range(g.n) if k != i and str(g.gen.v[k]) == str(gen) and float(g.u.v[k]) > 0.5]
+        if not others:
+            ss.PV.u.v[_pos(ss.PV, gen)] = 0.0
+        cap -= float(g.Sn.v[i])
+        removed.append({"genrou": gid, "bus": int(g.bus.v[i]), "sn_mva": float(g.Sn.v[i]),
+                        "had_exciter": bool(links[gid]["exciter"])})
+    if cap > limit + 1e-9:
+        raise RuntimeError(f"cannot reach capacity <= {limit:.0f} MVA by decommitment")
+    return {
+        "rule": "ascending MVA rating, then bus id, then idx; slack unit kept; stop at capacity <= C x dispatch",
+        "c_ratio": float(c_ratio), "dispatch_mw_for_rule": float(dispatch_mw), "capacity_limit_mva": limit,
+        "before": before, "decommitted": removed, "decommitted_count": len(removed),
+        "decommitted_mva": float(sum(r["sn_mva"] for r in removed)),
+    }
+
+
+def water_fill_capped(p0: np.ndarray, floor: np.ndarray, cap: np.ndarray, target: float) -> tuple[float, np.ndarray]:
+    p0 = np.asarray(p0, dtype=float)
+    floor = np.minimum(np.asarray(floor, dtype=float), np.asarray(cap, dtype=float))
+    cap = np.asarray(cap, dtype=float)
+
+    def total(k: float) -> float:
+        return float(np.sum(np.clip(k * p0, floor, cap)))
+
+    if total(0.0) > target + 1e-9:
+        raise RuntimeError("must-run output alone exceeds the dispatch target")
+    k_hi = float(np.max(cap / np.maximum(p0, 1e-12))) * 1.01
+    if total(k_hi) < target - 1e-9:
+        raise RuntimeError("online capability cannot supply the dispatch target")
+    lo, hi = 0.0, k_hi
+    for _ in range(200):
+        mid = 0.5 * (lo + hi)
+        if total(mid) < target:
+            lo = mid
+        else:
+            hi = mid
+    k = 0.5 * (lo + hi)
+    return k, np.clip(k * p0, floor, cap)
+
+
+def must_run_dispatch(ss: Any, area: AffectedArea, target_pu: float, must_run_fraction: float) -> dict[str, Any]:
+    g = ss.GENROU
+    base = float(ss.config.mva)
+    links = _genrou_links(ss)
+    rating: dict[str, float] = defaultdict(float)
+    gov_min: dict[str, float] = defaultdict(float)
+    for i in range(g.n):
+        if float(g.u.v[i]) <= 0.5:
+            continue
+        key = str(g.gen.v[i])
+        rating[key] += float(g.Sn.v[i]) / base
+        for ref in links[str(g.idx.v[i])]["governor"]:
+            name, idx = ref.split(":", 1)
+            model = getattr(ss, name)
+            k = _pos(model, idx)
+            if float(model.u.v[k]) > 0.5 and hasattr(model, "VMIN"):
+                gov_min[key] += max(float(model.VMIN.v[k]), 0.0) * float(g.Sn.v[i]) / base
+    rows = [i for i in range(ss.PV.n)
+            if int(ss.PV.bus.v[i]) in area.buses and str(ss.PV.idx.v[i]) in rating
+            and float(ss.PV.u.v[i]) > 0.5 and float(ss.PV.p0.v[i]) > 0.0]
+    p0 = np.asarray([float(ss.PV.p0.v[i]) for i in rows])
+    cap = np.asarray([min(float(ss.PV.pmax.v[i]), rating[str(ss.PV.idx.v[i])]) for i in rows])
+    cap = np.maximum(cap, 1e-6)
+    floor = np.asarray([max(must_run_fraction * c, gov_min.get(str(ss.PV.idx.v[i]), 0.0))
+                        for i, c in zip(rows, cap)])
+    k, p_new = water_fill_capped(p0, floor, cap, float(target_pu))
+    for i, pn in zip(rows, p_new):
+        ss.PV.p0.v[i] = float(pn)
+    return {
+        "rule": "must_run", "k": k, "units": len(rows), "target_mw": float(target_pu) * base,
+        "units_at_must_run": int(np.sum(np.isclose(p_new, np.minimum(floor, cap)) & (k * p0 < floor))),
+        "units_at_capability": int(np.sum(np.isclose(p_new, cap) & (k * p0 > cap))),
+        "must_run_fraction": must_run_fraction,
+    }
+
+
+def complete_exciters(ss: Any, mode: str, custom: dict[str, float] | None = None) -> dict[str, Any]:
+    if mode == "none":
+        return {"mode": "none", "added": 0}
+    if mode not in {"all", "all_scrx", "all_custom"}:
+        raise ValueError(f"unknown exciter_completion {mode!r}")
+    if mode == "all_custom":
+        if not custom or set(custom) != set(GENERIC_SEXS):
+            raise ValueError(f"all_custom needs completion_sexs with keys {sorted(GENERIC_SEXS)}")
+        params = dict(custom)
+    else:
+        params = GENERIC_SEXS if mode == "all" else SCRX_SEXS
+    reparameterized = 0
+    if mode in {"all_scrx", "all_custom"}:
+        sexs = getattr(ss, "SEXS", None)
+        for k in range(int(getattr(sexs, "n", 0) or 0)):
+            if all(abs(float(getattr(sexs, p).v[k]) - v) < 1e-9 for p, v in GENERIC_SEXS.items()):
+                for p, v in params.items():
+                    getattr(sexs, p).v[k] = v
+                reparameterized += 1
+    links = _genrou_links(ss)
+    added = []
+    for i in range(ss.GENROU.n):
+        gid = str(ss.GENROU.idx.v[i])
+        if links[gid]["exciter"]:
+            continue
+        ss.add("SEXS", {"idx": f"SEXSC_{gid}", "name": f"SEXSC_{gid}", "syn": gid, "u": 1, **params})
+        added.append(gid)
+    return {"mode": mode, "added": len(added), "reparameterized_converted_sexs": reparameterized,
+            "parameters": dict(params),
+            "basis": {"all": "generic SEXS set ANDES uses for the case's converted exciter records",
+                      "all_scrx": "the case's SCRX static-exciter record (TE 0 -> 0.05 s)",
+                      "all_custom": "AVR-parameter sensitivity"}[mode]}
+
+
+def scale_cut_set_impedance(ss: Any, area: AffectedArea, k: float) -> int:
+    if float(k) == 1.0:
+        return 0
+    if not float(k) > 0.0:
+        raise ValueError("tie_impedance_scale must be positive")
+    line = ss.Line
+    for p in area.cut_branch_positions:
+        line.x.v[p] = float(line.x.v[p]) * float(k)
+        line.r.v[p] = float(line.r.v[p]) * float(k)
+    return len(area.cut_branch_positions)
+
+
+def raise_rest_generation(ss: Any, area: AffectedArea, delta_pu: float) -> dict[str, Any]:
+    links = _genrou_links(ss)
+    base = float(ss.config.mva)
+    rating: dict[str, float] = defaultdict(float)
+    for i in range(ss.GENROU.n):
+        if float(ss.GENROU.u.v[i]) <= 0.5 or int(ss.GENROU.bus.v[i]) in area.buses:
+            continue
+        lk = links[str(ss.GENROU.idx.v[i])]
+        if lk["exciter"] and lk["governor"]:
+            rating[str(ss.GENROU.gen.v[i])] += float(ss.GENROU.Sn.v[i]) / base
+    rows = [i for i in range(ss.PV.n) if str(ss.PV.idx.v[i]) in rating and int(ss.PV.bus.v[i]) not in area.buses
+            and float(ss.PV.u.v[i]) > 0.5 and float(ss.PV.p0.v[i]) > 0.0]
+    p0 = np.asarray([float(ss.PV.p0.v[i]) for i in rows])
+    cap = np.maximum(np.asarray([min(float(ss.PV.pmax.v[i]), rating[str(ss.PV.idx.v[i])]) for i in rows]), p0)
+    k, p_new = water_fill_capped(p0, p0, cap, float(p0.sum() + delta_pu))
+    for i, pn in zip(rows, p_new):
+        ss.PV.p0.v[i] = float(pn)
+    return {"rule": "rest-of-interconnection governor units with an exciter, pro rata, capped at capability",
+            "delta_mw": float(delta_pu) * base, "units": len(rows), "k": float(k),
+            "units_at_capability": int(np.sum(np.isclose(p_new, cap) & (cap > p0)))}
+
+
+def reduce_rest_load(ss: Any, area: AffectedArea, delta_pu: float) -> dict[str, Any]:
+    rows = [i for i in range(ss.PQ.n) if int(ss.PQ.bus.v[i]) not in area.buses and float(ss.PQ.u.v[i]) > 0.5]
+    total = float(sum(float(ss.PQ.p0.v[i]) for i in rows))
+    factor = 1.0 - float(delta_pu) / total
+    if not 0.5 < factor < 1.0:
+        raise RuntimeError(f"implausible rest-load scaling factor {factor:.3f}")
+    for i in rows:
+        ss.PQ.p0.v[i] = float(ss.PQ.p0.v[i]) * factor
+        ss.PQ.q0.v[i] = float(ss.PQ.q0.v[i]) * factor
+    return {"rule": "rest-of-interconnection load scaled down pro rata (constant PF)",
+            "delta_mw": float(delta_pu) * float(ss.config.mva), "factor": factor, "loads": len(rows)}
+
+
+def _assemble(
+    cfg: ReplicaConfig,
+    *,
+    armed: bool,
+    quiet: bool,
+    disabled_exciters: Sequence[str],
+    tap: float,
+) -> ReplicaSystem:
+    ss = _load_system(cfg, quiet)
+    _disable_predefined_events(ss)
+    completion = complete_exciters(ss, cfg.exciter_completion, dict(cfg.completion_sexs) or None)
+    regularization = [dict(item, source="pa_dvsa.andes_regularization") for item in regularize_degenerate_blocks(ss)]
+    regularization += regularize_improper_ieeest(ss)
+    for ref in disabled_exciters:
+        _set_u(ss, ref, 0.0)
+        regularization.append({"model": ref.split(":")[0], "idx": ref.split(":")[1],
+                               "reason": "exciter not in equilibrium at TDS init (regulator limits); disabled -> constant field"})
+    physical_bus_count = int(ss.Bus.n)
+    base_mva = float(ss.config.mva)
+    area = select_affected_area(ss, cfg.affected_area)
+    bus_ids = [int(b) for b in ss.Bus.idx.v]
+    vn = {int(b): float(v) for b, v in zip(ss.Bus.idx.v, ss.Bus.Vn.v)}
+    ties_scaled = scale_cut_set_impedance(ss, area, cfg.tie_impedance_scale)
+
+    center, zone, assignment, zone_lines, zone_notes = _zone_and_assignment(ss, cfg, area)
+
+    load_mw_before = 0.0
+    for i in range(ss.PQ.n):
+        if int(ss.PQ.bus.v[i]) in area.buses:
+            load_mw_before += float(ss.PQ.p0.v[i]) * base_mva
+            ss.PQ.p0.v[i] *= cfg.load_scale
+            ss.PQ.q0.v[i] *= cfg.load_scale
+    load_reduction_mw = load_mw_before * (1.0 - cfg.load_scale)
+
+    genrou_gen = {str(gg) for gg in ss.GENROU.gen.v}
+    area_sync_pv = [
+        i for i in range(ss.PV.n)
+        if int(ss.PV.bus.v[i]) in area.buses and str(ss.PV.idx.v[i]) in genrou_gen
+        and float(ss.PV.u.v[i]) > 0.5 and float(ss.PV.p0.v[i]) > 0.0
+    ]
+    sync_mw = sum(float(ss.PV.p0.v[i]) for i in area_sync_pv) * base_mva
+    block_mw = sum(b.p_mw for b in cfg.blocks)
+    sync_factor = 1.0 - (block_mw + load_reduction_mw) / sync_mw
+    if not (0.2 < sync_factor < 1.0):
+        raise RuntimeError(f"implausible synchronous re-dispatch factor {sync_factor:.3f}")
+    target_pv_mw = sync_mw * sync_factor
+    target_pv_mw -= float(cfg.export_reduction_mw)
+    commitment = {"commitment_c": cfg.commitment_c, "dispatch_rule": cfg.dispatch_rule}
+    if cfg.commitment_c is not None:
+        if cfg.dispatch_rule != "must_run":
+            raise ValueError("a commitment level requires dispatch_rule='must_run'")
+        commitment.update(decommit_area_units(ss, area, float(cfg.commitment_c),
+                                              target_pv_mw + float(np.sum(ss.Slack.p0.v)) * base_mva))
+    if cfg.dispatch_rule == "common_factor":
+        for i in area_sync_pv:
+            ss.PV.p0.v[i] *= sync_factor
+        commitment["dispatch"] = {"rule": "common_factor", "k": sync_factor}
+    elif cfg.dispatch_rule == "must_run":
+        commitment["dispatch"] = must_run_dispatch(ss, area, target_pv_mw / base_mva, cfg.must_run_fraction)
+    else:
+        raise ValueError(f"unknown dispatch rule {cfg.dispatch_rule!r}")
+    if cfg.export_reduction_mw > 0.0:
+        if cfg.export_counterpart == "rest_generation":
+            commitment["export_reduction"] = raise_rest_generation(ss, area, float(cfg.export_reduction_mw) / base_mva)
+        elif cfg.export_counterpart == "rest_load":
+            commitment["export_reduction"] = reduce_rest_load(ss, area, float(cfg.export_reduction_mw) / base_mva)
+        else:
+            raise ValueError(f"unknown export_counterpart {cfg.export_counterpart!r}")
+    commitment.update(area_commitment_summary(ss, area))
+
+    pss_added: list[str] = []
+    if cfg.area_pss_completion:
+        links0 = _genrou_links(ss)
+        st = ss.IEEEST
+        template = None
+        for k in range(st.n):
+            syn = str(st.syn.v[k]) if hasattr(st, "syn") else ""
+            gpos = _pos(ss.GENROU, syn) if syn in list(ss.GENROU.idx.v) else None
+            if gpos is not None and int(ss.GENROU.bus.v[gpos]) in area.buses and float(st.u.v[k]) > 0.5:
+                template = {p_: getattr(st, p_).v[k] for p_ in ("MODE", "A1", "A2", "A3", "A4", "A5", "A6", "T1", "T2",
+                                                                 "T3", "T4", "T5", "T6", "KS", "LSMAX", "LSMIN", "VCU", "VCL")}
+                break
+        if template is None:
+            raise RuntimeError("no IEEEST record in the affected area to copy")
+        disabled_set = set(disabled_exciters)
+        for i in range(ss.GENROU.n):
+            gid = str(ss.GENROU.idx.v[i])
+            if float(ss.GENROU.u.v[i]) <= 0.5 or int(ss.GENROU.bus.v[i]) not in area.buses or links0[gid]["pss"]:
+                continue
+            exc = [r for r in links0[gid]["exciter"] if r not in disabled_set]
+            if not exc:
+                continue
+            idx = f"PSSC_{gid}"
+            ss.add("IEEEST", {"idx": idx, "name": idx, "avr": exc[0].split(":", 1)[1], **template})
+            pss_added.append(idx)
+    commitment["pss_completion"] = pss_added
+
+    gnet_ids: list[str] = []
+    for i in range(ss.PV.n):
+        pid = ss.PV.idx.v[i]
+        if int(ss.PV.bus.v[i]) not in area.buses or str(pid) in genrou_gen or float(ss.PV.u.v[i]) <= 0.5:
+            continue
+        sn = float(ss.PV.Sn.v[i]) if float(ss.PV.Sn.v[i]) > 0 else 100.0
+        idx = f"GNET_{pid}"
+        ss.add("PVD1", _pvd1_params(idx, int(ss.PV.bus.v[i]), pid, sn, cfg))
+        gnet_ids.append(idx)
+
+    embedded: list[dict[str, Any]] = []
+    if cfg.embedded_pv_share > 0.0:
+        for i in range(ss.PQ.n):
+            bus = int(ss.PQ.bus.v[i])
+            p_load = float(ss.PQ.p0.v[i])
+            if bus not in area.buses or float(ss.PQ.u.v[i]) <= 0.5 or p_load <= 0.0:
+                continue
+            p_dg = float(cfg.embedded_pv_share) * p_load
+            ss.PQ.p0.v[i] = p_load + p_dg
+            pv_id = f"DGPV_{ss.PQ.idx.v[i]}"
+            ss.add("PV", {"idx": pv_id, "bus": bus, "p0": p_dg, "q0": 0.0, "v0": 1.0, "qmax": 0.0, "qmin": 0.0,
+                          "pmax": 1.2 * p_dg, "pmin": 0.0, "Sn": max(1.2 * p_dg * base_mva, 1.0), "Vn": vn[bus],
+                          "name": pv_id})
+            dg_id = f"DG_{ss.PQ.idx.v[i]}"
+            ss.add("PVD1", _pvd1_params(dg_id, bus, pv_id, max(1.2 * p_dg * base_mva, 1.0), cfg))
+            embedded.append({"pvd1_id": dg_id, "pv_id": pv_id, "bus": bus, "p_mw": p_dg * base_mva,
+                             "load_idx": str(ss.PQ.idx.v[i])})
+
+    next_bus = max(bus_ids) + 1
+    blocks: list[BlockRuntime] = []
+    res_fraction = 0.0
+    if armed and cfg.pre_cascade_enabled:
+        for act in cfg.pre_cascade_actions:
+            if act.kind == "fixed_pf_res_reduction":
+                res_fraction += act.size / block_mw
+    for k, spec in enumerate(cfg.blocks):
+        hv, zth = assignment[spec.name]
+        p = spec.p_mw
+        if spec.q_report_mvar is not None:
+            q = -abs(spec.q_report_mvar)
+            q_source = "report"
+        else:
+            q = -cfg.tanphi * p
+            q_source = f"PF {cfg.fixed_pf:.2f} absorbing (assumption)"
+        scale = 1.0 - res_fraction
+        sn = cfg.gsu_rating_factor * p
+        x = cfg.gsu_x_on_rating * base_mva / sn
+        r = x / cfg.gsu_x_over_r
+        cb = next_bus + k
+        btap = float(tap) * dict(cfg.block_tap_factor).get(spec.name, 1.0)
+        hp = bus_ids.index(hv)
+        ss.add("Bus", {"idx": cb, "name": f"{spec.name}_PLANT", "Vn": cfg.collector_kv,
+                       "v0": float(ss.Bus.v0.v[hp]) / btap, "a0": float(ss.Bus.a0.v[hp]),
+                       "area": cfg.affected_area})
+        gsu_id = f"GSU_{spec.name}"
+        ss.add("Line", {"idx": gsu_id, "bus1": hv, "bus2": cb, "r": r, "x": x, "b": 0.0, "tap": btap, "phi": 0.0,
+                        "trans": 1, "Vn1": vn[hv], "Vn2": cfg.collector_kv, "name": gsu_id})
+        pv_id = f"PVPH_{spec.name}"
+        qs = q * scale / base_mva
+        ss.add("PV", {"idx": pv_id, "bus": cb, "p0": p * scale / base_mva, "q0": qs, "v0": 1.05,
+                      "qmax": qs, "qmin": qs, "pmax": 1.2 * p / base_mva, "pmin": 0.0,
+                      "Sn": sn, "Vn": cfg.collector_kv, "name": pv_id})
+        pvd1_id = f"PVD1_{spec.name}"
+        ss.add("PVD1", _pvd1_params(pvd1_id, cb, pv_id, sn, cfg))
+        br = BlockRuntime(spec=spec, hv_bus=hv, collector_bus=cb, gsu_id=gsu_id, pv_id=pv_id, pvd1_id=pvd1_id,
+                          p_sched_mw=p, q_sched_mvar=q, q_source=q_source, sn_mva=sn, x_sys=x, r_sys=r, tap=btap,
+                          zth_pu=zth)
+        if cfg.preserved_absorption:
+            sid = f"QKEEP_{spec.name}"
+            ss.add("Shunt", {"idx": sid, "bus": cb, "g": 0.0, "b": 0.0, "u": 0, "Vn": cfg.collector_kv, "name": sid})
+            br.preserve_shunt_id = sid
+        blocks.append(br)
+
+    line = ss.Line
+    mesh_src = zone_lines[:2]
+    cand_src = zone_lines[2:4]
+    mesh_ids: list[str] = []
+    cand_ids: list[str] = []
+    n_mesh_closed = (
+        sum(1 for a in cfg.pre_cascade_actions if a.kind == "line_energization")
+        if armed and cfg.pre_cascade_enabled else 0
+    )
+    n_mesh_closed = max(n_mesh_closed, int(cfg.initial_mesh_closed))
+    for group, src_list, closed in ((mesh_ids, mesh_src, n_mesh_closed), (cand_ids, cand_src, 0)):
+        for j, src in enumerate(src_list):
+            status = 1 if j < closed else 0
+            p = _pos(line, src)
+            idx = f"PAR_{src}"
+            ss.add("Line", {"idx": idx, "bus1": int(line.bus1.v[p]), "bus2": int(line.bus2.v[p]),
+                            "r": float(line.r.v[p]), "x": float(line.x.v[p]), "b": float(line.b.v[p]),
+                            "tap": float(line.tap.v[p]) or 1.0, "phi": 0.0, "trans": 0, "u": status,
+                            "Vn1": vn[int(line.bus1.v[p])], "Vn2": vn[int(line.bus2.v[p])], "name": idx})
+            group.append(idx)
+    ehv_shunts: dict[int, float] = {}
+    if cfg.area_ehv_shunt_mvar > 0.0:
+        weight: dict[int, float] = defaultdict(float)
+        for p in range(line.n):
+            if float(line.u.v[p]) <= 0.5 or int(line.trans.v[p]):
+                continue
+            for b in (int(line.bus1.v[p]), int(line.bus2.v[p])):
+                if b in area.buses and vn[b] >= 200.0:
+                    weight[b] += 0.5 * abs(float(line.b.v[p]))
+        total_w = sum(weight.values())
+        for b, w in sorted(weight.items()):
+            q = float(cfg.area_ehv_shunt_mvar) * w / total_w
+            ss.add("Shunt", {"idx": f"EHVCHG_{b}", "bus": b, "g": 0.0, "b": q / base_mva, "u": 1, "Vn": vn[b],
+                             "name": f"EHVCHG_{b}"})
+            ehv_shunts[b] = q
+    cap_ids: list[str] = []
+    for j, mvar in enumerate(cfg.candidate_capacitors_mvar):
+        bus = zone[j % len(zone)]
+        idx = f"CAPCAND_{j + 1}_{bus}"
+        ss.add("Shunt", {"idx": idx, "bus": bus, "g": 0.0, "b": mvar / base_mva, "u": 0, "Vn": vn[bus], "name": idx})
+        cap_ids.append(idx)
+
+    links = _genrou_links(ss)
+    area_of = {int(b): int(a) for b, a in zip(ss.Bus.idx.v, ss.Bus.area.v)}
+    neighbour_areas = sorted({
+        area_of[int(b)]
+        for p in area.cut_branch_positions
+        for b in (line.bus1.v[p], line.bus2.v[p])
+        if int(b) not in area.buses
+    })
+    area_gov: list[tuple[str, float]] = []
+    rest_gov: list[tuple[str, float]] = []
+    pv_p = {str(ss.PV.idx.v[i]): float(ss.PV.p0.v[i]) for i in range(ss.PV.n)}
+    for i in range(ss.GENROU.n):
+        if float(ss.GENROU.u.v[i]) <= 0.5:
+            continue
+        gov = [ref for ref in links[str(ss.GENROU.idx.v[i])]["governor"] if ref.startswith("TGOV1:")]
+        if not gov:
+            continue
+        p_gen = pv_p.get(str(ss.GENROU.gen.v[i]), 0.0)
+        if p_gen <= 0.0:
+            continue
+        bus = int(ss.GENROU.bus.v[i])
+        if bus in area.buses:
+            area_gov.append((gov[0], p_gen))
+        elif area_of[bus] in neighbour_areas and (
+            cfg.oa2_counterpart != "exciter_units" or links[str(ss.GENROU.idx.v[i])]["exciter"]
+        ):
+            rest_gov.append((gov[0], p_gen))
+    interchange_mw = sum(a.size for a in cfg.pre_cascade_actions if a.kind == "interchange_reduction") if cfg.pre_cascade_enabled else 0.0
+    a_tot = sum(p for _, p in area_gov)
+    r_tot = sum(p for _, p in rest_gov)
+    area_share = [(ref, interchange_mw / base_mva * p / a_tot) for ref, p in area_gov]
+    rest_share = [(ref, interchange_mw / base_mva * p / r_tot) for ref, p in rest_gov]
+    if armed and interchange_mw > 0:
+        gen_of_gov = {}
+        for name in GOVERNOR_MODELS:
+            model = getattr(ss, name, None)
+            for k in range(int(getattr(model, "n", 0) or 0)):
+                gen_of_gov[f"{name}:{model.idx.v[k]}"] = str(model.syn.v[k])
+        gen_pv = {str(ss.GENROU.idx.v[i]): str(ss.GENROU.gen.v[i]) for i in range(ss.GENROU.n)}
+        for sign, share in ((-1.0, area_share), (+1.0, rest_share)):
+            for ref, dp in share:
+                pv = gen_pv[gen_of_gov[ref]]
+                ss.PV.p0.v[_pos(ss.PV, pv)] += sign * dp
+
+    notes = {
+        "load_scale": cfg.load_scale,
+        "area_load_mw_before_scaling": load_mw_before,
+        "area_load_reduction_mw": load_reduction_mw,
+        "area_sync_dispatch_mw_before": sync_mw,
+        "sync_dispatch_factor": sync_factor,
+        "block_total_mw": block_mw,
+        "armed_res_reduction_fraction": res_fraction,
+        "interchange_reduction_mw": interchange_mw if armed else 0.0,
+        "interchange_counterpart_areas": neighbour_areas,
+        "interchange_area_governors": len(area_gov),
+        "interchange_counterpart_governors": len(rest_gov),
+        "commitment": commitment,
+        "exciter_completion": completion,
+        "tie_impedance_scale": float(cfg.tie_impedance_scale),
+        "ties_scaled": ties_scaled,
+        "export_reduction_mw": float(cfg.export_reduction_mw),
+        **({"area_ehv_shunt_mvar": float(cfg.area_ehv_shunt_mvar), "area_ehv_shunt_buses": len(ehv_shunts)}
+           if ehv_shunts else {}),
+        **({"embedded_pv_units": len(embedded), "embedded_pv_mw": sum(d["p_mw"] for d in embedded)}
+           if embedded else {}),
+        **zone_notes,
+    }
+    return ReplicaSystem(
+        system=ss, cfg=cfg, armed=armed, area=area, blocks=blocks, zone_buses=zone, zone_center=center,
+        gnet_pvd1_ids=gnet_ids, mesh_line_ids=mesh_ids, mesh_source_lines=list(mesh_src),
+        candidate_line_ids=cand_ids, candidate_cap_ids=cap_ids, physical_bus_count=physical_bus_count,
+        disabled_exciters=list(disabled_exciters), regularization=regularization,
+        redispatch_area_gov=area_share, redispatch_rest_gov=rest_share, base_notes=notes, tap=float(tap),
+        embedded_pv=embedded,
+    )
+
+
+def _pvd1_params(idx: str, bus: int, gen: Any, sn: float, cfg: ReplicaConfig) -> dict[str, Any]:
+    return {
+        "idx": idx, "name": idx, "bus": bus, "gen": gen, "Sn": float(sn), "fn": 60.0,
+        "ialim": float(cfg.pvd1_ialim), "pqflag": 0, "qmx": 0.6, "qmn": -0.6,
+        "dqdv": 1.0, "v0": 0.01, "v1": 5.0,
+        "vt0": 0.01, "vt1": 0.02, "vt2": 5.0, "vt3": 6.0,
+        "ft0": 1.0, "ft1": 1.1, "ft2": 999.0, "ft3": 1000.0, "recflag": 0,
+    }
+
+
+def _setup_and_pflow(rs: ReplicaSystem, *, quiet: bool) -> None:
+    from pa_dvsa.replication.robust_pflow import complementarity_pflow
+
+    ss = rs.system
+    with QuietAndes(quiet):
+        ss.setup()
+        ss.PFlow.config.tol = rs.cfg.pflow_tol
+        ok, info = complementarity_pflow(ss, tol=rs.cfg.pflow_tol)
+    rs.base_notes["pflow"] = info
+    if not ok:
+        raise RuntimeError(f"replica power flow did not converge: {info.get('reason')}")
+    v_phys = np.asarray(ss.Bus.v.v, dtype=float)[: rs.physical_bus_count]
+    if v_phys.max() > 1.25 or v_phys.min() < 0.7:
+        raise RuntimeError(f"abnormal power-flow solution (bus voltages in [{v_phys.min():.3f}, {v_phys.max():.3f}] pu)")
+    rs.pflow_ok = True
+    v = np.asarray(ss.Bus.v.v, dtype=float)
+    for b in rs.blocks:
+        b.z0_pu = float(v[_pos(ss.Bus, b.collector_bus)])
+        b.hv_v0_pu = float(v[_pos(ss.Bus, b.hv_bus)])
+        q = float(ss.PV.q.v[_pos(ss.PV, b.pv_id)]) * float(ss.config.mva)
+        scale = 1.0 - float(rs.base_notes.get("armed_res_reduction_fraction", 0.0))
+        if abs(q - b.q_sched_mvar * scale) > 0.5:
+            raise RuntimeError(f"{b.spec.name}: power flow Q {q:.2f} MVAr differs from schedule {b.q_sched_mvar * scale:.2f}")
+
+
+def _configure_volt_var(rs: ReplicaSystem) -> None:
+    ss = rs.system
+    pvd = ss.PVD1
+    base = float(ss.config.mva)
+    for b in rs.blocks:
+        k = _pos(pvd, b.pvd1_id)
+        pvd.v1.v[k] = b.z0_pu + 1e-5
+        pvd.dqdv.v[k] = rs.cfg.volt_var_slope * b.sn_mva / base
+        pvd.qmn.v[k] = 5.0 * b.sn_mva / base
+
+
+def _init_tds(rs: ReplicaSystem, *, quiet: bool) -> None:
+    ss = rs.system
+    cfg = rs.cfg
+    ss.TDS.config.tf = cfg.tf_s
+    ss.TDS.config.tstep = cfg.tstep_s
+    ss.TDS.config.tol = cfg.tds_tol
+    ss.TDS.config.max_iter = cfg.tds_max_iter
+    ss.TDS.config.criteria = 0
+    ss.TDS.config.no_tqdm = 1
+    ss.TDS.config.save_every = 0
+    if hasattr(ss.PV, "qlim"):
+        ss.PV.qlim.enable = False
+    with QuietAndes(quiet):
+        ss.TDS.init()
+    rs.tds_initialized = True
+    rs.base_notes["init_algebraic_settle"] = _settle_algebraics(ss, rs.disabled_exciters)
+    value, name = max_abs_dxdt(rs)
+    rs.base_notes["init_max_abs_dxdt"] = value
+    rs.base_notes["init_max_abs_dxdt_state"] = name
+
+
+def out_of_service_state_mask(ss: Any) -> np.ndarray:
+    n = int(ss.dae.n)
+    mask = np.zeros(n, dtype=bool)
+    for model in ss.exist.pflow_tds.values():
+        if not getattr(model, "n", 0) or not hasattr(model, "u"):
+            continue
+        off = np.flatnonzero(np.asarray(model.u.v, dtype=float) <= 0.5)
+        for var in model.states.values():
+            for k in off:
+                mask[int(var.a[k])] = True
+    return mask
+
+
+def max_abs_dxdt(rs: ReplicaSystem, *, include_out_of_service: bool = False) -> tuple[float, str]:
+    ss = rs.system
+    ss.TDS.fg_update(ss.exist.pflow_tds)
+    f = np.abs(np.asarray(ss.dae.f, dtype=float))
+    if not f.size:
+        return 0.0, ""
+    keep = np.ones(f.size, dtype=bool) if include_out_of_service else ~out_of_service_state_mask(ss)
+    worst = int(np.argmax(np.where(keep, f, 0.0)))
+    return float(f[worst]), ss.dae.x_name[worst]
+
+
+def _settle_algebraics(ss: Any, disabled: Sequence[str], *, tol: float = 1e-10, max_iter: int = 8) -> dict[str, Any]:
+    from scipy import sparse
+    from scipy.sparse.linalg import spsolve
+
+    dae = ss.dae
+    idx: list[int] = []
+    for ref in disabled:
+        name, dev = ref.split(":", 1)
+        model = getattr(ss, name)
+        k = _pos(model, dev)
+        for var in model.algebs.values():
+            idx.append(int(var.a[k]))
+    ss.TDS.fg_update(ss.exist.pflow_tds)
+    g = np.asarray(dae.g, dtype=float)
+    g0 = float(np.max(np.abs(g))) if g.size else 0.0
+    worst = dae.y_name[int(np.argmax(np.abs(g)))] if g.size else ""
+    it = 0
+    idx_arr = np.asarray(sorted(set(idx)), dtype=int)
+    while idx_arr.size and it < max_iter and float(np.max(np.abs(g[idx_arr]))) > tol:
+        ss.j_update(models=ss.exist.pflow_tds)
+        gy = dae.gy
+        mat = sparse.csc_matrix((np.asarray(gy.V).ravel(), (np.asarray(gy.I).ravel(), np.asarray(gy.J).ravel())),
+                                shape=(dae.m, dae.m))
+        sub = mat[idx_arr][:, idx_arr]
+        dy = spsolve(sub.tocsc(), g[idx_arr])
+        y = np.asarray(dae.y, dtype=float)
+        y[idx_arr] -= np.atleast_1d(dy)
+        dae.y[:] = y
+        ss.vars_to_models()
+        ss.TDS.fg_update(ss.exist.pflow_tds)
+        g = np.asarray(dae.g, dtype=float)
+        it += 1
+    return {"max_abs_g_before": g0, "variable": worst, "iterations": it, "variables_solved": int(idx_arr.size),
+            "max_abs_g_after": float(np.max(np.abs(g))) if g.size else 0.0}
 
 
 @dataclass(slots=True)
-class IslandBlackoutRuntime:
-    spec: IslandBlackoutCriteriaSpec
-    voltage_timers_s: dict[str, float] = field(default_factory=dict)
-    frequency_timers_s: dict[str, float] = field(default_factory=dict)
-    angle_timers_s: dict[str, float] = field(default_factory=dict)
-    imbalance_timers_s: dict[str, float] = field(default_factory=dict)
-    no_reference_timers_s: dict[str, float] = field(default_factory=dict)
-    deenergized_islands: set[str] = field(default_factory=set)
+class RelayState:
+    picked: np.ndarray
+    timer: np.ndarray
 
 
-@dataclass(frozen=True, slots=True)
-class IslandSnapshot:
-    island_id: str
-    buses: frozenset[int]
-    line_ids: tuple[str, ...]
-    affected_bus_count: int
-    online_genrou_ids: tuple[str, ...]
-    online_pv_ids: tuple[str, ...]
-    online_load_ids: tuple[str, ...]
-    online_collector_names: tuple[str, ...]
-    online_shunt_ids: tuple[str, ...]
-    generation_mw: float
-    load_mw: float
-    q_load_mvar: float
-    q_absorption_mvar: float
-    vmin_pu: float
-    vmax_pu: float
-    frequency_hz: float
-    angle_spread_deg: float
-    has_voltage_reference: bool
-    imbalance_fraction: float
-    deenergized: bool = False
+def _new_relay_state(n: int) -> RelayState:
+    return RelayState(np.zeros(n, dtype=bool), np.zeros(n, dtype=float))
 
 
-@dataclass(slots=True)
-class AffectedAreaSelection:
-    seed_buses: list[int]
-    radius: int
-    affected_buses: list[int]
-    boundary_line_ids: list[str]
-    affected_genrou_ids: list[str]
-    protected_genrou_ids: list[str]
-    affected_pv_ids: list[str]
-    selected_load_ids: list[str]
-    genrou_mva_by_id: dict[str, float]
-    load_mw_by_id: dict[str, float]
-    boundary_lines: list[dict[str, float | int | str]]
+def advance_definite_time(state: RelayState, stage: DefiniteTimeStage, values: np.ndarray, dt: float,
+                          active: np.ndarray) -> np.ndarray:
+    values = np.asarray(values, dtype=float)
+    finite = np.isfinite(values)
+    if stage.direction == "over":
+        pick = finite & (values >= stage.pickup)
+        hold = finite & (values >= stage.pickup * stage.dropout_ratio)
+    else:
+        pick = finite & (values <= stage.pickup)
+        hold = finite & (values <= stage.pickup / stage.dropout_ratio)
+    new_picked = active & (pick | (state.picked & hold))
+    state.timer = np.where(new_picked, np.where(state.picked, state.timer + dt, 0.0), 0.0)
+    state.picked = new_picked
+    return new_picked & (state.timer >= stage.delay_s - 1e-9)
 
 
 @dataclass(slots=True)
@@ -326,3584 +1476,1565 @@ class EventRecord:
     code: str
     category: str
     description: str
+    trigger: str
+    device: str = ""
+    bus: int | None = None
+    measured: dict[str, float] = field(default_factory=dict)
+    setting: dict[str, float] = field(default_factory=dict)
     lost_p_mw: float = 0.0
     lost_q_absorption_mvar: float = 0.0
-    net_load_increase_mw: float = 0.0
-    q_demand_increase_mvar: float = 0.0
-    island_id: str | None = None
-    trigger: str | None = None
-    device_model: str | None = None
-    device_id: str | None = None
-    bus_id: int | None = None
-    success: bool | None = None
-
-
-def report_relay_stages(
-    pickup_pu: float = 1.095,
-    dwell_s: float = 0.25,
-    reset_ratio: float = 0.95,
-) -> tuple[OverVoltageRelayStage, ...]:
-    """Hidden collector-side overvoltage relay with pickup/reset hysteresis.
-
-    The paper replica uses this as a plant/evacuation-side relay, not a
-    400-kV transmission alarm.  Event timing must therefore come from the
-    collector voltage crossing this pickup plus dwell, not from external event
-    scheduling.
-    """
-
-    return (
-        OverVoltageRelayStage("ov", float(pickup_pu), float(dwell_s), reset_ratio),
-    )
-
-
-def _report_q_estimate(active_power_mw: float) -> float:
-    """Transparent fallback for report rows where only MW is robustly usable."""
-
-    return 0.22 * float(active_power_mw)
-
-
-def build_report_collector_specs(
-    *,
-    count: int = 16,
-    tap_scale: float = 0.95,
-    q_absorption_scale: float = 1.0,
-    reset_ratio: float = 0.95,
-) -> tuple[CollectorSpec, ...]:
-    """Report-event collector library compressed onto the ACTIVSg2000 corridor.
-
-    The first three rows use the final-report MW/MVAr values directly.  The
-    smaller event-5 rows use proportional MVAr estimates when the table gives
-    reliable MW but not a separately auditable MVAr absorption number.
-    """
-
-    rows: list[dict[str, Any]] = [
-        {
-            "name": "Granada355",
-            "bus": 7406,
-            "tap": 1.012,
-            "threshold": 1.1105,
-            "mw": 355.0,
-            "q": 165.0,
-            "cluster": "E3 Granada",
-            "time": 10.0,
-            "visible": True,
-            "dwell": 0.45,
-        },
-        {
-            "name": "Badajoz582",
-            "bus": 7058,
-            "tap": 1.026,
-            "threshold": 1.1035,
-            "mw": 582.0,
-            "q": 165.0,
-            "cluster": "E4 Badajoz",
-            "time": 14.55,
-            "visible": True,
-            "dwell": 0.20,
-        },
-        {
-            "name": "Badajoz145",
-            "bus": 7042,
-            "tap": 1.010,
-            "threshold": 1.0965,
-            "mw": 145.0,
-            "q": 37.0,
-            "cluster": "E4 Badajoz",
-            "time": 14.95,
-            "visible": True,
-            "dwell": 0.20,
-        },
-        {
-            "name": "Segovia23",
-            "bus": 7018,
-            "tap": 1.002,
-            "threshold": 1.0960,
-            "mw": 23.0,
-            "q": _report_q_estimate(23.0),
-            "cluster": "E5 multi-site",
-            "time": 15.18,
-            "dwell": 0.12,
-            "estimated": True,
-        },
-        {
-            "name": "Seville550",
-            "bus": 7029,
-            "tap": 0.947,
-            "threshold": 1.0960,
-            "mw": 550.0,
-            "q": 195.0,
-            "cluster": "E5 multi-site",
-            "time": 15.28,
-            "visible": True,
-            "dwell": 0.12,
-        },
-        {
-            "name": "Segovia94",
-            "bus": 7407,
-            "tap": 1.020,
-            "threshold": 1.0960,
-            "mw": 94.0,
-            "q": _report_q_estimate(94.0),
-            "cluster": "E5 multi-site",
-            "time": 15.38,
-            "dwell": 0.12,
-            "estimated": True,
-        },
-        {
-            "name": "Badajoz118",
-            "bus": 0,
-            "tap": 0.967,
-            "threshold": 1.1045,
-            "mw": 118.0,
-            "q": _report_q_estimate(118.0),
-            "cluster": "E5 multi-site",
-            "time": 15.46,
-            "dwell": 0.12,
-            "estimated": True,
-        },
-        {
-            "name": "Huelva34",
-            "bus": 0,
-            "tap": 0.968,
-            "threshold": 1.1045,
-            "mw": 34.0,
-            "q": _report_q_estimate(34.0),
-            "cluster": "E5 multi-site",
-            "time": 15.54,
-            "dwell": 0.12,
-            "estimated": True,
-        },
-        {
-            "name": "Caceres38",
-            "bus": 0,
-            "tap": 0.954,
-            "threshold": 1.1050,
-            "mw": 38.0,
-            "q": _report_q_estimate(38.0),
-            "cluster": "E5 multi-site",
-            "time": 15.62,
-            "dwell": 0.12,
-            "estimated": True,
-        },
-        {
-            "name": "Badajoz72",
-            "bus": 0,
-            "tap": 1.020,
-            "threshold": 1.0960,
-            "mw": 72.0,
-            "q": _report_q_estimate(72.0),
-            "cluster": "E5 multi-site",
-            "time": 15.70,
-            "dwell": 0.12,
-            "estimated": True,
-        },
-        {
-            "name": "Badajoz16",
-            "bus": 0,
-            "tap": 0.936,
-            "threshold": 1.1010,
-            "mw": 16.0,
-            "q": _report_q_estimate(16.0),
-            "cluster": "E5 multi-site",
-            "time": 15.78,
-            "dwell": 0.16,
-            "estimated": True,
-        },
-        {
-            "name": "Caceres41",
-            "bus": 0,
-            "tap": 0.946,
-            "threshold": 1.1000,
-            "mw": 41.0,
-            "q": _report_q_estimate(41.0),
-            "cluster": "E5 multi-site",
-            "time": 15.86,
-            "dwell": 0.16,
-            "estimated": True,
-        },
-        {
-            "name": "Cadiz26",
-            "bus": 0,
-            "tap": 0.959,
-            "threshold": 1.1050,
-            "mw": 26.0,
-            "q": _report_q_estimate(26.0),
-            "cluster": "E5 multi-site",
-            "time": 15.94,
-            "dwell": 0.16,
-            "estimated": True,
-        },
-        {
-            "name": "Cadiz128",
-            "bus": 0,
-            "tap": 0.930,
-            "threshold": 1.0800,
-            "mw": 128.0,
-            "q": _report_q_estimate(128.0),
-            "cluster": "E5 multi-site",
-            "time": 16.02,
-            "dwell": 0.18,
-            "estimated": True,
-        },
-        {
-            "name": "Malaga154",
-            "bus": 0,
-            "tap": 0.957,
-            "threshold": 1.1060,
-            "mw": 154.0,
-            "q": _report_q_estimate(154.0),
-            "cluster": "E5 multi-site",
-            "time": 16.10,
-            "dwell": 0.16,
-            "estimated": True,
-        },
-        {
-            "name": "Cuenca530",
-            "bus": 0,
-            "tap": 0.951,
-            "threshold": 1.1050,
-            "mw": 530.0,
-            "q": _report_q_estimate(530.0),
-            "cluster": "E5 multi-site",
-            "time": 16.18,
-            "visible": True,
-            "dwell": 0.18,
-            "estimated": True,
-        },
-        {
-            "name": "ReserveEast220",
-            "bus": 0,
-            "mw": 220.0,
-            "q": _report_q_estimate(220.0),
-            "cluster": "E5 reserve",
-            "time": 16.28,
-            "dwell": 1.80,
-            "estimated": True,
-        },
-        {
-            "name": "ReserveSouth180",
-            "bus": 0,
-            "mw": 180.0,
-            "q": _report_q_estimate(180.0),
-            "cluster": "E5 reserve",
-            "time": 16.38,
-            "dwell": 1.90,
-            "estimated": True,
-        },
-        {
-            "name": "ReserveWest160",
-            "bus": 0,
-            "mw": 160.0,
-            "q": _report_q_estimate(160.0),
-            "cluster": "E5 reserve",
-            "time": 16.48,
-            "dwell": 2.00,
-            "estimated": True,
-        },
-        {
-            "name": "ReserveNorth140",
-            "bus": 0,
-            "mw": 140.0,
-            "q": _report_q_estimate(140.0),
-            "cluster": "E5 reserve",
-            "time": 16.58,
-            "dwell": 2.10,
-            "estimated": True,
-        },
-    ]
-
-    specs: list[CollectorSpec] = []
-    for row in rows[: int(count)]:
-        specs.append(
-            CollectorSpec(
-                str(row["name"]),
-                int(row["bus"]),
-                float(row.get("tap", tap_scale)),
-                float(row.get("threshold", 1.095)),
-                float(row["dwell"]),
-                float(row["mw"]),
-                float(row["q"]) * float(q_absorption_scale),
-                fixed_pf_q_fraction=0.35,
-                fast_threshold_pu=None,
-                fast_dwell_s=0.0,
-                report_cluster=str(row["cluster"]),
-                report_time_s=float(row["time"]),
-                min_trip_time_s=0.0,
-                relay_stages=report_relay_stages(
-                    float(row.get("threshold", 1.095)),
-                    float(row["dwell"]),
-                    reset_ratio,
-                ),
-                q_absorption_estimated=bool(row.get("estimated", False)),
-                visible_trace=bool(row.get("visible", False)),
-            )
-        )
-    return tuple(specs)
-
-
-@dataclass(slots=True)
-class ReplicationConfig:
-    case_id: str = "activsg2000_stable"
-    tf_s: float = 30.0
-    tstep_s: float = 0.01
-    pflow_tol: float = 1e-4
-    tds_tol: float = 1e-4
-    # Report-event protected evacuation assets.  The first six are pinned to
-    # the high-voltage ACTIVSg2000 corridor; remaining entries are assigned
-    # deterministically to high-generation affected-area buses during build.
-    collector_specs: tuple[CollectorSpec, ...] = field(
-        default_factory=build_report_collector_specs
-    )
-    meshing_source_lines: tuple[str, ...] = (
-        "Line_1767",
-        "Line_1723",
-        "Line_1678",
-        "Line_1679",
-    )
-    # Operator actions are intentionally all before the first relay trip in the
-    # default calibration.  They compress the report's long voltage-control
-    # period into a 30 s academic surrogate.  The report-aligned default keeps
-    # all manual/topology/HVDC actions before the first protection pickup; the
-    # later cascade is driven by automatic protection and island viability.
-    meshing_times_s: tuple[float, ...] = (0.6, 1.0, 1.4, 1.8)
-    meshing_equivalent_strengths: tuple[float, ...] = (1.0, 1.0, 0.05, 0.05)
-    reactor_actions: tuple[ReactorSwitchAction, ...] = (
-        ReactorSwitchAction(
-            2.2,
-            7406,
-            8.0,
-            1,
-            "Shunt reactor connected for local voltage control.",
-        ),
-        ReactorSwitchAction(
-            2.6,
-            7058,
-            8.0,
-            0,
-            "Shunt reactor opened after operator voltage-control review.",
-        ),
-        ReactorSwitchAction(
-            3.0,
-            7042,
-            8.0,
-            1,
-            "Shunt reactor connected in the high-voltage corridor.",
-        ),
-        ReactorSwitchAction(
-            3.4,
-            7406,
-            8.0,
-            0,
-            "Shunt reactor opened as the operating point is rebalanced.",
-        ),
-        ReactorSwitchAction(
-            3.8,
-            7018,
-            10.0,
-            1,
-            "Additional shunt reactor connected before the final voltage-reference action.",
-        ),
-        ReactorSwitchAction(
-            4.2,
-            7058,
-            10.0,
-            0,
-            "Shunt reactor opened shortly before the protection cascade.",
-        ),
-    )
-    hvdc_support_bus: int = 7406
-    hvdc_q_absorption_mvar: float = 130.0
-    hvdc_reference_time_s: float = 4.0
-    hvdc_disable_time_s: float = 1e9
-    allow_equivalent_blackout: bool = False
-    blackout_actions: tuple[BlackoutDisturbanceAction, ...] = ()
-    hvdc_surrogate: HVDCSurrogateSpec = field(default_factory=HVDCSurrogateSpec)
-    out_of_step_relay: OutOfStepRelaySpec = field(default_factory=OutOfStepRelaySpec)
-    generator_protection: GeneratorProtectionRelaySpec = field(
-        default_factory=GeneratorProtectionRelaySpec
-    )
-    morocco_ac_relay: UnderFrequencyTieRelaySpec = field(
-        default_factory=UnderFrequencyTieRelaySpec
-    )
-    defense_stages: tuple[UFLSUVLSStageSpec, ...] = (
-        UFLSUVLSStageSpec("UFLS1", 17.0, 0.18, under_voltage_pu=0.97, max_shed_mw=900.0),
-        UFLSUVLSStageSpec("UFLS2", 17.5, 0.22, under_voltage_pu=0.95, max_shed_mw=1200.0),
-    )
-    blackout_criteria: BlackoutCriteriaSpec = field(default_factory=BlackoutCriteriaSpec)
-    island_blackout_criteria: IslandBlackoutCriteriaSpec = field(
-        default_factory=IslandBlackoutCriteriaSpec
-    )
-    area_seed_buses: tuple[int, ...] = (7406, 7058, 7042, 7018, 7029, 7407)
-    area_bfs_radius: int = 5
-    area_min_genrou: int = 40
-    area_min_loads: int = 20
-    area_min_boundary_lines: int = 20
-    area_max_radius: int = 8
-    # For the paper-facing replica, place hidden collector/evacuation assets on
-    # the high-voltage corridor so the transmission-side panel is a single
-    # comparable voltage class, analogous to the 400 kV traces in the report.
-    collector_upstream_min_kv: float = 500.0
-    collector_initial_margin_pu: float = 0.085
-    collector_anchor_initial_margin_pu: float = 0.080
-    collector_granada_initial_margin_pu: float = 0.055
-    collector_badajoz_initial_margin_pu: float = 0.095
-    nominal_frequency_hz: float = 50.0
-    enable_post_cascade_relays: bool = True
-    # The report links fixed-power-factor renewable behavior and net-export
-    # changes to a progressive loss of reactive absorption before the first
-    # trip.  The default applies that ramp to the fixed-PF component of the
-    # modeled collector blocks; a separate background-shunt mode is available
-    # for sensitivity checks but is not used in the paper-ready calibration.
-    export_reduction_mode: str = "collector_fixed_pf"
-    background_fixed_pf_bus: int = 7406
-    background_fixed_pf_q_absorption_mvar: float = 0.0
-    export_reduction_time_s: float = 4.4
-    export_reduction_ramp_s: float = 11.5
-    relay_timer_decay: float = 0.30
-    collapse_voltage_pu: float = 0.75
-
-
-@dataclass(slots=True)
-class ReplicationArtifacts:
-    output_dir: Path
-    summary_path: Path
-    events_path: Path
-    collector_trace_path: Path
-    system_trace_path: Path
-    config_path: Path
-    island_trace_path: Path | None = None
-    deenergized_assets_path: Path | None = None
-    blackout_sequence_path: Path | None = None
-    figure_paths: list[Path] = field(default_factory=list)
-
-
-def _diagnostic_equivalent_blackout_actions() -> tuple[BlackoutDisturbanceAction, ...]:
-    return (
-        BlackoutDisturbanceAction(
-            14.85,
-            7406,
-            1800.0,
-            2800.0,
-            3,
-            "Diagnostic equivalent imbalance step; not used in the paper scenario.",
-        ),
-        BlackoutDisturbanceAction(
-            15.45,
-            7058,
-            2000.0,
-            3200.0,
-            3,
-            "Diagnostic equivalent imbalance step; not used in the paper scenario.",
-        ),
-        BlackoutDisturbanceAction(
-            16.05,
-            7042,
-            1800.0,
-            2800.0,
-            3,
-            "Diagnostic equivalent imbalance step; not used in the paper scenario.",
-        ),
-        BlackoutDisturbanceAction(
-            16.65,
-            7018,
-            1600.0,
-            2400.0,
-            3,
-            "Diagnostic equivalent imbalance step; not used in the paper scenario.",
-        ),
-    )
-
-
-def _disable_predefined_events(system: Any) -> None:
-    for model_name in ("Toggle", "Alter", "Fault"):
-        if not hasattr(system, model_name):
-            continue
-        table = getattr(system, model_name)
-        for i in range(getattr(table, "n", 0)):
-            table.u.v[i] = 0
-
-
-def _find_position(model: Any, device_id: str | int) -> int:
-    for i, value in enumerate(list(model.idx.v)):
-        if str(value) == str(device_id):
-            return i
-    raise ValueError(f"{device_id!r} is not an index in {model.class_name}")
-
-
-def _set_status(system: Any, model_name: str, device_id: str | int, status: int) -> None:
-    if hasattr(system, "set_status"):
-        try:
-            system.set_status(model_name, device_id, status)
-            return
-        except Exception:
-            # Fall back to direct status only if the public updater rejects the
-            # synthetic device id.  This is rare for added PQ/Shunt devices.
-            pass
-    model = getattr(system, model_name)
-    model.u.v[_find_position(model, device_id)] = status
-
-
-def _status(system: Any, model_name: str, device_id: str | int) -> float:
-    model = getattr(system, model_name)
-    return float(model.u.v[_find_position(model, device_id)])
-
-
-def _safe_status(system: Any, model_name: str, device_id: str | int) -> float:
-    try:
-        return _status(system, model_name, device_id)
-    except Exception:
-        return 0.0
-
-
-def _wrap_angle_diff(angle_a: float, angle_b: float) -> float:
-    return float(np.angle(np.exp(1j * (float(angle_a) - float(angle_b)))))
-
-
-def update_overvoltage_relay_timers(
-    collector: CollectorRuntime,
-    voltage_pu: float,
-    dt: float,
-    decay: float,
-) -> str | None:
-    """Advance two-stage OV relay pickup/reset logic and return a trip stage."""
-
-    stages = collector.spec.relay_stages
-    if not stages:
-        stages = (
-            OverVoltageRelayStage(
-                "legacy",
-                collector.spec.threshold_pu,
-                collector.spec.dwell_s,
-                reset_ratio=1.0,
-            ),
-        )
-    for stage in stages:
-        timer = float(collector.stage_timers_s.get(stage.name, 0.0))
-        picked_up = bool(collector.stage_picked_up.get(stage.name, False))
-        reset_level = stage.pickup_pu * stage.reset_ratio
-        if voltage_pu >= stage.pickup_pu:
-            picked_up = True
-            timer += dt
-        elif picked_up and voltage_pu > reset_level:
-            timer += dt
-        else:
-            picked_up = False
-            timer = max(0.0, timer - decay * dt)
-        collector.stage_timers_s[stage.name] = timer
-        collector.stage_picked_up[stage.name] = picked_up
-        if timer >= stage.dwell_s:
-            return stage.name
-    return None
-
-
-def _active_physical_bus_voltage(system: Any, physical_bus_count: int) -> np.ndarray:
-    return np.asarray(system.Bus.v.v[:physical_bus_count], dtype=float)
-
-
-def _estimate_frequency_hz(system: Any, nominal_hz: float) -> float:
-    if not hasattr(system, "GENROU") or getattr(system.GENROU, "n", 0) == 0:
-        return float(nominal_hz)
-    omega = np.asarray(system.GENROU.omega.v, dtype=float)
-    if omega.size == 0:
-        return float(nominal_hz)
-    status = np.asarray(system.GENROU.u.v, dtype=float)
-    if hasattr(system.GENROU, "M"):
-        weights = np.asarray(system.GENROU.M.v, dtype=float)
-    elif hasattr(system.GENROU, "Sn"):
-        weights = np.asarray(system.GENROU.Sn.v, dtype=float)
-    else:
-        weights = np.ones_like(omega)
-    mask = np.isfinite(omega) & (status > 0.5) & np.isfinite(weights) & (weights > 0.0)
-    if not np.any(mask):
-        return float(nominal_hz)
-    return float(nominal_hz * np.average(omega[mask], weights=weights[mask]))
-
-
-def _coherent_angle_separation_rad(
-    system: Any,
-    affected_buses: set[int],
-) -> float:
-    if not hasattr(system, "GENROU") or getattr(system.GENROU, "n", 0) == 0:
-        return 0.0
-    gen = system.GENROU
-    delta = np.asarray(gen.delta.v, dtype=float)
-    status = np.asarray(gen.u.v, dtype=float)
-    if hasattr(gen, "M"):
-        weights = np.asarray(gen.M.v, dtype=float)
-    elif hasattr(gen, "Sn"):
-        weights = np.asarray(gen.Sn.v, dtype=float)
-    else:
-        weights = np.ones_like(delta)
-    affected_delta: list[float] = []
-    affected_weights: list[float] = []
-    rest_delta: list[float] = []
-    rest_weights: list[float] = []
-    for i in range(getattr(gen, "n", 0)):
-        if status[i] <= 0.5 or not np.isfinite(delta[i]):
-            continue
-        w = float(weights[i]) if np.isfinite(weights[i]) and weights[i] > 0.0 else 1.0
-        if int(gen.bus.v[i]) in affected_buses:
-            affected_delta.append(float(delta[i]))
-            affected_weights.append(w)
-        else:
-            rest_delta.append(float(delta[i]))
-            rest_weights.append(w)
-    if not affected_delta or not rest_delta:
-        return 0.0
-    a = float(np.angle(np.average(np.exp(1j * np.asarray(affected_delta)), weights=affected_weights)))
-    b = float(np.angle(np.average(np.exp(1j * np.asarray(rest_delta)), weights=rest_weights)))
-    return abs(_wrap_angle_diff(a, b))
-
-
-def _model_n(system: Any, model_name: str) -> int:
-    return int(getattr(getattr(system, model_name, None), "n", 0))
-
-
-def _model_status_at(model: Any, index: int) -> float:
-    if hasattr(model, "u") and hasattr(model.u, "v"):
-        return float(model.u.v[index])
-    return 1.0
-
-
-def _base_mva(system: Any) -> float:
-    return float(getattr(getattr(system, "config", None), "mva", 100.0))
-
-
-def _bus_positions(system: Any) -> dict[int, int]:
-    return {int(bus): i for i, bus in enumerate(system.Bus.idx.v)}
-
-
-def _line_graph_components(
-    system: Any,
-    *,
-    ignored_line_ids: set[str] | None = None,
-) -> tuple[list[frozenset[int]], dict[int, str], dict[str, tuple[int, int]]]:
-    ignored = ignored_line_ids or set()
-    bus_ids = [int(bus) for bus in system.Bus.idx.v]
-    adjacency: dict[int, list[int]] = defaultdict(list)
-    line_endpoints: dict[str, tuple[int, int]] = {}
-    for i in range(_model_n(system, "Line")):
-        line_id = str(system.Line.idx.v[i])
-        b1 = int(system.Line.bus1.v[i])
-        b2 = int(system.Line.bus2.v[i])
-        line_endpoints[line_id] = (b1, b2)
-        if line_id in ignored or _model_status_at(system.Line, i) <= 0.5:
-            continue
-        adjacency[b1].append(b2)
-        adjacency[b2].append(b1)
-
-    components: list[frozenset[int]] = []
-    bus_to_island: dict[int, str] = {}
-    seen: set[int] = set()
-    for bus in bus_ids:
-        if bus in seen:
-            continue
-        queue: deque[int] = deque([bus])
-        seen.add(bus)
-        component: set[int] = set()
-        while queue:
-            current = queue.popleft()
-            component.add(current)
-            for nxt in adjacency.get(current, []):
-                if nxt in seen:
-                    continue
-                seen.add(nxt)
-                queue.append(nxt)
-        components.append(frozenset(component))
-    components.sort(key=lambda item: (-len(item), min(item) if item else 0))
-    for idx, component in enumerate(components, start=1):
-        island_id = f"I{idx:03d}"
-        for bus in component:
-            bus_to_island[bus] = island_id
-    return components, bus_to_island, line_endpoints
-
-
-def _generator_output_mw(system: Any, position: int) -> float:
-    if hasattr(system.GENROU, "Pe"):
-        pe = float(system.GENROU.Pe.v[position])
-        if np.isfinite(pe) and pe > 0.0:
-            return pe * _base_mva(system)
-    if hasattr(system.GENROU, "Sn"):
-        return max(0.0, float(system.GENROU.Sn.v[position]) * 0.75)
-    return 0.0
-
-
-def compute_island_snapshots(
-    system: Any,
-    *,
-    collectors: list[CollectorRuntime],
-    affected_buses: set[int],
-    ignored_line_ids: set[str] | None = None,
-    deenergized_islands: set[str] | None = None,
-    nominal_frequency_hz: float = 50.0,
-) -> list[IslandSnapshot]:
-    components, bus_to_island, line_endpoints = _line_graph_components(
-        system,
-        ignored_line_ids=ignored_line_ids,
-    )
-    base = _base_mva(system)
-    bus_pos = _bus_positions(system)
-    deenergized = deenergized_islands or set()
-    lines_by_island: dict[str, list[str]] = defaultdict(list)
-    for line_id, (b1, b2) in line_endpoints.items():
-        island_id = bus_to_island.get(b1)
-        if island_id and island_id == bus_to_island.get(b2):
-            lines_by_island[island_id].append(line_id)
-
-    snapshots: list[IslandSnapshot] = []
-    for idx, component in enumerate(components, start=1):
-        island_id = f"I{idx:03d}"
-        buses = set(component)
-        voltages = np.asarray(
-            [float(system.Bus.v.v[bus_pos[bus]]) for bus in buses if bus in bus_pos],
-            dtype=float,
-        )
-        vmin = float(np.nanmin(voltages)) if voltages.size else float("nan")
-        vmax = float(np.nanmax(voltages)) if voltages.size else float("nan")
-
-        online_genrou: list[str] = []
-        online_pv: list[str] = []
-        online_loads: list[str] = []
-        online_shunts: list[str] = []
-        online_collectors: list[str] = []
-        generation_mw = 0.0
-        reference_mw = 0.0
-        load_mw = 0.0
-        q_load_mvar = 0.0
-        q_absorption_mvar = 0.0
-        omega_values: list[float] = []
-        omega_weights: list[float] = []
-        angle_values: list[float] = []
-
-        for i in range(_model_n(system, "GENROU")):
-            bus = int(system.GENROU.bus.v[i])
-            if bus not in buses or _model_status_at(system.GENROU, i) <= 0.5:
-                continue
-            gen_id = str(system.GENROU.idx.v[i])
-            online_genrou.append(gen_id)
-            gen_mw = _generator_output_mw(system, i)
-            generation_mw += gen_mw
-            reference_mw += gen_mw
-            weight = float(system.GENROU.M.v[i]) if hasattr(system.GENROU, "M") else 1.0
-            if not np.isfinite(weight) or weight <= 0.0:
-                weight = 1.0
-            if hasattr(system.GENROU, "omega"):
-                omega = float(system.GENROU.omega.v[i])
-                if np.isfinite(omega):
-                    omega_values.append(omega)
-                    omega_weights.append(weight)
-            if hasattr(system.GENROU, "delta"):
-                delta = float(system.GENROU.delta.v[i])
-                if np.isfinite(delta):
-                    angle_values.append(delta)
-
-        for i in range(_model_n(system, "PV")):
-            bus = int(system.PV.bus.v[i])
-            if bus not in buses or _model_status_at(system.PV, i) <= 0.5:
-                continue
-            online_pv.append(str(system.PV.idx.v[i]))
-            generation_mw += max(0.0, float(system.PV.p0.v[i]) * base)
-
-        for i in range(_model_n(system, "PQ")):
-            bus = int(system.PQ.bus.v[i])
-            if bus not in buses or _model_status_at(system.PQ, i) <= 0.5:
-                continue
-            p_mw = float(system.PQ.p0.v[i]) * base if hasattr(system.PQ, "p0") else 0.0
-            q_mvar = float(system.PQ.q0.v[i]) * base if hasattr(system.PQ, "q0") else 0.0
-            if p_mw >= 0.0:
-                online_loads.append(str(system.PQ.idx.v[i]))
-                load_mw += p_mw
-                q_load_mvar += max(0.0, q_mvar)
-            else:
-                generation_mw += -p_mw
-
-        for i in range(_model_n(system, "Shunt")):
-            bus = int(system.Shunt.bus.v[i])
-            if bus not in buses or _model_status_at(system.Shunt, i) <= 0.5:
-                continue
-            online_shunts.append(str(system.Shunt.idx.v[i]))
-            b = float(system.Shunt.b.v[i]) if hasattr(system.Shunt, "b") else 0.0
-            if b < 0.0:
-                q_absorption_mvar += -b * base
-
-        for collector in collectors:
-            if collector.collector_bus in buses and not collector.tripped:
-                online_collectors.append(collector.spec.name)
-
-        if omega_values:
-            frequency_hz = float(
-                nominal_frequency_hz
-                * np.average(np.asarray(omega_values), weights=np.asarray(omega_weights))
-            )
-        else:
-            frequency_hz = float("nan")
-        if len(angle_values) >= 2:
-            angles = np.asarray(angle_values, dtype=float)
-            mean_angle = float(np.angle(np.average(np.exp(1j * angles))))
-            spread = max(abs(_wrap_angle_diff(angle, mean_angle)) for angle in angles)
-            angle_spread_deg = float(np.rad2deg(spread))
-        else:
-            angle_spread_deg = 0.0
-        imbalance = abs(load_mw - generation_mw) / max(load_mw, generation_mw, 1.0)
-        snapshots.append(
-            IslandSnapshot(
-                island_id=island_id,
-                buses=frozenset(buses),
-                line_ids=tuple(sorted(lines_by_island.get(island_id, []))),
-                affected_bus_count=len(buses & affected_buses),
-                online_genrou_ids=tuple(sorted(online_genrou)),
-                online_pv_ids=tuple(sorted(online_pv)),
-                online_load_ids=tuple(sorted(online_loads)),
-                online_collector_names=tuple(sorted(online_collectors)),
-                online_shunt_ids=tuple(sorted(online_shunts)),
-                generation_mw=float(generation_mw),
-                load_mw=float(load_mw),
-                q_load_mvar=float(q_load_mvar),
-                q_absorption_mvar=float(q_absorption_mvar),
-                vmin_pu=vmin,
-                vmax_pu=vmax,
-                frequency_hz=frequency_hz,
-                angle_spread_deg=angle_spread_deg,
-                has_voltage_reference=reference_mw >= 1.0,
-                imbalance_fraction=float(imbalance),
-                deenergized=island_id in deenergized,
-            )
-        )
-    return snapshots
-
-
-def select_affected_area(system: Any, cfg: ReplicationConfig) -> AffectedAreaSelection:
-    seeds = [int(bus) for bus in cfg.area_seed_buses]
-    adjacency: dict[int, list[tuple[int, int]]] = defaultdict(list)
-    for i in range(system.Line.n):
-        if float(system.Line.u.v[i]) <= 0.5:
-            continue
-        b1 = int(system.Line.bus1.v[i])
-        b2 = int(system.Line.bus2.v[i])
-        adjacency[b1].append((b2, i))
-        adjacency[b2].append((b1, i))
-
-    selected_radius = int(cfg.area_bfs_radius)
-    affected_buses: set[int] = set(seeds)
-    boundary_indices: list[int] = []
-    affected_genrou: list[tuple[str, int, float]] = []
-    affected_loads: list[tuple[str, int, float]] = []
-    affected_pvs: list[tuple[str, int, float]] = []
-    base_mva = float(system.config.mva)
-
-    for radius in range(int(cfg.area_bfs_radius), int(cfg.area_max_radius) + 1):
-        seen = set(seeds)
-        queue: deque[tuple[int, int]] = deque((bus, 0) for bus in seeds)
-        while queue:
-            bus, depth = queue.popleft()
-            if depth >= radius:
-                continue
-            for next_bus, _line_pos in adjacency.get(bus, []):
-                if next_bus in seen:
-                    continue
-                seen.add(next_bus)
-                queue.append((next_bus, depth + 1))
-
-        boundary_indices = []
-        for i in range(system.Line.n):
-            b1 = int(system.Line.bus1.v[i])
-            b2 = int(system.Line.bus2.v[i])
-            if (b1 in seen) != (b2 in seen):
-                boundary_indices.append(i)
-
-        affected_genrou = []
-        for i in range(getattr(system.GENROU, "n", 0)):
-            if int(system.GENROU.bus.v[i]) in seen:
-                mva = float(system.GENROU.Sn.v[i]) if hasattr(system.GENROU, "Sn") else 0.0
-                affected_genrou.append((str(system.GENROU.idx.v[i]), int(system.GENROU.bus.v[i]), mva))
-
-        affected_loads = []
-        for i in range(getattr(system.PQ, "n", 0)):
-            if int(system.PQ.bus.v[i]) in seen and float(system.PQ.p0.v[i]) > 0.0:
-                affected_loads.append(
-                    (
-                        str(system.PQ.idx.v[i]),
-                        int(system.PQ.bus.v[i]),
-                        float(system.PQ.p0.v[i]) * base_mva,
-                    )
-                )
-
-        affected_pvs = []
-        for i in range(getattr(system.PV, "n", 0)):
-            if int(system.PV.bus.v[i]) in seen:
-                affected_pvs.append(
-                    (
-                        str(system.PV.idx.v[i]),
-                        int(system.PV.bus.v[i]),
-                        float(system.PV.p0.v[i]) * base_mva,
-                    )
-                )
-
-        selected_radius = radius
-        affected_buses = seen
-        if (
-            len(boundary_indices) >= cfg.area_min_boundary_lines
-            and len(affected_genrou) >= cfg.area_min_genrou
-            and len(affected_loads) >= cfg.area_min_loads
-        ):
-            break
-
-    boundary_infos: list[dict[str, float | int | str]] = []
-    for i in boundary_indices:
-        boundary_infos.append(
-            {
-                "idx": str(system.Line.idx.v[i]),
-                "bus1": int(system.Line.bus1.v[i]),
-                "bus2": int(system.Line.bus2.v[i]),
-                "x_abs": abs(float(system.Line.x.v[i])),
-                "r_abs": abs(float(system.Line.r.v[i])),
-            }
-        )
-    boundary_infos.sort(key=lambda item: (float(item["x_abs"]), str(item["idx"])))
-    boundary_line_ids = [str(item["idx"]) for item in boundary_infos]
-
-    affected_genrou.sort(key=lambda item: (-item[2], item[0]))
-    protected_genrou: list[str] = []
-    protected_mva = 0.0
-    for gen_id, _bus, mva in affected_genrou:
-        if len(protected_genrou) >= cfg.generator_protection.max_genrou:
-            break
-        protected_genrou.append(gen_id)
-        protected_mva += mva
-        if protected_mva >= cfg.generator_protection.target_mva:
-            break
-
-    protected_buses = {
-        bus for gen_id, bus, _mva in affected_genrou if gen_id in set(protected_genrou)
-    }
-    affected_pv_ids = [
-        pv_id for pv_id, bus, _mw in sorted(affected_pvs, key=lambda item: (-item[2], item[0]))
-        if bus in protected_buses
-    ]
-    affected_loads.sort(key=lambda item: (-item[2], item[0]))
-    selected_load_ids = [load_id for load_id, _bus, _mw in affected_loads]
-
-    return AffectedAreaSelection(
-        seed_buses=seeds,
-        radius=selected_radius,
-        affected_buses=sorted(affected_buses),
-        boundary_line_ids=boundary_line_ids,
-        affected_genrou_ids=[item[0] for item in affected_genrou],
-        protected_genrou_ids=protected_genrou,
-        affected_pv_ids=affected_pv_ids,
-        selected_load_ids=selected_load_ids,
-        genrou_mva_by_id={gen_id: mva for gen_id, _bus, mva in affected_genrou},
-        load_mw_by_id={load_id: mw for load_id, _bus, mw in affected_loads},
-        boundary_lines=boundary_infos,
-    )
-
-
-def resolve_collector_specs(
-    system: Any,
-    cfg: ReplicationConfig,
-    area_selection: AffectedAreaSelection,
-) -> tuple[CollectorSpec, ...]:
-    """Assign report collectors to deterministic high-voltage generation buses."""
-
-    affected = set(area_selection.affected_buses)
-    bus_vn = {
-        int(system.Bus.idx.v[i]): float(system.Bus.Vn.v[i])
-        for i in range(getattr(system.Bus, "n", 0))
-    }
-    bus_position = _bus_positions(system)
-
-    def initial_bus_voltage(bus: int) -> float:
-        pos = bus_position.get(int(bus))
-        if pos is None:
-            return float("nan")
-        if hasattr(system.Bus, "v0") and hasattr(system.Bus.v0, "v"):
-            value = float(system.Bus.v0.v[pos])
-            if np.isfinite(value) and value > 0.0:
-                return value
-        if hasattr(system.Bus, "v") and hasattr(system.Bus.v, "v"):
-            return float(system.Bus.v.v[pos])
-        return 1.0
-
-    def with_initial_margin(spec: CollectorSpec, bus: int) -> CollectorSpec:
-        if spec.report_cluster == "E3 Granada":
-            margin = float(getattr(cfg, "collector_granada_initial_margin_pu", 0.0) or 0.0)
-        elif spec.report_cluster == "E4 Badajoz":
-            margin = float(getattr(cfg, "collector_badajoz_initial_margin_pu", 0.0) or 0.0)
-        elif spec.report_cluster in {"E3 Granada", "E4 Badajoz"}:
-            margin = float(getattr(cfg, "collector_anchor_initial_margin_pu", 0.0) or 0.0)
-        else:
-            margin = float(getattr(cfg, "collector_initial_margin_pu", 0.0) or 0.0)
-        if margin <= 0.0:
-            return spec
-        upstream_v0 = initial_bus_voltage(bus)
-        if not np.isfinite(upstream_v0) or upstream_v0 <= 0.0:
-            return spec
-        current_estimate = upstream_v0 / max(float(spec.tap), 1e-6)
-        target = max(0.92, float(spec.threshold_pu) - margin)
-        if spec.report_cluster not in {"E3 Granada", "E4 Badajoz"} and current_estimate <= target:
-            return spec
-        calibrated_tap = upstream_v0 / target
-        if spec.report_cluster in {"E3 Granada", "E4 Badajoz"}:
-            calibrated_tap = float(min(1.10, max(0.90, calibrated_tap)))
-        else:
-            calibrated_tap = float(min(1.10, max(float(spec.tap), calibrated_tap)))
-        return replace(spec, tap=calibrated_tap)
-
-    min_upstream_kv = float(getattr(cfg, "collector_upstream_min_kv", 0.0) or 0.0)
-    used = {
-        int(spec.transmission_bus)
-        for spec in cfg.collector_specs
-        if spec.transmission_bus > 0
-        and bus_vn.get(int(spec.transmission_bus), 0.0) >= min_upstream_kv
-    }
-    bus_scores: dict[int, float] = defaultdict(float)
-    for i in range(getattr(system.GENROU, "n", 0)):
-        bus = int(system.GENROU.bus.v[i])
-        if bus in affected and bus_vn.get(bus, 0.0) >= min_upstream_kv:
-            bus_scores[bus] += float(system.GENROU.Sn.v[i]) if hasattr(system.GENROU, "Sn") else 0.0
-    base_mva = float(system.config.mva)
-    for i in range(getattr(system.PV, "n", 0)):
-        bus = int(system.PV.bus.v[i])
-        if bus in affected and bus_vn.get(bus, 0.0) >= min_upstream_kv:
-            bus_scores[bus] += abs(float(system.PV.p0.v[i])) * base_mva
-
-    adjacency: dict[int, list[int]] = defaultdict(list)
-    for i in range(system.Line.n):
-        if float(system.Line.u.v[i]) <= 0.5:
-            continue
-        b1 = int(system.Line.bus1.v[i])
-        b2 = int(system.Line.bus2.v[i])
-        adjacency[b1].append(b2)
-        adjacency[b2].append(b1)
-    for bus in affected:
-        if bus_vn.get(int(bus), 0.0) >= min_upstream_kv:
-            bus_scores[int(bus)] += 5.0 * len(adjacency.get(int(bus), []))
-
-    def distance_to_used(candidate: int) -> int:
-        if not used:
-            return 99
-        if candidate in used:
-            return 0
-        seen = {candidate}
-        queue: deque[tuple[int, int]] = deque([(candidate, 0)])
-        while queue:
-            bus, distance = queue.popleft()
-            if distance >= 8:
-                continue
-            for nxt in adjacency.get(bus, []):
-                if nxt in seen:
-                    continue
-                if nxt in used:
-                    return distance + 1
-                seen.add(nxt)
-                queue.append((nxt, distance + 1))
-        return 99
-
-    candidates = sorted(
-        bus_scores,
-        key=lambda bus: (-bus_scores[bus], -distance_to_used(bus), bus),
-    )
-    candidate_cursor = 0
-    resolved: list[CollectorSpec] = []
-    fallback = [
-        int(bus)
-        for bus in cfg.area_seed_buses
-        if bus_vn.get(int(bus), 0.0) >= min_upstream_kv
-    ] or list(cfg.area_seed_buses)
-    for i, spec in enumerate(cfg.collector_specs):
-        pinned_bus = int(spec.transmission_bus)
-        if pinned_bus > 0 and bus_vn.get(pinned_bus, 0.0) >= min_upstream_kv:
-            resolved.append(with_initial_margin(spec, pinned_bus))
-            continue
-        chosen: int | None = None
-        while candidate_cursor < len(candidates):
-            candidate = int(candidates[candidate_cursor])
-            candidate_cursor += 1
-            if candidate not in used:
-                chosen = candidate
-                break
-        if chosen is None:
-            chosen = int(fallback[i % len(fallback)])
-        used.add(chosen)
-        resolved.append(with_initial_margin(replace(spec, transmission_bus=chosen), chosen))
-    return tuple(resolved)
-
-
-class QuietAndes:
-    def __init__(self, quiet: bool) -> None:
-        self.quiet = quiet
-        self._stdout_cm: Any = None
-        self._stderr_cm: Any = None
-
-    def __enter__(self) -> None:
-        if not self.quiet:
-            return None
-        self._stdout = io.StringIO()
-        self._stderr = io.StringIO()
-        self._stdout_cm = redirect_stdout(self._stdout)
-        self._stderr_cm = redirect_stderr(self._stderr)
-        self._stdout_cm.__enter__()
-        self._stderr_cm.__enter__()
-        return None
-
-    def __exit__(self, exc_type, exc, tb) -> bool:
-        if self.quiet:
-            self._stderr_cm.__exit__(exc_type, exc, tb)
-            self._stdout_cm.__exit__(exc_type, exc, tb)
-        return False
-
-
-class IberianReplicationMonitor:
-    def __init__(
-        self,
-        system: Any,
-        cfg: ReplicationConfig,
-        collectors: list[CollectorRuntime],
-        mesh_line_ids: list[str],
-        reactor_action_ids: list[str],
-        area_selection: AffectedAreaSelection,
-        hvdc: HVDCSurrogateRuntime,
-        morocco_ac: UnderFrequencyTieRelayRuntime,
-        out_of_step: OutOfStepRelayRuntime,
-        generator_protection: GeneratorProtectionRelayRuntime,
-        defense_stages: list[UFLSUVLSStageRuntime],
-        blackout_criteria: BlackoutCriteriaRuntime,
-        island_blackout: IslandBlackoutRuntime,
-        blackout_load_ids: list[str],
-        background_fixed_pf_shunt_id: str | None,
-        physical_bus_count: int,
-    ) -> None:
-        self.system = system
+    shed_mw: float = 0.0
+    island: str = ""
+
+
+def accepted_sample(last_t_acc: float | None, t_target: float, h: float) -> tuple[bool, float, float]:
+    t_acc = round(float(t_target) - float(h), 9)
+    if last_t_acc is None:
+        return True, t_acc, 0.0
+    if t_acc > last_t_acc + 1e-9:
+        return True, t_acc, t_acc - last_t_acc
+    return False, float(last_t_acc), 0.0
+
+
+class PhysicsMonitor:
+    def __init__(self, rs: ReplicaSystem) -> None:
+        self.rs = rs
+        ss = rs.system
+        cfg = rs.cfg
         self.cfg = cfg
-        self.collectors = collectors
-        self.mesh_line_ids = mesh_line_ids
-        self.reactor_action_ids = reactor_action_ids
-        self.area_selection = area_selection
-        self.affected_bus_set = set(area_selection.affected_buses)
-        self.hvdc = hvdc
-        self.morocco_ac = morocco_ac
-        self.out_of_step = out_of_step
-        self.generator_protection = generator_protection
-        self.defense_stages = defense_stages
-        self.blackout_criteria = blackout_criteria
-        self.island_blackout = island_blackout
-        self.blackout_load_ids = blackout_load_ids
-        self.background_fixed_pf_shunt_id = background_fixed_pf_shunt_id
-        self.physical_bus_count = physical_bus_count
-        self.previous_time_s: float | None = None
-        self.mesh_index = 0
-        self.reactor_index = 0
-        self.export_reduction_started = False
-        self.export_reduction_done = False
-        self.export_reduction_progress = 0.0
-        if cfg.export_reduction_mode == "collector_fixed_pf":
-            self.export_reduction_total_mvar = sum(
-                collector.fixed_pf_q_absorption_mvar for collector in collectors
-            )
-        elif cfg.export_reduction_mode == "background_shunt":
-            self.export_reduction_total_mvar = float(
-                cfg.background_fixed_pf_q_absorption_mvar
-            )
-        else:
-            raise ValueError(
-                "export_reduction_mode must be 'collector_fixed_pf' or 'background_shunt'"
-            )
-        self.hvdc_reference_recorded = False
-        self.blackout_action_index = 0
+        self.ss = ss
+        self.base = float(ss.config.mva)
+        self.bus_ids = np.asarray([int(b) for b in ss.Bus.idx.v])
+        self.bpos = {int(b): i for i, b in enumerate(self.bus_ids)}
+        self.nphys = rs.physical_bus_count
+        self.area_mask = np.zeros(ss.Bus.n, dtype=bool)
+        for b in rs.area.buses:
+            self.area_mask[self.bpos[b]] = True
+        for blk in rs.blocks:
+            self.area_mask[self.bpos[blk.collector_bus]] = True
         self.events: list[EventRecord] = []
-        self.collector_trace: list[dict[str, float | int | str]] = []
-        self.system_trace: list[dict[str, float | int | str]] = []
-        self.island_trace: list[dict[str, float | int | str]] = []
-        self.deenergized_assets: list[dict[str, float | int | str | None]] = []
-        self.blackout_sequence: list[dict[str, float | int | str | None]] = []
-        self.last_islands: list[IslandSnapshot] = []
-        self.cumulative_lost_p_mw = 0.0
-        self.cumulative_lost_q_absorption_mvar = 0.0
-        self.cumulative_blackout_load_mw = 0.0
-        self.cumulative_blackout_q_demand_mvar = 0.0
-
-    def __call__(self, t: float, system: Any) -> None:
-        time_s = float(t)
-        dt = 0.0 if self.previous_time_s is None else max(0.0, time_s - self.previous_time_s)
-        self.previous_time_s = time_s
-
-        if self.blackout_criteria.declared:
-            self._record_system_trace(time_s, system)
-            return
-
-        self._apply_scheduled_actions(time_s)
-        self._monitor_collectors(time_s, dt, system)
-        self._apply_protection_chain(time_s, dt, system)
-        self._record_system_trace(time_s, system)
-
-    def _record_event(
-        self,
-        time_s: float,
-        code: str,
-        category: str,
-        description: str,
-        *,
-        lost_p_mw: float = 0.0,
-        lost_q_absorption_mvar: float = 0.0,
-        net_load_increase_mw: float = 0.0,
-        q_demand_increase_mvar: float = 0.0,
-        island_id: str | None = None,
-        trigger: str | None = None,
-        device_model: str | None = None,
-        device_id: str | None = None,
-        bus_id: int | None = None,
-        success: bool | None = None,
-    ) -> None:
-        self.cumulative_lost_p_mw += float(lost_p_mw)
-        self.cumulative_lost_q_absorption_mvar += float(lost_q_absorption_mvar)
-        self.cumulative_blackout_load_mw += float(net_load_increase_mw)
-        self.cumulative_blackout_q_demand_mvar += float(q_demand_increase_mvar)
-        event = EventRecord(
-            float(time_s),
-            code,
-            category,
-            description,
-            float(lost_p_mw),
-            float(lost_q_absorption_mvar),
-            float(net_load_increase_mw),
-            float(q_demand_increase_mvar),
-            island_id,
-            trigger,
-            device_model,
-            device_id,
-            bus_id,
-            success,
+        self.collector_rows: list[dict[str, Any]] = []
+        self.system_rows: list[dict[str, Any]] = []
+        self.last_t_acc: float | None = None
+        self.step_count = 0
+        self.rejected_calls = 0
+        self.stopped_reason: str | None = None
+        self.stalled_reason: str | None = None
+        self.stall_guard = False
+        self._small_steps = 0
+        self.collapse_declared: dict[str, float] = {}
+        self._initiated = False
+        self.jump_solves = 0
+        self.jump_failures: list[dict[str, Any]] = []
+        self.retired = False
+        pvd = ss.PVD1
+        self.plant_ids = [b.pvd1_id for b in rs.blocks] + list(rs.gnet_pvd1_ids)
+        self.plant_pos = np.asarray([_pos(pvd, i) for i in self.plant_ids], dtype=int)
+        self.plant_is_block = np.asarray([True] * len(rs.blocks) + [False] * len(rs.gnet_pvd1_ids))
+        self.plant_bus_pos = np.asarray([self.bpos[int(pvd.bus.v[p])] for p in self.plant_pos], dtype=int)
+        if cfg.plant_relay_side not in {"collector", "hv"}:
+            raise ValueError(f"unknown plant_relay_side {cfg.plant_relay_side!r}")
+        self.plant_meas_pos = self.plant_bus_pos.copy()
+        if cfg.plant_relay_side == "hv":
+            for k, blk in enumerate(rs.blocks):
+                self.plant_meas_pos[k] = self.bpos[int(blk.hv_bus)]
+        bf_idx = list(ss.BusFreq.idx.v) if _n(ss, "BusFreq") else []
+        self.plant_bf_pos = np.asarray(
+            [bf_idx.index(pvd.busfreq.v[p]) if pvd.busfreq.v[p] in bf_idx else -1 for p in self.plant_pos], dtype=int
         )
-        self.events.append(event)
-        if category in {
-            "protection_trip",
-            "generator_trip",
-            "defense_action",
-            "morocco_ac_trip",
-            "out_of_step_trip",
-            "hvdc_block",
-            "island_blackout_declared",
-            "system_blackout_declared",
-            "blackout_declared",
-        }:
-            self.blackout_sequence.append(asdict(event))
-
-    def _apply_scheduled_actions(self, time_s: float) -> None:
-        while (
-            self.mesh_index < len(self.mesh_line_ids)
-            and self.mesh_index < len(self.cfg.meshing_times_s)
-            and time_s >= self.cfg.meshing_times_s[self.mesh_index]
-        ):
-            line_id = self.mesh_line_ids[self.mesh_index]
-            _set_status(self.system, "Line", line_id, 1)
-            self._record_event(
-                self.cfg.meshing_times_s[self.mesh_index],
-                "OA1",
-                "operator_action",
-                f"Additional 500-kV corridor branch energized ({line_id}).",
-            )
-            self.mesh_index += 1
-
-        self._apply_fixed_pf_export_ramp(time_s)
-
-        while (
-            self.reactor_index < len(self.reactor_action_ids)
-            and self.reactor_index < len(self.cfg.reactor_actions)
-            and time_s >= self.cfg.reactor_actions[self.reactor_index].time_s
-        ):
-            action = self.cfg.reactor_actions[self.reactor_index]
-            shunt_id = self.reactor_action_ids[self.reactor_index]
-            _set_status(self.system, "Shunt", shunt_id, int(action.final_status))
-            lost_q = action.q_mvar if int(action.final_status) == 0 else -action.q_mvar
-            self._record_event(
-                action.time_s,
-                "OA3",
-                "operator_action",
-                f"{action.description} ({shunt_id}).",
-                lost_q_absorption_mvar=lost_q,
-            )
-            self.reactor_index += 1
-
-        if (
-            not self.hvdc_reference_recorded
-            and time_s >= self.cfg.hvdc_reference_time_s
-        ):
-            self.hvdc_reference_recorded = True
-            _set_status(self.system, "PQ", self.hvdc.local_pq_id, 1)
-            _set_status(self.system, "PQ", self.hvdc.remote_pq_id, 1)
-            self._record_event(
-                self.cfg.hvdc_reference_time_s,
-                "OA4",
-                "operator_action",
-                (
-                    "HVDC voltage-reference/setpoint adjustment before the "
-                    "collector-side protection cascade."
-                ),
-            )
-
-        if self.cfg.allow_equivalent_blackout:
-            self._apply_blackout_disturbances(time_s)
-
-    def _apply_blackout_disturbances(self, time_s: float) -> None:
-        while (
-            self.blackout_action_index < len(self.blackout_load_ids)
-            and self.blackout_action_index < len(self.cfg.blackout_actions)
-        ):
-            action = self.cfg.blackout_actions[self.blackout_action_index]
-            if time_s < action.time_s:
-                return
-            trip_count = sum(collector.tripped for collector in self.collectors)
-            if trip_count < action.require_trip_count:
-                return
-            load_id = self.blackout_load_ids[self.blackout_action_index]
-            _set_status(self.system, "PQ", load_id, 1)
-            self._record_event(
-                action.time_s,
-                f"AD{self.blackout_action_index + 2}",
-                "automatic_blackout",
-                f"{action.description} ({load_id}).",
-                net_load_increase_mw=action.p_mw,
-                q_demand_increase_mvar=action.q_mvar,
-            )
-            self.blackout_action_index += 1
-
-    def _apply_protection_chain(self, time_s: float, dt: float, system: Any) -> None:
-        if dt <= 0.0 or self.blackout_criteria.declared:
-            return
-        physical_v = _active_physical_bus_voltage(system, self.physical_bus_count)
-        vmin = float(np.nanmin(physical_v))
-        freq_hz = _estimate_frequency_hz(system, self.cfg.nominal_frequency_hz)
-        angle_sep = _coherent_angle_separation_rad(system, self.affected_bus_set)
-
-        if not self.cfg.enable_post_cascade_relays:
-            return
-        self._apply_generator_protection(time_s, dt, system, vmin, freq_hz, angle_sep)
-        self._apply_defense_stages(time_s, dt, system, vmin, freq_hz)
-        self._apply_morocco_ac_trip(time_s, dt, system, freq_hz, angle_sep)
-        self._apply_out_of_step_trip(time_s, dt, system, angle_sep)
-        self._apply_hvdc_block(time_s, dt, system, physical_v, freq_hz)
-        self._evaluate_island_blackout(time_s, dt, system)
-        self._apply_blackout_criteria(time_s, dt, vmin, freq_hz, angle_sep)
-
-    def _collector_trip_count(self) -> int:
-        return int(sum(collector.tripped for collector in self.collectors))
-
-    def _apply_hvdc_block(
-        self,
-        time_s: float,
-        dt: float,
-        system: Any,
-        physical_v: np.ndarray,
-        freq_hz: float,
-    ) -> None:
-        hvdc = self.hvdc
-        spec = hvdc.spec
-        if hvdc.blocked:
-            return
-        if self._collector_trip_count() < spec.require_collector_trips:
-            hvdc.timer_s = 0.0
-            return
-        if spec.require_france_ac_separation and not self.out_of_step.tripped:
-            hvdc.timer_s = 0.0
-            return
-        if time_s < spec.min_block_time_s:
-            return
-        bus_pos = {int(bus): i for i, bus in enumerate(system.Bus.idx.v)}
-        local_v = float(system.Bus.v.v[bus_pos.get(spec.local_bus, 0)])
-        islands = self._current_islands(system)
-        local_island = next(
-            (island for island in islands if spec.local_bus in island.buses),
-            None,
-        )
-        local_frequency = (
-            local_island.frequency_hz
-            if local_island is not None and np.isfinite(local_island.frequency_hz)
-            else freq_hz
-        )
-        local_vmin = (
-            local_island.vmin_pu
-            if local_island is not None and np.isfinite(local_island.vmin_pu)
-            else float(np.nanmin(physical_v))
-        )
-        condition = (
-            local_v <= spec.block_voltage_pu
-            or local_v >= spec.block_over_voltage_pu
-            or local_frequency <= spec.block_frequency_hz
-            or local_vmin <= spec.block_voltage_pu
-            or self.out_of_step.tripped
-        )
-        hvdc.timer_s = hvdc.timer_s + dt if condition else max(0.0, hvdc.timer_s - dt)
-        if hvdc.timer_s < spec.dwell_s:
-            return
-        _set_status(system, "PQ", hvdc.local_pq_id, 0)
-        _set_status(system, "PQ", hvdc.remote_pq_id, 0)
-        hvdc.blocked = True
-        hvdc.block_time_s = time_s
-        self._record_event(
-            time_s,
-            "HVDC",
-            "hvdc_block",
-            (
-                f"{spec.name} blocks on converter voltage/frequency logic "
-                f"(Vlocal={local_v:.3f} pu, f={local_frequency:.2f} Hz)."
-            ),
-            q_demand_increase_mvar=spec.reactive_support_mvar,
-            island_id=local_island.island_id if local_island else None,
-            trigger="hvdc_terminal_voltage_frequency",
-        )
-        self._evaluate_island_blackout(time_s, dt, system)
-
-    def _apply_out_of_step_trip(
-        self,
-        time_s: float,
-        dt: float,
-        system: Any,
-        angle_sep: float,
-    ) -> None:
-        relay = self.out_of_step
-        spec = relay.spec
-        if relay.tripped:
-            return
-        if self._collector_trip_count() < spec.require_collector_trips:
-            relay.timer_s = 0.0
-            return
-        if spec.require_morocco_trip and not self.morocco_ac.tripped:
-            relay.timer_s = 0.0
-            return
-        if time_s < spec.min_trip_time_s:
-            return
-        threshold = np.deg2rad(spec.angle_threshold_deg)
-        condition = angle_sep >= threshold
-        relay.timer_s = relay.timer_s + dt if condition else max(0.0, relay.timer_s - dt)
-        if relay.timer_s < spec.dwell_s:
-            return
-        tripped_lines: list[str] = []
-        for line_id in relay.line_ids:
-            if _safe_status(system, "Line", line_id) > 0.5:
-                _set_status(system, "Line", line_id, 0)
-                tripped_lines.append(str(line_id))
-        relay.tripped = True
-        relay.trip_time_s = time_s
-        islands = self._current_islands(system)
-        affected_island = self._affected_island(islands)
-        self._record_event(
-            time_s,
-            "FR-AC",
-            "out_of_step_trip",
-            (
-                "France-like AC loss-of-synchronism relay trips selected "
-                "boundary tie-lines "
-                f"(angle separation={np.rad2deg(angle_sep):.2f} deg, "
-                f"lines={', '.join(tripped_lines[:5])}"
-                f"{'...' if len(tripped_lines) > 5 else ''})."
-            ),
-            island_id=affected_island.island_id if affected_island else None,
-            trigger="loss_of_synchronism_ac_separation",
-        )
-
-    def _apply_morocco_ac_trip(
-        self,
-        time_s: float,
-        dt: float,
-        system: Any,
-        freq_hz: float,
-        angle_sep: float,
-    ) -> None:
-        relay = self.morocco_ac
-        spec = relay.spec
-        if relay.tripped:
-            return
-        if self._collector_trip_count() < spec.require_collector_trips:
-            relay.timer_s = 0.0
-            return
-        if spec.require_generator_trip and not self.generator_protection.tripped:
-            relay.timer_s = 0.0
-            return
-        if time_s < spec.min_trip_time_s:
-            return
-        condition = (
-            freq_hz <= spec.under_frequency_hz
-            or angle_sep >= np.deg2rad(spec.angle_threshold_deg)
-            or self.generator_protection.tripped
-        )
-        relay.timer_s = relay.timer_s + dt if condition else max(0.0, relay.timer_s - dt)
-        if relay.timer_s < spec.dwell_s:
-            return
-        tripped_lines: list[str] = []
-        for line_id in relay.line_ids:
-            if _safe_status(system, "Line", line_id) > 0.5:
-                _set_status(system, "Line", line_id, 0)
-                tripped_lines.append(str(line_id))
-        relay.tripped = True
-        relay.trip_time_s = time_s
-        islands = self._current_islands(system)
-        affected_island = self._affected_island(islands)
-        self._record_event(
-            time_s,
-            "MA-AC",
-            "morocco_ac_trip",
-            (
-                "Morocco-like underfrequency AC interconnection relay trips "
-                f"selected boundary tie-lines (f={freq_hz:.2f} Hz, "
-                f"angle separation={np.rad2deg(angle_sep):.2f} deg, "
-                f"lines={', '.join(tripped_lines[:5])}"
-                f"{'...' if len(tripped_lines) > 5 else ''})."
-            ),
-            island_id=affected_island.island_id if affected_island else None,
-            trigger="underfrequency_ac_interconnection_trip",
-        )
-
-    def _apply_generator_protection(
-        self,
-        time_s: float,
-        dt: float,
-        system: Any,
-        vmin: float,
-        freq_hz: float,
-        angle_sep: float,
-    ) -> None:
-        relay = self.generator_protection
-        spec = relay.spec
-        if relay.tripped:
-            return
-        if self._collector_trip_count() < spec.require_collector_trips:
-            relay.timer_s = 0.0
-            return
-        if time_s < spec.min_trip_time_s:
-            return
-        condition = (
-            vmin <= spec.under_voltage_pu
-            or freq_hz <= spec.under_frequency_hz
-            or angle_sep >= np.deg2rad(spec.angle_threshold_deg)
-            or self._collector_trip_count() >= spec.require_collector_trips
-        )
-        relay.timer_s = relay.timer_s + dt if condition else max(0.0, relay.timer_s - dt)
-        if relay.timer_s < spec.dwell_s:
-            return
-        self._current_islands(system)
-        tripped_genrou: list[str] = []
-        lost_generation_mw = 0.0
-        for gen_id in relay.genrou_ids:
-            if _safe_status(system, "GENROU", gen_id) > 0.5:
-                pos = _find_position(system.GENROU, gen_id)
-                bus_id = int(system.GENROU.bus.v[pos])
-                pe_pu = float(system.GENROU.Pe.v[pos]) if hasattr(system.GENROU, "Pe") else float("nan")
-                pe_mw = pe_pu * float(system.config.mva) if np.isfinite(pe_pu) else 0.0
-                if pe_mw <= 0.0:
-                    pe_mw = self.area_selection.genrou_mva_by_id.get(str(gen_id), 0.0)
-                _set_status(system, "GENROU", gen_id, 0)
-                tripped_genrou.append(str(gen_id))
-                lost_generation_mw += pe_mw
-                relay.tripped_mva += self.area_selection.genrou_mva_by_id.get(str(gen_id), 0.0)
-                self._append_deenergized_asset(
-                    time_s,
-                    self._island_id_for_bus(bus_id),
-                    "GENROU",
-                    str(gen_id),
-                    bus_id,
-                    "generator_uv_uf_loss_of_synchronism_protection",
-                    lost_mw=pe_mw,
-                )
-        tripped_pv: list[str] = []
-        for pv_id in relay.pv_ids:
-            if _safe_status(system, "PV", pv_id) > 0.5:
-                pos = _find_position(system.PV, pv_id)
-                bus_id = int(system.PV.bus.v[pos])
-                lost_pv_mw = max(0.0, float(system.PV.p0.v[pos]) * float(system.config.mva))
-                _set_status(system, "PV", pv_id, 0)
-                tripped_pv.append(str(pv_id))
-                self._append_deenergized_asset(
-                    time_s,
-                    self._island_id_for_bus(bus_id),
-                    "PV",
-                    str(pv_id),
-                    bus_id,
-                    "plant_overvoltage_uv_uf_protection",
-                    lost_mw=lost_pv_mw,
-                )
-        relay.tripped = True
-        relay.trip_time_s = time_s
-        self._record_event(
-            time_s,
-            "GEN",
-            "generator_trip",
-            (
-                "Generator protection trips affected-area machines after "
-                "the report-like collector cascade has removed generation and "
-                f"reactive absorption (Vmin={vmin:.3f} pu, f={freq_hz:.2f} Hz, "
-                f"angle={np.rad2deg(angle_sep):.2f} deg, "
-                f"GENROU={len(tripped_genrou)}, PV={len(tripped_pv)})."
-            ),
-            lost_p_mw=lost_generation_mw,
-            trigger="generator_uv_uf_loss_of_synchronism",
-        )
-
-    def _apply_defense_stages(
-        self,
-        time_s: float,
-        dt: float,
-        system: Any,
-        vmin: float,
-        freq_hz: float,
-    ) -> None:
-        if not self.generator_protection.tripped:
-            return
-        for stage in self.defense_stages:
-            if stage.applied or time_s < stage.spec.min_time_s:
-                continue
-            condition = (
-                vmin <= stage.spec.under_voltage_pu
-                or freq_hz <= stage.spec.under_frequency_hz
-                or self.generator_protection.tripped
-            )
-            stage.timer_s = stage.timer_s + dt if condition else max(0.0, stage.timer_s - dt)
-            if stage.timer_s < stage.spec.dwell_s:
-                continue
-            islands = self._current_islands(system)
-            affected_island = self._affected_island(islands)
-            affected_buses = set(affected_island.buses) if affected_island else set()
-            target_mw = min(
-                stage.spec.max_shed_mw,
-                stage.spec.load_fraction
-                * sum(self.area_selection.load_mw_by_id.get(load_id, 0.0) for load_id in stage.load_ids),
-            )
-            shed_mw = 0.0
-            shed_ids: list[str] = []
-            for load_id in stage.load_ids:
-                if shed_mw >= target_mw:
-                    break
-                if _safe_status(system, "PQ", load_id) <= 0.5:
-                    continue
-                pos = _find_position(system.PQ, load_id)
-                bus_id = int(system.PQ.bus.v[pos])
-                if affected_buses and bus_id not in affected_buses:
-                    continue
-                _set_status(system, "PQ", load_id, 0)
-                shed_ids.append(str(load_id))
-                shed_mw += self.area_selection.load_mw_by_id.get(str(load_id), 0.0)
-                self._append_deenergized_asset(
-                    time_s,
-                    affected_island.island_id if affected_island else "",
-                    "PQ",
-                    str(load_id),
-                    bus_id,
-                    f"{stage.spec.name}_defense_load_shed",
-                    lost_mw=self.area_selection.load_mw_by_id.get(str(load_id), 0.0),
-                )
-            stage.applied = True
-            stage.applied_time_s = time_s
-            stage.shed_mw = shed_mw
-            success = bool(
-                (np.isfinite(vmin) and vmin > stage.spec.under_voltage_pu)
-                and freq_hz > stage.spec.under_frequency_hz
-            )
-            self._record_event(
-                time_s,
-                stage.spec.name,
-                "defense_action",
-                (
-                    "UFLS/UVLS defense stage sheds affected-area demand but "
-                    f"voltage/frequency remain in emergency range "
-                    f"(shed={shed_mw:.1f} MW, loads={len(shed_ids)})."
-                ),
-                net_load_increase_mw=-shed_mw,
-                island_id=affected_island.island_id if affected_island else None,
-                trigger="ufls_uvls",
-                success=success,
-            )
-
-    def _apply_blackout_criteria(
-        self,
-        time_s: float,
-        dt: float,
-        vmin: float,
-        freq_hz: float,
-        angle_sep: float,
-    ) -> None:
-        blackout = self.blackout_criteria
-        spec = blackout.spec
-        if blackout.declared:
-            return
-        if self.island_blackout.deenergized_islands:
-            return
-        if not self.hvdc.blocked:
-            blackout.voltage_timer_s = 0.0
-            blackout.frequency_timer_s = 0.0
-            blackout.angle_timer_s = 0.0
-            return
-        blackout.voltage_timer_s = (
-            blackout.voltage_timer_s + dt
-            if vmin <= spec.voltage_pu
-            else max(0.0, blackout.voltage_timer_s - dt)
-        )
-        blackout.frequency_timer_s = (
-            blackout.frequency_timer_s + dt
-            if freq_hz <= spec.frequency_hz
-            else max(0.0, blackout.frequency_timer_s - dt)
-        )
-        angle_condition = (
-            self.out_of_step.tripped
-            and self.hvdc.blocked
-            and angle_sep >= np.deg2rad(spec.angle_threshold_deg)
-        )
-        blackout.angle_timer_s = (
-            blackout.angle_timer_s + dt
-            if angle_condition
-            else max(0.0, blackout.angle_timer_s - dt)
-        )
-        reason: str | None = None
-        if blackout.voltage_timer_s >= spec.voltage_dwell_s:
-            reason = f"physical-network voltage below {spec.voltage_pu:.2f} pu"
-        elif blackout.frequency_timer_s >= spec.frequency_dwell_s:
-            reason = f"frequency below {spec.frequency_hz:.1f} Hz"
-        elif blackout.angle_timer_s >= spec.angle_dwell_s:
-            reason = (
-                f"coherent-area angle separation above {spec.angle_threshold_deg:.1f} deg"
-            )
-        if reason is None:
-            return
-        blackout.declared = True
-        blackout.declared_time_s = time_s
-        blackout.reason = reason
-        self._record_event(
-            time_s,
-            "BO",
-            "system_blackout_declared",
-            f"Blackout endpoint declared by criteria: {reason}.",
-            trigger="global_blackout_criteria",
-        )
-
-    def _ignored_lines_for_island_accounting(self) -> set[str]:
-        if not self.out_of_step.tripped:
-            return set()
-        return set(self.area_selection.boundary_line_ids)
-
-    def _current_islands(self, system: Any) -> list[IslandSnapshot]:
-        snapshots = compute_island_snapshots(
-            system,
-            collectors=self.collectors,
-            affected_buses=self.affected_bus_set,
-            ignored_line_ids=self._ignored_lines_for_island_accounting(),
-            deenergized_islands=self.island_blackout.deenergized_islands,
-            nominal_frequency_hz=self.cfg.nominal_frequency_hz,
-        )
-        self.last_islands = snapshots
-        return snapshots
-
-    def _affected_island(self, islands: list[IslandSnapshot]) -> IslandSnapshot | None:
-        affected = [item for item in islands if item.affected_bus_count > 0]
-        if not affected:
-            return None
-        affected.sort(
-            key=lambda item: (
-                -item.affected_bus_count,
-                -len(item.online_collector_names),
-                -item.load_mw,
-                item.island_id,
-            )
-        )
-        return affected[0]
-
-    def _evaluate_island_blackout(
-        self,
-        time_s: float,
-        dt: float,
-        system: Any,
-    ) -> None:
-        if self.blackout_criteria.declared or not self.cfg.enable_post_cascade_relays:
-            return
-        if not self.hvdc.blocked or self.hvdc.block_time_s is None:
-            return
-        if (
-            time_s - float(self.hvdc.block_time_s)
-            < self.cfg.island_blackout_criteria.min_time_after_hvdc_block_s
-        ):
-            return
-        islands = self._current_islands(system)
-        island = self._affected_island(islands)
-        if island is None or island.island_id in self.island_blackout.deenergized_islands:
-            return
-        spec = self.island_blackout.spec
-        island_id = island.island_id
-        no_reference = (
-            (not island.has_voltage_reference)
-            or island.generation_mw < spec.min_generation_mw
-        )
-        low_voltage = np.isfinite(island.vmin_pu) and island.vmin_pu <= spec.voltage_pu
-        low_frequency = (
-            np.isfinite(island.frequency_hz)
-            and island.frequency_hz <= spec.frequency_hz
-        )
-        high_angle = island.angle_spread_deg >= spec.angle_threshold_deg
-        all_defense_applied = all(stage.applied for stage in self.defense_stages)
-        imbalance = (
-            all_defense_applied
-            and island.imbalance_fraction >= spec.imbalance_fraction
-        )
-        runtime = self.island_blackout
-        runtime.no_reference_timers_s[island_id] = (
-            runtime.no_reference_timers_s.get(island_id, 0.0) + dt
-            if no_reference
-            else 0.0
-        )
-        runtime.voltage_timers_s[island_id] = (
-            runtime.voltage_timers_s.get(island_id, 0.0) + dt if low_voltage else 0.0
-        )
-        runtime.frequency_timers_s[island_id] = (
-            runtime.frequency_timers_s.get(island_id, 0.0) + dt if low_frequency else 0.0
-        )
-        runtime.angle_timers_s[island_id] = (
-            runtime.angle_timers_s.get(island_id, 0.0) + dt if high_angle else 0.0
-        )
-        runtime.imbalance_timers_s[island_id] = (
-            runtime.imbalance_timers_s.get(island_id, 0.0) + dt if imbalance else 0.0
-        )
-        reason: str | None = None
-        trigger: str | None = None
-        if runtime.no_reference_timers_s[island_id] >= spec.voltage_dwell_s:
-            reason = "affected island has no viable voltage/frequency reference"
-            trigger = "no_reference"
-        elif runtime.voltage_timers_s[island_id] >= spec.voltage_dwell_s:
-            reason = f"affected island voltage below {spec.voltage_pu:.2f} pu"
-            trigger = "island_undervoltage"
-        elif runtime.frequency_timers_s[island_id] >= spec.frequency_dwell_s:
-            reason = f"affected island frequency below {spec.frequency_hz:.1f} Hz"
-            trigger = "island_underfrequency"
-        elif runtime.angle_timers_s[island_id] >= spec.angle_dwell_s:
-            reason = (
-                "affected island loss-of-synchronism angle spread "
-                f"{island.angle_spread_deg:.1f} deg"
-            )
-            trigger = "island_angle_spread"
-        elif runtime.imbalance_timers_s[island_id] >= spec.imbalance_dwell_s:
-            reason = (
-                "affected island load-generation imbalance remains too large "
-                "after UFLS/UVLS"
-            )
-            trigger = "post_defense_imbalance"
-        if reason is None or trigger is None:
-            return
-        self._deenergize_island(time_s, system, island, reason, trigger)
-
-    def _deenergize_island(
-        self,
-        time_s: float,
-        system: Any,
-        island: IslandSnapshot,
-        reason: str,
-        trigger: str,
-    ) -> None:
-        island_id = island.island_id
-        buses = set(island.buses)
-        self.island_blackout.deenergized_islands.add(island_id)
-        self._record_event(
-            time_s,
-            f"{island_id}-BO",
-            "island_blackout_declared",
-            (
-                f"{island_id} de-energized: {reason} "
-                f"(buses={len(buses)}, load={island.load_mw:.1f} MW, "
-                f"generation={island.generation_mw:.1f} MW)."
-            ),
-            island_id=island_id,
-            trigger=trigger,
-        )
-        self._trip_assets_in_island(time_s, system, island, reason)
-        self.blackout_criteria.declared = True
-        self.blackout_criteria.declared_time_s = time_s
-        self.blackout_criteria.reason = reason
-        self._record_event(
-            time_s,
-            "BO",
-            "system_blackout_declared",
-            (
-                "System blackout endpoint declared after explicit island "
-                f"de-energization ({island_id}): {reason}."
-            ),
-            island_id=island_id,
-            trigger=trigger,
-        )
-
-    def _append_deenergized_asset(
-        self,
-        time_s: float,
-        island_id: str,
-        model: str,
-        device_id: str,
-        bus_id: int | None,
-        reason: str,
-        *,
-        lost_mw: float = 0.0,
-        q_mvar: float = 0.0,
-    ) -> None:
-        self.deenergized_assets.append(
-            {
-                "time_s": float(time_s),
-                "island_id": island_id,
-                "model": model,
-                "device_id": str(device_id),
-                "bus_id": bus_id,
-                "reason": reason,
-                "lost_mw": float(lost_mw),
-                "q_mvar": float(q_mvar),
-            }
-        )
-
-    def _island_id_for_bus(self, bus_id: int) -> str:
-        islands = self.last_islands or self._current_islands(self.system)
-        for island in islands:
-            if int(bus_id) in island.buses:
-                return island.island_id
-        return ""
-
-    def _trip_assets_in_island(
-        self,
-        time_s: float,
-        system: Any,
-        island: IslandSnapshot,
-        reason: str,
-    ) -> None:
-        buses = set(island.buses)
-        island_id = island.island_id
-        base = _base_mva(system)
-        for model_name in ("GENROU", "PV", "PQ", "Shunt", "Line"):
-            if not hasattr(system, model_name):
-                continue
-            model = getattr(system, model_name)
-            for i in range(getattr(model, "n", 0)):
-                if _model_status_at(model, i) <= 0.5:
-                    continue
-                if model_name == "Line":
-                    bus1 = int(model.bus1.v[i])
-                    bus2 = int(model.bus2.v[i])
-                    in_island = bus1 in buses or bus2 in buses
-                    bus_id = bus1 if bus1 in buses else bus2 if bus2 in buses else None
-                else:
-                    bus_id = int(model.bus.v[i])
-                    in_island = bus_id in buses
-                if not in_island:
-                    continue
-                device_id = str(model.idx.v[i])
-                lost_mw = 0.0
-                q_mvar = 0.0
-                if model_name == "GENROU":
-                    lost_mw = _generator_output_mw(system, i)
-                elif model_name == "PV" and hasattr(model, "p0"):
-                    lost_mw = max(0.0, float(model.p0.v[i]) * base)
-                elif model_name == "PQ":
-                    p_mw = float(model.p0.v[i]) * base if hasattr(model, "p0") else 0.0
-                    q_mvar = float(model.q0.v[i]) * base if hasattr(model, "q0") else 0.0
-                    lost_mw = abs(p_mw)
-                elif model_name == "Shunt" and hasattr(model, "b"):
-                    q_mvar = float(model.b.v[i]) * base
-                _set_status(system, model_name, device_id, 0)
-                self._append_deenergized_asset(
-                    time_s,
-                    island_id,
-                    model_name,
-                    device_id,
-                    bus_id,
-                    reason,
-                    lost_mw=lost_mw,
-                    q_mvar=q_mvar,
-                )
-        for collector in self.collectors:
-            if collector.collector_bus not in buses or collector.tripped:
-                continue
-            collector.tripped = True
-            collector.trip_time_s = time_s
-            collector.trip_stage_name = "island_deenergization"
-            self._append_deenergized_asset(
-                time_s,
-                island_id,
-                "Collector",
-                collector.spec.name,
-                collector.collector_bus,
-                reason,
-                lost_mw=collector.spec.active_power_mw,
-                q_mvar=collector.spec.q_absorption_mvar,
-            )
-
-    def _monitor_collectors(self, time_s: float, dt: float, system: Any) -> None:
-        bus_pos = {int(bus): i for i, bus in enumerate(system.Bus.idx.v)}
-        row: dict[str, float | int | str] = {"time_s": time_s}
-
-        for collector in self.collectors:
-            coll_pos = bus_pos[collector.collector_bus]
-            trans_pos = bus_pos[collector.spec.transmission_bus]
-            voltage = float(system.Bus.v.v[coll_pos])
-            transmission_voltage = float(system.Bus.v.v[trans_pos])
-            collector.last_voltage_pu = voltage
-            collector.last_transmission_voltage_pu = transmission_voltage
-            if (not collector.tripped) and voltage > collector.max_voltage_pu:
-                collector.max_voltage_pu = voltage
-                collector.max_voltage_time_s = time_s
-
-            row[f"{collector.spec.name}_voltage_pu_raw"] = voltage
-            row[f"{collector.spec.name}_voltage_pu"] = "" if collector.tripped else voltage
-            row[f"{collector.spec.name}_transmission_voltage_pu"] = transmission_voltage
-            row[f"{collector.spec.name}_threshold_pu"] = collector.spec.threshold_pu
-            row[f"{collector.spec.name}_online"] = 0 if collector.tripped else 1
-
-            if collector.tripped or dt <= 0.0:
-                continue
-            trip_stage = update_overvoltage_relay_timers(
-                collector,
-                voltage,
-                dt,
-                self.cfg.relay_timer_decay,
-            )
-            collector.timer_s = max(collector.stage_timers_s.values(), default=0.0)
-            collector.fast_timer_s = collector.stage_timers_s.get("high", 0.0)
-            if trip_stage is not None and time_s >= collector.spec.min_trip_time_s:
-                self._trip_collector(collector, time_s, trip_stage)
-
-        self.collector_trace.append(row)
-
-    def _apply_fixed_pf_export_ramp(self, time_s: float) -> None:
-        start = self.cfg.export_reduction_time_s
-        duration = max(float(self.cfg.export_reduction_ramp_s), 1e-9)
-        if (
-            time_s < start
-            or self.export_reduction_done
-            or self.export_reduction_total_mvar <= 0.0
-        ):
-            return
-
-        progress = min(1.0, max(0.0, (time_s - start) / duration))
-        if not self.export_reduction_started:
-            self.export_reduction_started = True
-            self._record_event(
-                start,
-                "OA2",
-                "operator_action",
-                (
-                    "Export reduction and fixed-power-factor plant behavior begin "
-                    "a ramped loss of reactive absorption."
-                ),
-            )
-
-        if progress <= self.export_reduction_progress:
-            return
-
-        shunt_model = self.system.Shunt
-        base_mva = float(self.system.config.mva)
-        remaining_fraction = max(0.0, 1.0 - progress)
-        if self.cfg.export_reduction_mode == "collector_fixed_pf":
-            for collector in self.collectors:
-                pos = _find_position(shunt_model, collector.fixed_pf_q_shunt_id)
-                shunt_model.b.v[pos] = -(
-                    collector.fixed_pf_q_absorption_mvar * remaining_fraction / base_mva
-                )
-                if (
-                    progress >= 1.0
-                    and _status(self.system, "Shunt", collector.fixed_pf_q_shunt_id) > 0.5
-                ):
-                    _set_status(self.system, "Shunt", collector.fixed_pf_q_shunt_id, 0)
-        else:
-            if self.background_fixed_pf_shunt_id is None:
-                return
-            pos = _find_position(shunt_model, self.background_fixed_pf_shunt_id)
-            shunt_model.b.v[pos] = -(
-                self.export_reduction_total_mvar * remaining_fraction / base_mva
-            )
-            if (
-                progress >= 1.0
-                and _status(self.system, "Shunt", self.background_fixed_pf_shunt_id) > 0.5
-            ):
-                _set_status(self.system, "Shunt", self.background_fixed_pf_shunt_id, 0)
-
-        incremental_lost_q = self.export_reduction_total_mvar * (
-            progress - self.export_reduction_progress
-        )
-        self.cumulative_lost_q_absorption_mvar += float(incremental_lost_q)
-        self.export_reduction_progress = progress
-        self.export_reduction_done = progress >= 1.0
-
-    def _trip_collector(
-        self,
-        collector: CollectorRuntime,
-        time_s: float,
-        trip_stage_name: str | None = None,
-    ) -> None:
-        collector.tripped = True
-        collector.trip_time_s = time_s
-        collector.trip_voltage_pu = collector.last_voltage_pu
-        collector.trip_stage_name = trip_stage_name
-        _set_status(self.system, "PQ", collector.pq_id, 0)
-
-        lost_q = 0.0
-        if _status(self.system, "Shunt", collector.main_q_shunt_id) > 0.5:
-            _set_status(self.system, "Shunt", collector.main_q_shunt_id, 0)
-            lost_q += collector.main_q_absorption_mvar
-        if _status(self.system, "Shunt", collector.fixed_pf_q_shunt_id) > 0.5:
-            shunt = self.system.Shunt
-            pos = _find_position(shunt, collector.fixed_pf_q_shunt_id)
-            _set_status(self.system, "Shunt", collector.fixed_pf_q_shunt_id, 0)
-            lost_q += max(0.0, -float(shunt.b.v[pos]) * float(self.system.config.mva))
-
-        self._record_event(
-            time_s,
-            f"AA_{collector.spec.name}",
-            "protection_trip",
-            (
-                f"{collector.spec.name} trips by collector-side overvoltage "
-                f"(V={collector.last_voltage_pu:.3f} pu, "
-                f"threshold={collector.spec.threshold_pu:.3f} pu, "
-                f"stage={trip_stage_name or 'legacy'}, "
-                f"cluster={collector.spec.report_cluster})."
-            ),
-            lost_p_mw=collector.spec.active_power_mw,
-            lost_q_absorption_mvar=lost_q,
-        )
-
-    def _record_system_trace(self, time_s: float, system: Any) -> None:
-        physical_v = np.asarray(system.Bus.v.v[: self.physical_bus_count], dtype=float)
-        physical_v_finite = physical_v[np.isfinite(physical_v)]
-        if physical_v_finite.size:
-            physical_percentiles = np.nanpercentile(
-                physical_v_finite,
-                [1.0, 10.0, 50.0, 90.0, 99.0],
-            )
-        else:
-            physical_percentiles = np.array([np.nan, np.nan, np.nan, np.nan, np.nan])
-        frequency_hz = _estimate_frequency_hz(system, self.cfg.nominal_frequency_hz)
-        angle_sep = _coherent_angle_separation_rad(system, self.affected_bus_set)
-        islands = self._current_islands(system)
-        affected_island = self._affected_island(islands)
-        for island in islands:
-            self.island_trace.append(
-                {
-                    "time_s": float(time_s),
-                    "island_id": island.island_id,
-                    "bus_count": len(island.buses),
-                    "affected_bus_count": island.affected_bus_count,
-                    "line_count": len(island.line_ids),
-                    "online_genrou_count": len(island.online_genrou_ids),
-                    "online_pv_count": len(island.online_pv_ids),
-                    "online_load_count": len(island.online_load_ids),
-                    "online_collector_count": len(island.online_collector_names),
-                    "generation_mw": island.generation_mw,
-                    "load_mw": island.load_mw,
-                    "q_load_mvar": island.q_load_mvar,
-                    "q_absorption_mvar": island.q_absorption_mvar,
-                    "vmin_pu": float("nan") if island.deenergized else island.vmin_pu,
-                    "vmax_pu": float("nan") if island.deenergized else island.vmax_pu,
-                    "frequency_hz": float("nan")
-                    if island.deenergized
-                    else island.frequency_hz,
-                    "angle_spread_deg": float("nan")
-                    if island.deenergized
-                    else island.angle_spread_deg,
-                    "has_voltage_reference": int(island.has_voltage_reference),
-                    "imbalance_fraction": island.imbalance_fraction,
-                    "deenergized": int(island.deenergized),
+        self.plant_online = np.ones(len(self.plant_ids), dtype=bool)
+        self.plant_stages = cfg.plant_stages()
+        self.plant_relays = {st.name: _new_relay_state(len(self.plant_ids)) for st in self.plant_stages}
+        block_names = [b.spec.name for b in rs.blocks]
+        self.extra_stages: list[tuple[DefiniteTimeStage, np.ndarray, RelayState]] = []
+        for name, st in cfg.extra_plant_stages:
+            if name not in block_names:
+                raise ValueError(f"extra plant stage for unknown block {name!r}")
+            mask = np.zeros(len(self.plant_ids), dtype=bool)
+            mask[block_names.index(name)] = True
+            self.extra_stages.append((st, mask, _new_relay_state(len(self.plant_ids))))
+        self.plant_trip_time = np.full(len(self.plant_ids), np.nan)
+        self.plant_max_v = np.full(len(self.plant_ids), -np.inf)
+        self.plant_max_v_t = np.full(len(self.plant_ids), np.nan)
+        self.plant_first_pickup = np.full(len(self.plant_ids), np.nan)
+        self.shadow: dict[str, dict[str, Any]] = {}
+        if cfg.shadow_plant_ov:
+            for mode in ("standard", "fast"):
+                stages = plant_ov_stages(mode, cfg.plant_ov1_delay_s)
+                self.shadow[mode] = {
+                    "stages": stages,
+                    "state": {st.name: _new_relay_state(len(self.plant_ids)) for st in stages},
+                    "operate_time": np.full(len(self.plant_ids), np.nan),
+                    "stage": [""] * len(self.plant_ids),
                 }
-            )
-        affected_generation = affected_island.generation_mw if affected_island else float("nan")
-        affected_load = affected_island.load_mw if affected_island else float("nan")
-        affected_vmin = affected_island.vmin_pu if affected_island else float("nan")
-        affected_frequency = affected_island.frequency_hz if affected_island else float("nan")
-        self.system_trace.append(
-            {
-                "time_s": time_s,
-                "vmax_physical_pu": float(np.nanmax(physical_v)),
-                "vmin_physical_pu": float(np.nanmin(physical_v)),
-                "v01_physical_pu": float(physical_percentiles[0]),
-                "v10_physical_pu": float(physical_percentiles[1]),
-                "v50_physical_pu": float(physical_percentiles[2]),
-                "v90_physical_pu": float(physical_percentiles[3]),
-                "v99_physical_pu": float(physical_percentiles[4]),
-                "frequency_hz": float(frequency_hz),
-                "angle_separation_deg": float(np.rad2deg(angle_sep)),
-                "affected_island_id": affected_island.island_id if affected_island else "",
-                "affected_island_generation_mw": float(affected_generation),
-                "affected_island_load_mw": float(affected_load),
-                "affected_island_vmin_pu": float(affected_vmin),
-                "affected_island_frequency_hz": float(affected_frequency),
-                "deenergized_island_count": int(len(self.island_blackout.deenergized_islands)),
-                "online_collectors": int(sum(not item.tripped for item in self.collectors)),
-                "hvdc_blocked": int(self.hvdc.blocked),
-                "morocco_ac_tripped": int(self.morocco_ac.tripped),
-                "boundary_lines_tripped": int(
-                    self.morocco_ac.tripped or self.out_of_step.tripped
-                ),
-                "france_ac_tripped": int(self.out_of_step.tripped),
-                "generator_protection_tripped": int(self.generator_protection.tripped),
-                "defense_stages_applied": int(sum(stage.applied for stage in self.defense_stages)),
-                "blackout_declared": int(self.blackout_criteria.declared),
-                "cumulative_lost_p_mw": float(self.cumulative_lost_p_mw),
-                "cumulative_lost_q_absorption_mvar": float(
-                    self.cumulative_lost_q_absorption_mvar
-                ),
-                "cumulative_blackout_load_mw": float(self.cumulative_blackout_load_mw),
-                "cumulative_blackout_q_demand_mvar": float(
-                    self.cumulative_blackout_q_demand_mvar
-                ),
-            }
-        )
+        self.block_pref0 = np.asarray([float(pvd.pref0.v[p]) for p in self.plant_pos[: len(rs.blocks)]])
+        self.block_qref0 = np.asarray([float(pvd.qref0.v[p]) for p in self.plant_pos[: len(rs.blocks)]])
+        g = ss.GENROU
+        self.gen_ids = [str(v) for v in g.idx.v]
+        self.gen_online = np.asarray(g.u.v, dtype=float) > 0.5
+        self.gen_bus_pos = np.asarray([self.bpos[int(b)] for b in g.bus.v], dtype=int)
+        self.gen_M = np.asarray(g.M.v, dtype=float)
+        links = _genrou_links(ss)
+        self.gen_links = [links[i]["exciter"] + links[i]["governor"] + links[i]["pss"] for i in self.gen_ids]
+        self.gen_stages = cfg.generator_stages() if cfg.generator_protection_enabled else ()
+        self.gen_relays = {st.name: _new_relay_state(len(self.gen_ids)) for st in self.gen_stages}
+        self.gen_in_area = self.area_mask[self.gen_bus_pos]
+        self.qctl: list[tuple[Any, int, int, float, float]] = []
+        if cfg.area_q_control_tc_s > 0.0:
+            for i in np.flatnonzero(self.gen_online & self.gen_in_area):
+                for ref in links[self.gen_ids[i]]["exciter"]:
+                    name, idx = ref.split(":", 1)
+                    model = getattr(ss, name)
+                    k = _pos(model, idx)
+                    if float(model.u.v[k]) > 0.5:
+                        self.qctl.append((model, k, int(i), float(g.Qe.v[i]), float(g.Sn.v[i]) / self.base))
+        self.uel: list[tuple[Any, int, int, float, float, float]] = []
+        if cfg.area_uel_tc_s > 0.0:
+            qmin_of = {}
+            for mname in ("PV", "Slack"):
+                m = getattr(ss, mname)
+                for k in range(m.n):
+                    qmin_of[str(m.idx.v[k])] = float(m.qmin.v[k])
+            for i in np.flatnonzero(self.gen_online & self.gen_in_area):
+                qmin = qmin_of.get(str(g.gen.v[i]))
+                if qmin is None:
+                    continue
+                for ref in links[self.gen_ids[i]]["exciter"]:
+                    name, idx = ref.split(":", 1)
+                    model = getattr(ss, name)
+                    k = _pos(model, idx)
+                    if float(model.u.v[k]) > 0.5:
+                        self.uel.append((model, k, int(i), qmin, float(g.Sn.v[i]) / self.base, float(model.vref0.v[k])))
+        self.uel_offset = np.zeros(len(self.uel))
+        pq = ss.PQ
+        self.load_pos = np.asarray([i for i in range(pq.n) if float(pq.u.v[i]) > 0.5 and float(pq.Req.v[i]) > 0.0], dtype=int)
+        self.load_bus_pos = np.asarray([self.bpos[int(pq.bus.v[i])] for i in self.load_pos], dtype=int)
+        self.load_req0 = np.asarray(pq.Req.v, dtype=float)[self.load_pos].copy()
+        self.load_xeq0 = np.asarray(pq.Xeq.v, dtype=float)[self.load_pos].copy()
+        self.load_comp0 = {name: np.asarray(getattr(pq, name).v, dtype=float)[self.load_pos].copy()
+                           for name in ("Ppf", "Qpf", "Ipeq", "Iqeq", "Req", "Xeq") if hasattr(pq, name)}
+        self.load_mix = (float(pq.config.p2p), float(pq.config.p2i), float(pq.config.p2z))
+        self.load_shed_fraction = np.zeros(len(self.load_pos))
+        self.load_ramp_factor = np.ones(len(self.load_pos))
+        self.load_in_area = self.area_mask[self.load_bus_pos] if len(self.load_pos) else np.zeros(0, dtype=bool)
+        v0 = np.asarray(ss.Bus.v.v, dtype=float)
+        self.load_p0_mw = np.asarray([self._load_p(int(p), float(v0[b])) for p, b in zip(self.load_pos, self.load_bus_pos)])
+        self.ufls_state = [_new_relay_state(len(self.load_pos)) for _ in cfg.ufls_stages]
+        self.ufls_done = [np.zeros(len(self.load_pos), dtype=bool) for _ in cfg.ufls_stages]
+        self.cut_pos = list(rs.area.cut_branch_positions)
+        self.separated = False
+        self.sep_state = _new_relay_state(1)
+        self._refresh_islands()
+        self.coi_sep0: float | None = None
+        self.collapse_timers: dict[str, float] = defaultdict(float)
+        self.actions = list(cfg.pre_cascade_actions) if (cfg.pre_cascade_enabled and not rs.armed) else []
+        self.mesh_done = [False] * len(rs.mesh_line_ids)
+        self.gov_pref0: dict[str, float] = {}
+        for ref, _ in rs.redispatch_area_gov + rs.redispatch_rest_gov:
+            name, idx = ref.split(":", 1)
+            model = getattr(ss, name)
+            self.gov_pref0[ref] = float(model.pref0.v[_pos(model, idx)])
+        pv = ss.PV
+        self.spv_pos = np.asarray([i for i in range(pv.n) if float(pv.u.v[i]) > 0.5], dtype=int)
+        self.spv_qmax = np.asarray(pv.qmax.v, dtype=float)[self.spv_pos] * self.base
+        self.spv_qmin = np.asarray(pv.qmin.v, dtype=float)[self.spv_pos] * self.base
+        self.spv_max_exceed = 0.0
+        self.spv_worst = ""
+        flows0 = cut_branch_flows_mva(rs)
+        self.export0_mw = float(np.sum(flows0.real))
+        self.cut_abs_p0_mw = float(np.sum(np.abs(flows0.real)))
+        self.cum_lost_p = 0.0
+        self.cum_lost_q_abs = 0.0
+        self.cum_shed = 0.0
+        self.cum_gen_trip_mw = 0.0
+        self.dg = list(rs.embedded_pv)
+        self.dg_lost_mw = 0.0
+        if self.dg:
+            v0 = np.asarray(ss.Bus.v.v, dtype=float)
+            ntr = len(cfg.embedded_pv_tranches)
+            self.dg_pos = np.asarray([_pos(pvd, d["pvd1_id"]) for d in self.dg], dtype=int)
+            self.dg_bus_pos = np.asarray([self.bpos[int(d["bus"])] for d in self.dg], dtype=int)
+            self.dg_p0_mw = np.asarray([d["p_mw"] for d in self.dg])
+            self.dg_pref0 = np.asarray(pvd.pref0.v, dtype=float)[self.dg_pos].copy()
+            self.dg_qref0 = np.asarray(pvd.qref0.v, dtype=float)[self.dg_pos].copy()
+            u1 = float(cfg.embedded_pv_ov[0][0])
+            vb0 = v0[self.dg_bus_pos]
+            self.dg_ratio = np.stack([u1 / (vb0 + m) for m in cfg.embedded_pv_tranches], axis=1)
+            self.dg_on = np.ones((len(self.dg), ntr), dtype=bool)
+            self.dg_stages = [DefiniteTimeStage(f"DGOV{j + 1}", "voltage", "over", float(u), float(t), 0.98,
+                                                "embedded PV inverter protection at LV (final report Sec. 4.3.3.2)")
+                              for j, (u, t) in enumerate(cfg.embedded_pv_ov)]
+            self.dg_relays = [_new_relay_state(self.dg_on.size) for _ in self.dg_stages]
 
+    def _refresh_islands(self) -> None:
+        ss = self.ss
+        line = ss.Line
+        u = np.asarray(line.u.v, dtype=float) > 0.5
+        a1 = [self.bpos[int(b)] for b in line.bus1.v]
+        a2 = [self.bpos[int(b)] for b in line.bus2.v]
+        edges = [(a1[i], a2[i]) for i in range(line.n) if u[i]]
+        comps = _components(list(range(ss.Bus.n)), edges)
+        self.island_of_bus = np.zeros(ss.Bus.n, dtype=int)
+        for k, comp in enumerate(comps):
+            for b in comp:
+                self.island_of_bus[b] = k
+        self.n_islands = len(comps)
+        self.island_sizes = [len(c) for c in comps]
+        self.gen_rel0 = None
+        self.gen_rel_unwrapped = None
+        area_idx = np.flatnonzero(self.area_mask)
+        vals, counts = np.unique(self.island_of_bus[area_idx], return_counts=True)
+        self.affected_island = int(vals[np.argmax(counts)])
 
-def build_replication_system(
-    cfg: ReplicationConfig,
-) -> tuple[
-    Any,
-    list[CollectorRuntime],
-    list[str],
-    list[str],
-    AffectedAreaSelection,
-    HVDCSurrogateRuntime,
-    UnderFrequencyTieRelayRuntime,
-    OutOfStepRelayRuntime,
-    GeneratorProtectionRelayRuntime,
-    list[UFLSUVLSStageRuntime],
-    BlackoutCriteriaRuntime,
-    IslandBlackoutRuntime,
-    list[str],
-    str | None,
-    int,
-]:
-    case = AndesCase.load(
-        AndesCaseSpec(cfg.case_id, setup=False, run_pflow=False, init_tds=False)
-    )
-    system = case.system
-    _disable_predefined_events(system)
+    def _coi(self, mask: np.ndarray, x: np.ndarray, *, angle: bool = False) -> float:
+        w = self.gen_M[mask]
+        if w.sum() <= 0:
+            return float("nan")
+        if angle:
+            return float(np.angle(np.sum(w * np.exp(1j * x[mask])) / w.sum()))
+        return float(np.sum(w * x[mask]) / w.sum())
 
-    base_mva = float(system.config.mva)
-    physical_bus_count = int(system.Bus.n)
-    area_selection = select_affected_area(system, cfg)
-    collector_specs = resolve_collector_specs(system, cfg, area_selection)
+    def __call__(self, t_target: float, system: Any) -> None:
+        ss = self.ss
+        if self.stall_guard and self.stalled_reason is None:
+            self._small_steps = self._small_steps + 1 if float(ss.TDS.h) < 1e-4 else 0
+            if self._small_steps >= 300:
+                self.stalled_reason = f"step size < 1e-4 s for 300 attempts at t={float(t_target):.4f} s"
+                ss.TDS.config.tf = float(t_target)
+        is_new, t_acc, dt = accepted_sample(self.last_t_acc, float(t_target), float(ss.TDS.h))
+        if is_new:
+            self.last_t_acc = t_acc
+            self.step_count += 1
+            self._process_sample(t_acc, dt)
+        else:
+            self.rejected_calls += 1
+        self._apply_ramps(float(t_target))
 
-    collectors: list[CollectorRuntime] = []
-    next_bus = int(max(system.Bus.idx.v)) + 1
-    for i, spec in enumerate(collector_specs):
-        collector_bus = next_bus + i
-        system.add(
-            "Bus",
-            {
-                "idx": collector_bus,
-                "name": f"{spec.name}_collector",
-                "Vn": spec.base_kv,
-                "v0": 1.0,
-                "a0": 0.0,
-            },
-        )
-        gsu_line_id = system.add(
-            "Line",
-            {
-                "bus1": spec.transmission_bus,
-                "bus2": collector_bus,
-                "r": 0.001,
-                "x": 0.08,
-                "b": 0.0,
-                "tap": spec.tap,
-                "u": 1,
-                "name": f"GSU_{spec.name}",
-            },
-        )
-        pq_id = system.add(
-            "PQ",
-            {
-                "bus": collector_bus,
-                "p0": -spec.active_power_mw / base_mva,
-                "q0": 0.0,
-                "u": 1,
-                "name": f"IBR_{spec.name}",
-            },
-        )
-        main_q = spec.q_absorption_mvar * (1.0 - spec.fixed_pf_q_fraction)
-        fixed_q = spec.q_absorption_mvar * spec.fixed_pf_q_fraction
-        main_q_shunt_id = system.add(
-            "Shunt",
-            {
-                "bus": collector_bus,
-                "g": 0.0,
-                "b": -main_q / base_mva,
-                "u": 1,
-                "name": f"{spec.name}_QABS_MAIN",
-            },
-        )
-        fixed_pf_q_shunt_id = system.add(
-            "Shunt",
-            {
-                "bus": collector_bus,
-                "g": 0.0,
-                "b": -fixed_q / base_mva,
-                "u": 1,
-                "name": f"{spec.name}_QABS_FIXEDPF",
-            },
-        )
-        collectors.append(
-            CollectorRuntime(
-                spec=spec,
-                collector_bus=collector_bus,
-                gsu_line_id=str(gsu_line_id),
-                pq_id=str(pq_id),
-                main_q_shunt_id=str(main_q_shunt_id),
-                fixed_pf_q_shunt_id=str(fixed_pf_q_shunt_id),
-            )
-        )
-
-    mesh_line_ids: list[str] = []
-    for i, source_id in enumerate(cfg.meshing_source_lines):
-        line = system.Line
-        pos = _find_position(line, source_id)
-        strength = (
-            float(cfg.meshing_equivalent_strengths[i])
-            if i < len(cfg.meshing_equivalent_strengths)
-            else 1.0
-        )
-        strength = max(strength, 1e-6)
-        mesh_line_ids.append(
-            str(
-                system.add(
-                    "Line",
-                    {
-                        "bus1": int(line.bus1.v[pos]),
-                        "bus2": int(line.bus2.v[pos]),
-                        "r": float(line.r.v[pos]) / strength,
-                        "x": float(line.x.v[pos]) / strength,
-                        "b": float(line.b.v[pos]) * strength,
-                        "tap": float(line.tap.v[pos]),
-                        "u": 0,
-                        "name": f"MESH_{source_id}",
-                    },
-                )
-            )
-        )
-
-    reactor_ids: list[str] = []
-    for i, action in enumerate(cfg.reactor_actions, start=1):
-        initial_status = 0 if int(action.final_status) == 1 else 1
-        reactor_ids.append(
-            str(
-                system.add(
-                    "Shunt",
-                    {
-                        "bus": action.bus,
-                        "g": 0.0,
-                        "b": -action.q_mvar / base_mva,
-                        "u": initial_status,
-                        "name": f"REPORT_REACTOR_{i}",
-                    },
-                )
-            )
-        )
-
-    hvdc_spec = cfg.hvdc_surrogate
-    hvdc_local_pq_id = str(
-        system.add(
-            "PQ",
-            {
-                "bus": hvdc_spec.local_bus,
-                "p0": hvdc_spec.transfer_mw / base_mva,
-                "q0": -hvdc_spec.reactive_support_mvar / base_mva,
-                "u": 0,
-                "name": f"{hvdc_spec.name}_LOCAL",
-            },
-        )
-    )
-    hvdc_remote_pq_id = str(
-        system.add(
-            "PQ",
-            {
-                "bus": hvdc_spec.remote_bus,
-                "p0": -hvdc_spec.transfer_mw / base_mva,
-                "q0": 0.0,
-                "u": 0,
-                "name": f"{hvdc_spec.name}_REMOTE",
-            },
-        )
-    )
-    hvdc_runtime = HVDCSurrogateRuntime(
-        spec=hvdc_spec,
-        local_pq_id=hvdc_local_pq_id,
-        remote_pq_id=hvdc_remote_pq_id,
-    )
-
-    morocco_runtime = UnderFrequencyTieRelayRuntime(
-        spec=cfg.morocco_ac_relay,
-        line_ids=area_selection.boundary_line_ids[
-            : cfg.morocco_ac_relay.boundary_line_count
-        ],
-    )
-    out_of_step_runtime = OutOfStepRelayRuntime(
-        spec=cfg.out_of_step_relay,
-        line_ids=area_selection.boundary_line_ids[
-            cfg.morocco_ac_relay.boundary_line_count : cfg.morocco_ac_relay.boundary_line_count
-            + cfg.out_of_step_relay.boundary_line_count
-        ],
-    )
-    generator_runtime = GeneratorProtectionRelayRuntime(
-        spec=cfg.generator_protection,
-        genrou_ids=list(area_selection.protected_genrou_ids),
-        pv_ids=list(area_selection.affected_pv_ids),
-    )
-    defense_runtimes = [
-        UFLSUVLSStageRuntime(spec=stage, load_ids=list(area_selection.selected_load_ids))
-        for stage in cfg.defense_stages
-    ]
-    blackout_runtime = BlackoutCriteriaRuntime(spec=cfg.blackout_criteria)
-    island_blackout_runtime = IslandBlackoutRuntime(spec=cfg.island_blackout_criteria)
-
-    blackout_load_ids: list[str] = []
-    if cfg.allow_equivalent_blackout:
-        for i, action in enumerate(cfg.blackout_actions, start=1):
-            blackout_load_ids.append(
-                str(
-                    system.add(
-                        "PQ",
-                        {
-                            "bus": action.bus,
-                            "p0": action.p_mw / base_mva,
-                            "q0": action.q_mvar / base_mva,
-                            "u": 0,
-                            "name": f"BLACKOUT_IMBALANCE_{i}",
-                        },
-                    )
-                )
-            )
-
-    background_fixed_pf_shunt_id: str | None = None
-    if cfg.background_fixed_pf_q_absorption_mvar > 0.0:
-        background_fixed_pf_shunt_id = str(
-            system.add(
-                "Shunt",
-                {
-                    "bus": cfg.background_fixed_pf_bus,
-                    "g": 0.0,
-                    "b": -cfg.background_fixed_pf_q_absorption_mvar / base_mva,
-                    "u": 1,
-                    "name": "BACKGROUND_FIXEDPF_Q_ABS",
-                },
-            )
-        )
-    return (
-        system,
-        collectors,
-        mesh_line_ids,
-        reactor_ids,
-        area_selection,
-        hvdc_runtime,
-        morocco_runtime,
-        out_of_step_runtime,
-        generator_runtime,
-        defense_runtimes,
-        blackout_runtime,
-        island_blackout_runtime,
-        blackout_load_ids,
-        background_fixed_pf_shunt_id,
-        physical_bus_count,
-    )
-
-
-def run_replication(
-    cfg: ReplicationConfig,
-    *,
-    out_dir: Path,
-    quiet_andes: bool = True,
-) -> tuple[ReplicationArtifacts, dict[str, Any], IberianReplicationMonitor]:
-    out_dir.mkdir(parents=True, exist_ok=True)
-    (
-        system,
-        collectors,
-        mesh_ids,
-        reactor_ids,
-        area_selection,
-        hvdc,
-        morocco_ac,
-        out_of_step,
-        generator_protection,
-        defense_stages,
-        blackout_criteria,
-        island_blackout,
-        blackout_load_ids,
-        background_fixed_pf_id,
-        physical_bus_count,
-    ) = build_replication_system(cfg)
-
-    with QuietAndes(quiet_andes):
-        system.setup()
-        system.PFlow.config.max_iter = 100
-        system.PFlow.config.tol = cfg.pflow_tol
-        pflow_ok = bool(system.PFlow.run())
-        if not pflow_ok:
-            system.Bus.v0.v[:] = 1.0
-            system.Bus.a0.v[:] = 0.0
-            pflow_ok = bool(system.PFlow.run())
-    if not pflow_ok:
-        raise RuntimeError("ACTIVSg2000 replication power flow did not converge.")
-
-    monitor = IberianReplicationMonitor(
-        system,
-        cfg,
-        collectors,
-        mesh_ids,
-        reactor_ids,
-        area_selection,
-        hvdc,
-        morocco_ac,
-        out_of_step,
-        generator_protection,
-        defense_stages,
-        blackout_criteria,
-        island_blackout,
-        blackout_load_ids,
-        background_fixed_pf_id,
-        physical_bus_count,
-    )
-
-    system.TDS.config.tf = cfg.tf_s
-    system.TDS.config.tstep = cfg.tstep_s
-    system.TDS.config.tol = cfg.tds_tol
-    system.TDS.config.max_iter = 25
-    system.TDS.config.criteria = 0
-    system.TDS.config.verbose = 0
-    system.TDS.callpert = monitor
-
-    with QuietAndes(quiet_andes):
-        system.TDS.init()
-        tds_ok = bool(system.TDS.run())
-    if not tds_ok and not monitor.blackout_criteria.declared:
-        failure_time = float(system.dae.t)
-        monitor.blackout_criteria.declared = True
-        monitor.blackout_criteria.declared_time_s = failure_time
-        monitor.blackout_criteria.reason = "ANDES TDS stopped after explicit protection actions"
-        monitor._record_event(
-            failure_time,
-            "BO",
-            "system_blackout_declared",
-            (
-                "Blackout endpoint declared because the dynamic simulation "
-                "did not maintain a valid continuation after the explicit "
-                "protection/control chain."
-            ),
-            trigger="tds_non_continuation",
-        )
-
-    summary = _build_summary(cfg, system, collectors, monitor, pflow_ok, tds_ok)
-    artifacts = _write_outputs(out_dir, cfg, collectors, monitor, summary)
-    return artifacts, summary, monitor
-
-
-def _build_summary(
-    cfg: ReplicationConfig,
-    system: Any,
-    collectors: list[CollectorRuntime],
-    monitor: IberianReplicationMonitor,
-    pflow_ok: bool,
-    tds_ok: bool,
-) -> dict[str, Any]:
-    trip_events = [event for event in monitor.events if event.category == "protection_trip"]
-    hvdc_events = [event for event in monitor.events if event.category == "hvdc_block"]
-    morocco_events = [event for event in monitor.events if event.category == "morocco_ac_trip"]
-    tie_events = [event for event in monitor.events if event.category == "out_of_step_trip"]
-    gen_events = [event for event in monitor.events if event.category == "generator_trip"]
-    defense_events = [event for event in monitor.events if event.category == "defense_action"]
-    island_blackout_events = [
-        event for event in monitor.events if event.category == "island_blackout_declared"
-    ]
-    system_blackout_events = [
-        event for event in monitor.events if event.category == "system_blackout_declared"
-    ]
-    legacy_declared_events = [
-        event for event in monitor.events if event.category == "blackout_declared"
-    ]
-    declared_events = system_blackout_events or legacy_declared_events
-    system_trace = monitor.system_trace
-    min_physical_voltage = min((row["vmin_physical_pu"] for row in system_trace), default=float("nan"))
-    max_physical_voltage = max((row["vmax_physical_pu"] for row in system_trace), default=float("nan"))
-    blackout_time = min((event.time_s for event in declared_events), default=None)
-    if blackout_time is None:
-        valid_trace = system_trace
-    else:
-        valid_trace = [
-            row for row in system_trace if float(row["time_s"]) <= float(blackout_time)
-        ]
-    min_voltage_before_blackout = min(
-        (row["vmin_physical_pu"] for row in valid_trace),
-        default=float("nan"),
-    )
-    crash_detected = bool(
-        np.isfinite(min_physical_voltage)
-        and min_physical_voltage <= cfg.blackout_criteria.voltage_pu
-    )
-    blackout_events = [event for event in monitor.events if event.category == "automatic_blackout"]
-    first_trip = min((event.time_s for event in trip_events), default=None)
-    last_trip = max((event.time_s for event in trip_events), default=None)
-    return {
-        "case_id": cfg.case_id,
-        "pflow_ok": pflow_ok,
-        "tds_ok": tds_ok,
-        "final_time_s": float(system.dae.t),
-        "physical_bus_count": int(getattr(system.Bus, "n", 0)) - len(collectors),
-        "total_bus_count_with_collectors": int(getattr(system.Bus, "n", 0)),
-        "collector_count": len(collectors),
-        "collector_trips": len(trip_events),
-        "first_trip_time_s": first_trip,
-        "last_trip_time_s": last_trip,
-        "first_hvdc_block_time_s": min((event.time_s for event in hvdc_events), default=None),
-        "first_morocco_ac_trip_time_s": min((event.time_s for event in morocco_events), default=None),
-        "first_france_ac_separation_time_s": min((event.time_s for event in tie_events), default=None),
-        "first_tie_trip_time_s": min((event.time_s for event in tie_events), default=None),
-        "first_generator_protection_trip_time_s": min((event.time_s for event in gen_events), default=None),
-        "first_defense_action_time_s": min((event.time_s for event in defense_events), default=None),
-        "blackout_time_s": blackout_time,
-        "blackout_reason": monitor.blackout_criteria.reason,
-        "final_valid_time_s": blackout_time if blackout_time is not None else float(system.dae.t),
-        "total_lost_p_mw": float(monitor.cumulative_lost_p_mw),
-        "total_lost_q_absorption_mvar": float(monitor.cumulative_lost_q_absorption_mvar),
-        "automatic_blackout_actions": len(blackout_events),
-        "island_blackout_events": len(island_blackout_events),
-        "system_blackout_events": len(system_blackout_events),
-        "deenergized_island_count": len(monitor.island_blackout.deenergized_islands),
-        "deenergized_asset_count": len(monitor.deenergized_assets),
-        "equivalent_blackout_enabled": bool(cfg.allow_equivalent_blackout),
-        "post_cascade_relays_enabled": bool(cfg.enable_post_cascade_relays),
-        "hvdc_blocks": len(hvdc_events),
-        "morocco_ac_trip_events": len(morocco_events),
-        "tie_line_separation_events": len(tie_events),
-        "generator_protection_events": len(gen_events),
-        "defense_actions": len(defense_events),
-        "total_blackout_load_increase_mw": float(monitor.cumulative_blackout_load_mw),
-        "total_blackout_q_demand_increase_mvar": float(
-            monitor.cumulative_blackout_q_demand_mvar
-        ),
-        "min_physical_voltage_pu": float(min_physical_voltage),
-        "min_physical_voltage_before_blackout_pu": float(min_voltage_before_blackout),
-        "max_physical_voltage_pu": float(max_physical_voltage),
-        "voltage_crash_detected": crash_detected,
-        "blackout_detected": bool(declared_events or crash_detected or not tds_ok),
-        "affected_area": {
-            "radius": monitor.area_selection.radius,
-            "seed_buses": monitor.area_selection.seed_buses,
-            "affected_bus_count": len(monitor.area_selection.affected_buses),
-            "boundary_line_count": len(monitor.area_selection.boundary_line_ids),
-            "selected_morocco_ac_lines": monitor.morocco_ac.line_ids,
-            "selected_france_ac_lines": monitor.out_of_step.line_ids,
-            "selected_boundary_lines": monitor.morocco_ac.line_ids + monitor.out_of_step.line_ids,
-            "affected_genrou_count": len(monitor.area_selection.affected_genrou_ids),
-            "protected_genrou_ids": monitor.generator_protection.genrou_ids,
-            "affected_pv_ids": monitor.generator_protection.pv_ids,
-            "selected_load_count": len(monitor.area_selection.selected_load_ids),
-            "deenergized_islands": sorted(monitor.island_blackout.deenergized_islands),
-        },
-        "collector_maxima": {
-            collector.spec.name: {
-                "max_voltage_pu_before_trip": float(collector.max_voltage_pu),
-                "time_s": float(collector.max_voltage_time_s),
-                "threshold_pu": collector.spec.threshold_pu,
-                "report_cluster": collector.spec.report_cluster,
-                "report_time_s": collector.spec.report_time_s,
-                "trip_stage": collector.trip_stage_name,
-                "trip_time_s": collector.trip_time_s,
-                "trip_voltage_pu": collector.trip_voltage_pu,
-            }
-            for collector in collectors
-        },
-        "interpretation": (
-            "The run reproduces a report-constrained mechanism surrogate on a "
-            "large ACTIVSg2000 dynamic backbone: hidden collector-side "
-            "overvoltage trips remove generation and reactive absorption; after "
-            "the collector cascade propagates, generator protection, failed "
-            "defense action, Morocco-like AC underfrequency separation, "
-            "France-like out-of-step separation, HVDC blocking, and affected "
-            "island de-energization are evaluated explicitly. The paper figure "
-            "trims traces at the operational blackout endpoint instead of "
-            "plotting a misleading post-blackout continuation."
-        ),
-    }
-
-
-def _write_outputs(
-    out_dir: Path,
-    cfg: ReplicationConfig,
-    collectors: list[CollectorRuntime],
-    monitor: IberianReplicationMonitor,
-    summary: dict[str, Any],
-) -> ReplicationArtifacts:
-    summary_path = out_dir / "summary.json"
-    events_path = out_dir / "events.json"
-    collector_trace_path = out_dir / "collector_traces.csv"
-    system_trace_path = out_dir / "system_traces.csv"
-    island_trace_path = out_dir / "island_traces.csv"
-    deenergized_assets_path = out_dir / "deenergized_assets.csv"
-    blackout_sequence_path = out_dir / "blackout_sequence.json"
-    config_path = out_dir / "case_config.json"
-
-    config_payload = asdict(cfg)
-    config_payload["collector_runtime"] = [
-        {
-            "name": item.spec.name,
-            "transmission_bus": item.spec.transmission_bus,
-            "collector_bus": item.collector_bus,
-            "tap": item.spec.tap,
-            "base_kv": item.spec.base_kv,
-            "threshold_pu": item.spec.threshold_pu,
-            "gsu_line_id": item.gsu_line_id,
-            "pq_id": item.pq_id,
-            "main_q_shunt_id": item.main_q_shunt_id,
-            "fixed_pf_q_shunt_id": item.fixed_pf_q_shunt_id,
-        }
-        for item in collectors
-    ]
-    config_payload["background_fixed_pf_shunt_id"] = monitor.background_fixed_pf_shunt_id
-    config_payload["blackout_load_ids"] = monitor.blackout_load_ids
-    config_payload["area_selection"] = asdict(monitor.area_selection)
-    config_payload["hvdc_surrogate_runtime"] = asdict(monitor.hvdc)
-    config_payload["morocco_ac_runtime"] = asdict(monitor.morocco_ac)
-    config_payload["out_of_step_runtime"] = asdict(monitor.out_of_step)
-    config_payload["generator_protection_runtime"] = asdict(monitor.generator_protection)
-    config_payload["defense_stage_runtime"] = [asdict(stage) for stage in monitor.defense_stages]
-    config_payload["blackout_criteria_runtime"] = asdict(monitor.blackout_criteria)
-    island_runtime_payload = asdict(monitor.island_blackout)
-    island_runtime_payload["deenergized_islands"] = sorted(
-        monitor.island_blackout.deenergized_islands
-    )
-    config_payload["island_blackout_runtime"] = island_runtime_payload
-
-    summary_path.write_text(json.dumps(summary, indent=2) + "\n")
-    events_path.write_text(
-        json.dumps([asdict(event) for event in monitor.events], indent=2) + "\n"
-    )
-    blackout_sequence_path.write_text(json.dumps(monitor.blackout_sequence, indent=2) + "\n")
-    config_path.write_text(json.dumps(config_payload, indent=2) + "\n")
-    _write_csv(collector_trace_path, monitor.collector_trace)
-    _write_csv(system_trace_path, monitor.system_trace)
-    _write_csv(island_trace_path, monitor.island_trace)
-    _write_csv(deenergized_assets_path, monitor.deenergized_assets)
-
-    return ReplicationArtifacts(
-        output_dir=out_dir,
-        summary_path=summary_path,
-        events_path=events_path,
-        collector_trace_path=collector_trace_path,
-        system_trace_path=system_trace_path,
-        config_path=config_path,
-        island_trace_path=island_trace_path,
-        deenergized_assets_path=deenergized_assets_path,
-        blackout_sequence_path=blackout_sequence_path,
-    )
-
-
-def _write_csv(path: Path, rows: list[dict[str, Any]]) -> None:
-    if not rows:
-        path.write_text("")
-        return
-    fieldnames: list[str] = []
-    for row in rows:
-        for key in row:
-            if key not in fieldnames:
-                fieldnames.append(key)
-    with path.open("w", newline="") as fh:
-        writer = csv.DictWriter(fh, fieldnames=fieldnames)
-        writer.writeheader()
-        for row in rows:
-            writer.writerow(row)
-
-
-def make_replication_plot(
-    artifacts: ReplicationArtifacts,
-    cfg: ReplicationConfig,
-    monitor: IberianReplicationMonitor,
-    *,
-    latex_fig_dir: Path | None = None,
-    formats: tuple[str, ...] = ("pdf", "png", "svg"),
-) -> list[Path]:
-    import matplotlib as mpl
-    import matplotlib.pyplot as plt
-
-    mpl.rcParams.update(
-        {
-            "font.family": "serif",
-            "font.size": 8.0,
-            "axes.labelsize": 9.0,
-            "xtick.labelsize": 8.0,
-            "ytick.labelsize": 8.0,
-            "legend.fontsize": 6.8,
-            "pdf.fonttype": 42,
-            "ps.fonttype": 42,
-            "svg.fonttype": "path",
-            "axes.spines.top": False,
-            "axes.spines.right": False,
-        }
-    )
-
-    def _series(source_rows: list[dict[str, Any]], key: str, mask: np.ndarray) -> np.ndarray:
-        values: list[float] = []
-        for row in source_rows:
-            value = row.get(key, float("nan"))
-            if value == "" or value is None:
-                values.append(float("nan"))
+    def _apply_ramps(self, t: float) -> None:
+        ss = self.ss
+        for act in self.actions:
+            if act.kind not in {"interchange_reduction", "fixed_pf_res_reduction", "area_net_load_ramp"}:
+                continue
+            frac = 0.0 if t < act.start_s else min(1.0, (t - act.start_s) / max(act.duration_s, 1e-9))
+            if act.kind == "area_net_load_ramp":
+                if not len(self.load_pos):
+                    continue
+                area_mw = float(self.load_p0_mw[self.load_in_area].sum())
+                rest_mw = float(self.load_p0_mw[~self.load_in_area].sum())
+                fac = np.where(self.load_in_area, 1.0 + frac * act.size / area_mw, 1.0 - frac * act.size / rest_mw)
+                if np.array_equal(fac, self.load_ramp_factor):
+                    continue
+                self.load_ramp_factor = fac
+                pq = ss.PQ
+                keep = 1.0 - self.load_shed_fraction
+                for name, vals0 in self.load_comp0.items():
+                    if name in LOAD_P_COMPONENTS:
+                        getattr(pq, name).v[self.load_pos] = vals0 * fac * keep
+                continue
+            if act.kind == "interchange_reduction":
+                for sign, share in ((-1.0, self.rs.redispatch_area_gov), (+1.0, self.rs.redispatch_rest_gov)):
+                    for ref, dp in share:
+                        name, idx = ref.split(":", 1)
+                        model = getattr(ss, name)
+                        model.pref0.v[_pos(model, idx)] = self.gov_pref0[ref] + sign * frac * dp
             else:
-                values.append(float(value))
-        return np.asarray(values, dtype=float)[mask]
+                total = sum(b.p_sched_mw for b in self.rs.blocks)
+                red = 1.0 - frac * act.size / total
+                pvd = ss.PVD1
+                for k, _b in enumerate(self.rs.blocks):
+                    p = self.plant_pos[k]
+                    pvd.pref0.v[p] = self.block_pref0[k] * red
+                    pvd.qref0.v[p] = self.block_qref0[k] * red
 
-    def _column_nan_percentile(values: np.ndarray, percentile: float) -> np.ndarray:
-        out = np.full(values.shape[1], np.nan, dtype=float)
-        for col in range(values.shape[1]):
-            finite = values[:, col][np.isfinite(values[:, col])]
-            if finite.size:
-                out[col] = float(np.percentile(finite, percentile))
-        return out
+    def _event(self, rec: EventRecord) -> None:
+        self.events.append(rec)
 
-    collector_list = list(monitor.collectors)
-    rows = monitor.collector_trace
-    sys_rows = monitor.system_trace
-    if not rows:
-        raise RuntimeError("No collector trace was recorded; cannot plot replication.")
-    if not sys_rows:
-        raise RuntimeError("No system trace was recorded; cannot plot replication.")
+    def _jump(self, t: float, what: str) -> None:
+        from pa_dvsa.replication.robust_pflow import damped_frozen_algebraic
 
-    times = np.array([float(row["time_s"]) for row in rows])
-    sys_times = np.array([float(row["time_s"]) for row in sys_rows])
-    lost_p = np.array([float(row["cumulative_lost_p_mw"]) for row in sys_rows])
-    lost_q = np.array([float(row["cumulative_lost_q_absorption_mvar"]) for row in sys_rows])
-    physical_vmin = np.array([float(row["vmin_physical_pu"]) for row in sys_rows])
-    physical_vmax = np.array([float(row["vmax_physical_pu"]) for row in sys_rows])
-    physical_v01 = np.array(
-        [float(row.get("v01_physical_pu", row["vmin_physical_pu"])) for row in sys_rows]
-    )
-    physical_v10 = np.array(
-        [float(row.get("v10_physical_pu", row["vmin_physical_pu"])) for row in sys_rows]
-    )
-    physical_v50 = np.array(
-        [
-            float(
-                row.get(
-                    "v50_physical_pu",
-                    0.5 * (float(row["vmin_physical_pu"]) + float(row["vmax_physical_pu"])),
-                )
-            )
-            for row in sys_rows
-        ]
-    )
-    physical_v90 = np.array(
-        [float(row.get("v90_physical_pu", row["vmax_physical_pu"])) for row in sys_rows]
-    )
-    physical_v99 = np.array(
-        [float(row.get("v99_physical_pu", row["vmax_physical_pu"])) for row in sys_rows]
-    )
-    affected_vmin = np.array(
-        [float(row.get("affected_island_vmin_pu", np.nan)) for row in sys_rows],
-        dtype=float,
-    )
-    affected_frequency = np.array(
-        [float(row.get("affected_island_frequency_hz", np.nan)) for row in sys_rows],
-        dtype=float,
-    )
-    affected_generation = np.array(
-        [float(row.get("affected_island_generation_mw", np.nan)) for row in sys_rows],
-        dtype=float,
-    )
-    affected_load = np.array(
-        [float(row.get("affected_island_load_mw", np.nan)) for row in sys_rows],
-        dtype=float,
-    )
-    blackout_time = monitor.blackout_criteria.declared_time_s
-    plot_end = float(blackout_time) if blackout_time is not None else min(float(cfg.tf_s), 30.0)
-    x_right = min(float(cfg.tf_s), max(24.0, plot_end + 1.6))
-    time_mask = times <= plot_end + 1e-9
-    sys_mask = sys_times <= plot_end + 1e-9
-    times_plot = times[time_mask]
-    sys_times_plot = sys_times[sys_mask]
-    lost_p_plot = lost_p[sys_mask]
-    lost_q_plot = lost_q[sys_mask]
-    physical_vmin_plot = physical_vmin[sys_mask]
-    physical_vmax_plot = physical_vmax[sys_mask]
-    physical_v01_plot = physical_v01[sys_mask]
-    physical_v10_plot = physical_v10[sys_mask]
-    physical_v50_plot = physical_v50[sys_mask]
-    physical_v90_plot = physical_v90[sys_mask]
-    physical_v99_plot = physical_v99[sys_mask]
-    affected_vmin_plot = affected_vmin[sys_mask]
-    affected_frequency_plot = affected_frequency[sys_mask]
-    affected_generation_plot = affected_generation[sys_mask]
-    affected_load_plot = affected_load[sys_mask]
+        ok, it, res = damped_frozen_algebraic(self.ss)
+        self.jump_solves += 1
+        if not ok:
+            self.jump_failures.append({"t": float(t), "event": what, "iterations": int(it), "max_residual": float(res)})
 
-    palette = ["#486AA8", "#5C9E91", "#D49A4A", "#B75D69", "#7966A8", "#6D7F8F"]
-    action_color = "#D88B45"
-    trip_color = "#B64E5A"
-    blackout_color = "#2F3437"
-    threshold_color = "#555B62"
+    def _device_buses(self, model: Any) -> list[int | None]:
+        ss = self.ss
+        gen_bus = {str(i): int(b) for i, b in zip(ss.GENROU.idx.v, ss.GENROU.bus.v)}
+        if "bus" in model.params:
+            return [int(b) for b in model.bus.v]
+        if "syn" in model.params:
+            return [gen_bus.get(str(v)) for v in model.syn.v]
+        if "avr" in model.params:
+            exc_syn: dict[str, str] = {}
+            for name in EXCITER_MODELS:
+                m = getattr(ss, name, None)
+                for k in range(int(getattr(m, "n", 0) or 0)):
+                    exc_syn[str(m.idx.v[k])] = str(m.syn.v[k])
+            return [gen_bus.get(exc_syn.get(str(v), ""), None) for v in model.avr.v]
+        return [None] * int(model.n)
 
-    fig, (ax_v, ax_trans, ax_island, ax_balance, ax_evt) = plt.subplots(
-        5,
-        1,
-        figsize=(7.05, 7.15),
-        sharex=True,
-        gridspec_kw={
-            "height_ratios": [1.60, 1.05, 1.05, 1.12, 0.40],
-            "hspace": 0.08,
-        },
-        constrained_layout=False,
-    )
+    def _freeze_other_islands(self, t: float) -> None:
+        ss = self.ss
+        dae = ss.dae
+        tf = np.array(dae.Tf, dtype=float)
+        frozen = 0
+        unmapped: set[str] = set()
+        for name, model in ss.models.items():
+            if not int(getattr(model, "n", 0) or 0) or not model.states:
+                continue
+            buses = self._device_buses(model)
+            for k, b in enumerate(buses):
+                if b is None:
+                    unmapped.add(name)
+                    continue
+                if int(self.island_of_bus[self.bpos[int(b)]]) == self.affected_island:
+                    continue
+                for var in model.states.values():
+                    a = int(var.a[k])
+                    if tf[a] > 0.0:
+                        tf[a] = 1e12
+                        frozen += 1
+        dae.Tf[:] = tf
+        from kvxopt import spdiag
 
-    collector_voltage_stack: list[np.ndarray] = []
-    transmission_voltage_by_collector: dict[str, np.ndarray] = {}
-    visible_collectors = [collector for collector in collector_list if collector.spec.visible_trace]
-    if not visible_collectors:
-        visible_collectors = collector_list[: min(6, len(collector_list))]
-    visible_names = {collector.spec.name for collector in visible_collectors}
+        ss.TDS.Teye = spdiag(dae.Tf.tolist())
+        other = self.island_of_bus != self.affected_island
+        line = ss.Line
+        opened = 0
+        for p in range(line.n):
+            if float(line.u.v[p]) > 0.5 and other[self.bpos[int(line.bus1.v[p])]] and other[self.bpos[int(line.bus2.v[p])]]:
+                set_line_status(ss, line.idx.v[p], 0.0)
+                opened += 1
+        off = 0
+        for name in ("PQ", "Shunt", "PV"):
+            model = getattr(ss, name, None)
+            for k in range(int(getattr(model, "n", 0) or 0)):
+                if float(model.u.v[k]) > 0.5 and other[self.bpos[int(model.bus.v[k])]]:
+                    model.u.v[k] = 0.0
+                    off += 1
+        for i in np.flatnonzero(self.gen_online & other[self.gen_bus_pos]):
+            ss.GENROU.u.v[i] = 0.0
+            for ref in self.gen_links[i]:
+                _set_u(ss, ref, 0.0)
+            for model_name, idx, attr, mut_value in trip_machine_mutations(ss, self.gen_ids[i]):
+                _apply_attr(ss, model_name, idx, attr, mut_value)
+            self.gen_online[i] = False
+            off += 1
+        if len(self.load_pos):
+            load_other = other[self.load_bus_pos]
+            for done in self.ufls_done:
+                done[load_other] = True
+        with QuietAndes(True):
+            ss.connectivity(info=False)
+        self._refresh_islands()
+        self.retired = True
+        ss.TDS.custom_event = True
+        self._event(EventRecord(
+            t, "RETIRE_OTHER_ISLANDS", "numerical",
+            "After separation the other island is not simulated: its dynamic states are frozen, its internal "
+            "branches opened and its devices switched off (the islands are electrically independent, so the "
+            "affected island's trajectory is unchanged)", "separation",
+            measured={"states_frozen": float(frozen), "branches_opened": float(opened), "devices_off": float(off)},
+            setting={"unmapped_models": float(len(unmapped))},
+        ))
+        self._jump(t, "retire other islands")
 
-    for i, collector in enumerate(collector_list):
-        name = collector.spec.name
-        voltage = np.array(
-            [
-                float(row[f"{name}_voltage_pu_raw"])
-                if row[f"{name}_voltage_pu_raw"] != ""
-                else np.nan
-                for row in rows
-            ],
-            dtype=float,
-        )[time_mask]
-        collector_voltage_stack.append(voltage)
-        transmission_voltage_by_collector[name] = np.array(
-            [float(row[f"{name}_transmission_voltage_pu"]) for row in rows],
-            dtype=float,
-        )[time_mask]
-    collector_array = np.vstack(collector_voltage_stack)
-    collector_low = _column_nan_percentile(collector_array, 10)
-    collector_high = _column_nan_percentile(collector_array, 90)
-    ax_v.fill_between(
-        times_plot,
-        collector_low,
-        collector_high,
-        color="#D5A6AE",
-        alpha=0.22,
-        lw=0,
-        label="Collector-bus voltage band",
-        zorder=2,
-    )
-    for i, collector in enumerate(visible_collectors):
-        name = collector.spec.name
-        voltage = np.array(
-            [
-                float(row[f"{name}_voltage_pu_raw"])
-                if row[f"{name}_voltage_pu_raw"] != ""
-                else np.nan
-                for row in rows
-            ],
-            dtype=float,
-        )[time_mask]
-        color = palette[i % len(palette)]
-        trace_label = "Named protected assets" if i == 0 else "_nolegend_"
-        ax_v.plot(times_plot, voltage, lw=1.75, color=color, label=trace_label, zorder=3)
-        if collector.trip_time_s is not None and collector.trip_time_s <= plot_end + 1e-9:
-            ax_v.plot(
-                collector.trip_time_s,
-                collector.trip_voltage_pu,
-                marker="o",
-                ms=4.2,
-                mec="white",
-                mew=0.6,
-                color=color,
-                zorder=5,
-            )
+    def _initiating_contingency(self, t: float) -> None:
+        cfg = self.cfg
+        if cfg.initiating_block is None or self._initiated or t < cfg.initiating_time_s - 1e-9:
+            return
+        self._initiated = True
+        names = [b.spec.name for b in self.rs.blocks]
+        if cfg.initiating_block not in names:
+            raise ValueError(f"initiating block {cfg.initiating_block!r} is not a protected block")
+        k = names.index(cfg.initiating_block)
+        ss = self.ss
+        v = float(ss.Bus.v.v[self.plant_bus_pos[k]])
+        p_idx = self.plant_pos[k]
+        p = float(ss.PVD1.Ipout_y.v[p_idx]) * v * self.base
+        q = float(ss.PVD1.Iqout_y.v[p_idx]) * v * self.base
+        self._trip_plant(k, "INIT", t, v, float("nan"), p, q)
 
-    thresholds = sorted({round(item.spec.threshold_pu, 6) for item in collector_list})
-    if len(thresholds) == 1:
-        ax_v.axhline(
-            thresholds[0],
-            color=threshold_color,
-            ls=(0, (4, 3)),
-            lw=1.3,
-            label="Protection pickup",
-            zorder=2.5,
-        )
-    else:
-        ax_v.axhspan(
-            min(thresholds),
-            max(thresholds),
-            facecolor="#EFE7CB",
-            edgecolor=threshold_color,
-            linewidth=0.7,
-            alpha=0.44,
-            label="Protection pickup band",
-            zorder=1.8,
-        )
-        ax_v.axhline(
-            min(thresholds),
-            color=threshold_color,
-            lw=0.85,
-            ls=(0, (3, 2)),
-            alpha=0.75,
-            zorder=2.6,
-        )
-        ax_v.axhline(
-            max(thresholds),
-            color=threshold_color,
-            lw=0.85,
-            ls=(0, (3, 2)),
-            alpha=0.75,
-            zorder=2.6,
-        )
+    def _process_sample(self, t: float, dt: float) -> None:
+        ss = self.ss
+        cfg = self.cfg
+        self._initiating_contingency(t)
+        if self.qctl and dt > 0.0:
+            qe = np.asarray(ss.GENROU.Qe.v, dtype=float)
+            for model, k, i, q0, sn in self.qctl:
+                if self.gen_online[i]:
+                    model.vref0.v[k] += dt / cfg.area_q_control_tc_s * (q0 - qe[i]) / (sn * cfg.q_control_gain)
+        if self.uel and dt > 0.0:
+            qe = np.asarray(ss.GENROU.Qe.v, dtype=float)
+            for j, (model, k, i, qmin, sn, vref_init) in enumerate(self.uel):
+                if not self.gen_online[i]:
+                    continue
+                d = dt / cfg.area_uel_tc_s * (qmin - qe[i]) / (sn * cfg.q_control_gain)
+                new = max(0.0, self.uel_offset[j] + d)
+                model.vref0.v[k] += new - self.uel_offset[j]
+                self.uel_offset[j] = new
+        v = np.asarray(ss.Bus.v.v, dtype=float)
+        omega = np.asarray(ss.GENROU.omega.v, dtype=float)
+        delta = np.asarray(ss.GENROU.delta.v, dtype=float)
+        pvd = ss.PVD1
+        plant_v = v[self.plant_meas_pos]
+        bf_f = np.asarray(ss.BusFreq.f.v, dtype=float) if _n(ss, "BusFreq") else np.array([])
+        plant_f = np.where(self.plant_bf_pos >= 0, bf_f[np.clip(self.plant_bf_pos, 0, None)] if bf_f.size else np.nan, np.nan)
+        ip = np.asarray(pvd.Ipout_y.v, dtype=float)[self.plant_pos]
+        iq = np.asarray(pvd.Iqout_y.v, dtype=float)[self.plant_pos]
+        plant_p = ip * plant_v * self.base
+        plant_q = iq * plant_v * self.base
+        gen_on = self.gen_online.copy()
 
-    trip_times = [event.time_s for event in monitor.events if event.category == "protection_trip"]
-    if trip_times:
-        ax_v.axvspan(min(trip_times), min(max(trip_times), plot_end), color="#F2D6DB", alpha=0.42, lw=0)
+        for k, act in enumerate([a for a in self.actions if a.kind == "line_energization"]):
+            if k < len(self.rs.mesh_line_ids) and not self.mesh_done[k] and t >= act.start_s - 1e-9:
+                lid = self.rs.mesh_line_ids[k]
+                sw = set_line_status(ss, lid, 1.0)
+                ss.TDS.custom_event = True
+                self.mesh_done[k] = True
+                self._refresh_islands()
+                self._jump(t, f"energize {lid}")
+                lp = _pos(ss.Line, lid)
+                self._event(EventRecord(t, act.code, "operator_action", act.description, "scheduled",
+                                        device=lid, bus=int(ss.Line.bus1.v[lp]),
+                                        measured={"b_pu": float(ss.Line.b.v[lp]),
+                                                  "charging_mvar_at_1pu": float(ss.Line.b.v[lp]) * self.base,
+                                                  "ghk_pu": sw["ghk"], "bhk_pu": sw["bhk"]}))
+        for act in self.actions:
+            if act.kind in {"interchange_reduction", "fixed_pf_res_reduction", "area_net_load_ramp"}:
+                key = f"_started_{act.code}"
+                if t >= act.start_s - 1e-9 and not getattr(self, key, False):
+                    setattr(self, key, True)
+                    self._event(EventRecord(t, act.code, "operator_action", act.description, "scheduled",
+                                            setting={"size": act.size, "duration_s": act.duration_s}))
 
-    ax_trans.fill_between(
-        sys_times_plot,
-        physical_vmin_plot,
-        physical_vmax_plot,
-        color="#87919A",
-        alpha=0.16,
-        lw=0,
-        label="All buses min--max",
-        zorder=0,
-    )
-    ax_trans.fill_between(
-        sys_times_plot,
-        physical_v01_plot,
-        physical_v99_plot,
-        color="#87919A",
-        alpha=0.16,
-        lw=0,
-        label="1--99 percentile",
-        zorder=1,
-    )
-    ax_trans.fill_between(
-        sys_times_plot,
-        physical_v10_plot,
-        physical_v90_plot,
-        color="#87919A",
-        alpha=0.30,
-        lw=0,
-        label="10--90 percentile",
-        zorder=2,
-    )
-    ax_trans.plot(
-        sys_times_plot,
-        physical_v50_plot,
-        color="#46505A",
-        lw=1.35,
-        label="Median",
-        zorder=3,
-    )
-    ax_trans.plot(
-        sys_times_plot,
-        physical_vmax_plot,
-        color="#6D7780",
-        lw=0.95,
-        ls=(0, (4, 3)),
-        alpha=0.80,
-        label="Min/max",
-        zorder=4,
-    )
-    ax_trans.plot(
-        sys_times_plot,
-        physical_vmin_plot,
-        color="#3F464B",
-        lw=0.95,
-        ls=(0, (1.2, 2.0)),
-        alpha=0.85,
-        zorder=4,
-    )
-    for i, collector in enumerate(visible_collectors):
-        name = collector.spec.name
-        upstream_voltage = transmission_voltage_by_collector[name]
-        trace_label = "Selected upstream buses" if i == 0 else "_nolegend_"
-        ax_trans.plot(
-            times_plot,
-            upstream_voltage,
-            color=palette[i % len(palette)],
-            lw=0.95,
-            alpha=0.70,
-            label=trace_label,
-            zorder=5,
-        )
+        isl = self.island_of_bus
+        gen_isl = isl[self.gen_bus_pos]
+        island_f: dict[int, float] = {}
+        for k in set(gen_isl[gen_on].tolist()):
+            island_f[k] = self._coi(gen_on & (gen_isl == k), omega)
 
-    if blackout_time is not None:
-        for ax in (ax_v, ax_trans, ax_island, ax_balance, ax_evt):
-            ax.axvspan(
-                float(blackout_time),
-                x_right,
-                color="#2F3437",
-                alpha=0.10 if ax is ax_v else 0.08,
-                lw=0,
-                zorder=-1,
-            )
-        ax_v.text(
-            min(x_right - 0.08, float(blackout_time) + 0.18),
-            0.985,
-            "de-energized / no valid continuation",
-            transform=ax_v.get_xaxis_transform(),
-            ha="left",
-            va="top",
-            fontsize=6.8,
-            color=blackout_color,
-        )
+        trips: list[tuple[int, str]] = []
+        for st in self.plant_stages:
+            vals = plant_v if st.quantity == "voltage" else plant_f
+            op = advance_definite_time(self.plant_relays[st.name], st, vals, dt, self.plant_online)
+            for k in np.flatnonzero(op):
+                trips.append((int(k), st.name))
+        for st, mask, state in self.extra_stages:
+            vals = plant_v if st.quantity == "voltage" else plant_f
+            op = advance_definite_time(state, st, vals, dt, self.plant_online & mask)
+            for k in np.flatnonzero(op):
+                trips.append((int(k), st.name))
+        ov1 = self.plant_relays.get("OV1") or self.plant_relays.get("OVF")
+        if ov1 is not None:
+            newly = ov1.picked & np.isnan(self.plant_first_pickup)
+            self.plant_first_pickup[newly] = t
+        for sh in self.shadow.values():
+            active = self.plant_online & np.isnan(sh["operate_time"])
+            for st in sh["stages"]:
+                op = advance_definite_time(sh["state"][st.name], st, plant_v, dt, active)
+                for k in np.flatnonzero(op & np.isnan(sh["operate_time"])):
+                    sh["operate_time"][k] = t
+                    sh["stage"][k] = st.name
+        upd = self.plant_online & (plant_v > self.plant_max_v)
+        self.plant_max_v[upd] = plant_v[upd]
+        self.plant_max_v_t[upd] = t
+        done: set[int] = set()
+        for k, stage in trips:
+            if k in done or not self.plant_online[k]:
+                continue
+            done.add(k)
+            state = self.plant_relays.get(stage) or next(s for st, m, s in self.extra_stages if st.name == stage and m[k])
+            t_pick = t - float(state.timer[k])
+            self._trip_plant(k, stage, t, plant_v[k], plant_f[k], plant_p[k], plant_q[k], t_pick)
 
-    system_chain = {
-        "hvdc_block",
-        "morocco_ac_trip",
-        "out_of_step_trip",
-        "generator_trip",
-        "defense_action",
-        "island_blackout_declared",
-        "system_blackout_declared",
-        "blackout_declared",
+        if self.dg and np.any(self.dg_on):
+            lv = (v[self.dg_bus_pos][:, None] * self.dg_ratio).ravel()
+            tripped = np.zeros(self.dg_on.size, dtype=bool)
+            for st, state in zip(self.dg_stages, self.dg_relays):
+                tripped |= advance_definite_time(state, st, lv, dt, self.dg_on.ravel())
+            if np.any(tripped):
+                on = self.dg_on.ravel()
+                on[tripped] = False
+                self.dg_on = on.reshape(self.dg_on.shape)
+                frac = self.dg_on.mean(axis=1)
+                pvd.pref0.v[self.dg_pos] = self.dg_pref0 * frac
+                pvd.qref0.v[self.dg_pos] = self.dg_qref0 * frac
+                lost = float(np.sum(self.dg_p0_mw * (1.0 - frac))) - self.dg_lost_mw
+                self.dg_lost_mw += lost
+                self.cum_lost_p += lost
+                ss.TDS.custom_event = True
+                self._event(EventRecord(
+                    t, "EMBEDDED_PV_TRIP", "embedded_pv_trip",
+                    f"{int(tripped.sum())} embedded PV tranches disconnected by LV overvoltage protection", "embedded_pv_ov",
+                    measured={"tranches": float(tripped.sum()), "lost_mw": lost, "v_bus_max_pu": float(v[self.dg_bus_pos].max())},
+                    lost_p_mw=lost,
+                ))
+
+        if self.gen_stages:
+            gen_v = v[self.gen_bus_pos]
+            gtrips: list[tuple[int, str, float]] = []
+            for st in self.gen_stages:
+                vals = gen_v if st.quantity == "voltage" else omega
+                op = advance_definite_time(self.gen_relays[st.name], st, vals, dt, self.gen_online)
+                for i in np.flatnonzero(op):
+                    gtrips.append((int(i), st.name, float(vals[i])))
+            rel = np.full(len(self.gen_ids), np.nan)
+            for k in set(gen_isl[gen_on].tolist()):
+                m = gen_on & (gen_isl == k)
+                ref = self._coi(m, delta, angle=True)
+                rel[m] = np.angle(np.exp(1j * (delta[m] - ref)))
+            if self.gen_rel0 is None:
+                self.gen_rel0 = rel.copy()
+                self.gen_rel_unwrapped = rel.copy()
+            else:
+                prev = self.gen_rel_unwrapped
+                step = np.angle(np.exp(1j * (rel - np.angle(np.exp(1j * prev)))))
+                self.gen_rel_unwrapped = np.where(np.isfinite(rel) & np.isfinite(prev), prev + step, prev)
+                slip = np.abs(self.gen_rel_unwrapped - self.gen_rel0) >= math.radians(cfg.pole_slip_deg)
+                for i in np.flatnonzero(slip & self.gen_online):
+                    gtrips.append((int(i), "POLE_SLIP", float(math.degrees(self.gen_rel_unwrapped[i] - self.gen_rel0[i]))))
+            gdone: set[int] = set()
+            for i, stage, val in gtrips:
+                if i in gdone or not self.gen_online[i]:
+                    continue
+                gdone.add(i)
+                self._trip_generator(i, stage, t, val)
+
+        if len(self.load_pos) and cfg.ufls_stages:
+            load_isl = isl[self.load_bus_pos]
+            lf = np.asarray([island_f.get(int(k), np.nan) for k in load_isl])
+            for s_idx, (fpu, frac) in enumerate(cfg.ufls_stages):
+                stage = DefiniteTimeStage(f"UFLS{s_idx + 1}", "frequency", "under", fpu, cfg.ufls_delay_s, 0.999)
+                active = ~self.ufls_done[s_idx]
+                op = advance_definite_time(self.ufls_state[s_idx], stage, lf, dt, active)
+                if np.any(op):
+                    self._shed(s_idx, frac, op, t, lf)
+
+        if cfg.separation_enabled and not self.separated:
+            a_mask = gen_on & self.gen_in_area
+            r_mask = gen_on & ~self.gen_in_area
+            sep = float("nan")
+            if a_mask.any() and r_mask.any():
+                sep = self._coi(a_mask, delta, angle=True) - self._coi(r_mask, delta, angle=True)
+                sep = float(np.angle(np.exp(1j * sep)))
+                if self.coi_sep0 is None:
+                    self.coi_sep0 = sep
+                    self._sep_unwrapped = sep
+                else:
+                    self._sep_unwrapped += float(np.angle(np.exp(1j * (sep - np.angle(np.exp(1j * self._sep_unwrapped))))))
+                change = abs(self._sep_unwrapped - self.coi_sep0)
+                stage = DefiniteTimeStage("OOS", "angle", "over", math.radians(cfg.separation_angle_deg),
+                                          cfg.separation_delay_s, 0.999)
+                if advance_definite_time(self.sep_state, stage, np.array([change]), dt, np.array([True]))[0]:
+                    self._separate(t, math.degrees(change))
+
+        if cfg.forced_separation_at_s is not None and not self.separated and t >= cfg.forced_separation_at_s - 1e-9:
+            self._separate(t, float("nan"), forced=True)
+
+        self._check_collapse(t, dt, v, island_f)
+
+        if self.spv_pos.size:
+            q = np.asarray(ss.PV.q.v, dtype=float)[self.spv_pos] * self.base
+            exc = np.maximum(q - self.spv_qmax, self.spv_qmin - q)
+            j = int(np.argmax(exc))
+            if exc[j] > self.spv_max_exceed:
+                self.spv_max_exceed = float(exc[j])
+                self.spv_worst = str(ss.PV.idx.v[self.spv_pos[j]])
+
+        if self.step_count % max(self.cfg.record_every, 1) == 0 or dt == 0.0:
+            self._record(t, v, plant_v, plant_p, plant_q, island_f, omega)
+
+    def _trip_plant(self, k: int, stage: str, t: float, v: float, f: float, p: float, q: float,
+                    t_pick: float = float("nan")) -> None:
+        ss = self.ss
+        pvd = ss.PVD1
+        p_idx = self.plant_pos[k]
+        if float(pvd.u.v[p_idx]) <= 0.5:
+            self.plant_online[k] = False
+            return
+        pvd.u.v[p_idx] = 0.0
+        ss.TDS.custom_event = True
+        self.plant_online[k] = False
+        self.plant_trip_time[k] = t
+        name = self.plant_ids[k]
+        lost_q = max(0.0, -q)
+        kept = 0.0
+        if self.plant_is_block[k]:
+            blk = self.rs.blocks[k]
+            if blk.preserve_shunt_id is not None and q < 0 and v > 0:
+                sh = ss.Shunt
+                sp = _pos(sh, blk.preserve_shunt_id)
+                sh.b.v[sp] = q / self.base / (v * v)
+                sh.u.v[sp] = 1.0
+                kept = lost_q
+            name = blk.spec.name
+        setting = {st.name: st.pickup for st in self.plant_stages if st.name == stage}
+        st = next((s for s in [*self.plant_stages, *(e[0] for e in self.extra_stages if e[1][k])] if s.name == stage), None)
+        if st is not None:
+            setting = {"pickup": st.pickup, "delay_s": st.delay_s}
+        self.cum_lost_p += p
+        self.cum_lost_q_abs += lost_q - kept
+        initiating = stage == "INIT"
+        self._event(EventRecord(
+            t, f"TRIP_{name}", "plant_trip" if self.plant_is_block[k] else "plant_trip_other",
+            (f"{name} disconnected: initiating contingency (documented first event)" if initiating
+             else f"{name} tripped by plant {stage} relay"),
+            "initiating_contingency" if initiating else f"plant_{stage}", device=self.plant_ids[k],
+            bus=int(self.bus_ids[self.plant_bus_pos[k]]),
+            measured={"v_pu": v, "f_pu": f, "p_mw": p, "q_mvar": q, "pickup_start_s": t_pick}, setting=setting,
+            lost_p_mw=p, lost_q_absorption_mvar=lost_q - kept,
+            island=str(self.island_of_bus[self.plant_bus_pos[k]]),
+        ))
+        self._jump(t, f"trip {name}")
+
+    def _trip_generator(self, i: int, stage: str, t: float, value: float) -> None:
+        ss = self.ss
+        g = ss.GENROU
+        if float(g.u.v[i]) <= 0.5:
+            self.gen_online[i] = False
+            return
+        pe = float(g.Pe.v[i]) * self.base
+        qe = float(g.Qe.v[i]) * self.base
+        g.u.v[i] = 0.0
+        for ref in self.gen_links[i]:
+            _set_u(ss, ref, 0.0)
+        for model_name, idx, attr, mut_value in trip_machine_mutations(ss, self.gen_ids[i]):
+            _apply_attr(ss, model_name, idx, attr, mut_value)
+        ss.TDS.custom_event = True
+        self.gen_online[i] = False
+        self.cum_gen_trip_mw += pe
+        self.cum_lost_p += pe
+        if qe < 0:
+            self.cum_lost_q_abs += -qe
+        st = next((s for s in self.gen_stages if s.name == stage), None)
+        setting = {"pickup": st.pickup, "delay_s": st.delay_s} if st else {"pole_slip_deg": self.cfg.pole_slip_deg}
+        self._event(EventRecord(
+            t, f"GTRIP_{self.gen_ids[i]}", "generator_trip", f"{self.gen_ids[i]} tripped by generator {stage}",
+            f"generator_{stage}", device=self.gen_ids[i], bus=int(self.bus_ids[self.gen_bus_pos[i]]),
+            measured={"value": value, "p_mw": pe, "q_mvar": qe}, setting=setting, lost_p_mw=pe,
+            lost_q_absorption_mvar=max(0.0, -qe), island=str(self.island_of_bus[self.gen_bus_pos[i]]),
+        ))
+        if self._last_machine_check(i, t):
+            return
+        self._jump(t, f"trip {self.gen_ids[i]}")
+
+    def _shed(self, s_idx: int, frac: float, mask: np.ndarray, t: float, lf: np.ndarray) -> None:
+        ss = self.ss
+        pq = ss.PQ
+        v = np.asarray(ss.Bus.v.v, dtype=float)
+        shed = 0.0
+        islands: set[int] = set()
+        for j in np.flatnonzero(mask):
+            self.ufls_done[s_idx][j] = True
+            self.load_shed_fraction[j] = min(1.0, self.load_shed_fraction[j] + frac)
+            p = self.load_pos[j]
+            vb = v[self.load_bus_pos[j]]
+            before = self._load_p(p, vb)
+            for name, vals0 in self.load_comp0.items():
+                ramp = self.load_ramp_factor[j] if name in LOAD_P_COMPONENTS else 1.0
+                getattr(pq, name).v[p] = vals0[j] * ramp * (1.0 - self.load_shed_fraction[j])
+            after = self._load_p(p, vb)
+            shed += before - after
+            islands.add(int(self.island_of_bus[self.load_bus_pos[j]]))
+        self.cum_shed += shed
+        fpu, _ = self.cfg.ufls_stages[s_idx]
+        self._event(EventRecord(
+            t, f"UFLS{s_idx + 1}", "ufls", f"UFLS stage {s_idx + 1} sheds {frac:.1%} of load in island(s) {sorted(islands)}",
+            "island_coi_underfrequency", measured={"f_pu_min": float(np.nanmin(lf[mask])), "loads": int(mask.sum())},
+            setting={"pickup_pu": fpu, "delay_s": self.cfg.ufls_delay_s}, shed_mw=shed,
+            island=",".join(str(k) for k in sorted(islands)),
+        ))
+        self._jump(t, f"UFLS{s_idx + 1}")
+
+    def _load_p(self, p: int, vb: float) -> float:
+        pq = self.ss.PQ
+        p2p, p2i, p2z = self.load_mix
+        return float(p2p * float(pq.Ppf.v[p]) + p2i * float(pq.Ipeq.v[p]) * vb
+                     + p2z * float(pq.Req.v[p]) * vb * vb) * self.base
+
+    def _separate(self, t: float, change_deg: float, *, forced: bool = False) -> None:
+        ss = self.ss
+        for p in self.cut_pos:
+            set_line_status(ss, ss.Line.idx.v[p], 0.0)
+        ss.TDS.custom_event = True
+        self.separated = True
+        self._refresh_islands()
+        n_fail = len(self.jump_failures)
+        self._jump(t, "separation")
+        jump_ok = len(self.jump_failures) == n_fail
+        self._event(EventRecord(
+            t, "SEPARATION", "forced_separation_check" if forced else "out_of_step_separation",
+            (f"Numerical islanding check: cut set ({len(self.cut_pos)} branches) opened by script" if forced else
+             f"Out-of-step relay opens the complete cut set ({len(self.cut_pos)} branches) of the affected area"),
+            "scripted_check" if forced else "coi_angle_change",
+            measured={"angle_change_deg": change_deg, "islands_after": self.n_islands,
+                      "jump_solve_converged": float(jump_ok)},
+            setting={"threshold_deg": self.cfg.separation_angle_deg, "delay_s": self.cfg.separation_delay_s},
+        ))
+        if self.cfg.freeze_other_islands_after_separation and not forced:
+            self._freeze_other_islands(t)
+
+    def _check_collapse(self, t: float, dt: float, v: np.ndarray, island_f: dict[int, float]) -> None:
+        cfg = self.cfg
+        isl = self.island_of_bus
+        for k in range(self.n_islands):
+            if self.island_sizes[k] < 2:
+                continue
+            key = str(k)
+            if key in self.collapse_declared:
+                continue
+            mask = isl == k
+            vmed = float(np.median(v[mask]))
+            f = island_f.get(k, float("nan"))
+            bad_v = vmed < cfg.collapse_voltage_pu
+            bad_f = np.isfinite(f) and (f < cfg.collapse_f_low_pu or f > cfg.collapse_f_high_pu)
+            no_sync = not np.isfinite(f)
+            if bad_v or bad_f or no_sync:
+                self.collapse_timers[key] += dt
+            else:
+                self.collapse_timers[key] = 0.0
+            if self.collapse_timers[key] >= cfg.collapse_dwell_s:
+                reason = "median voltage < %.2f pu" % cfg.collapse_voltage_pu if bad_v else (
+                    "no online synchronous machine" if no_sync else "COI frequency outside [%.3f, %.3f] pu" % (
+                        cfg.collapse_f_low_pu, cfg.collapse_f_high_pu))
+                self._declare_collapse(k, t, reason, vmed, f)
+
+    def _declare_collapse(self, k: int, t: float, reason: str, vmed: float, f: float) -> None:
+        cfg = self.cfg
+        key = str(k)
+        self.collapse_declared[key] = t
+        affected = k == self.affected_island
+        self._event(EventRecord(
+            t, f"COLLAPSE_I{k}", "island_collapse",
+            f"Island {k} ({self.island_sizes[k]} buses{', affected area' if affected else ''}) meets collapse criterion: {reason}",
+            "island_collapse_criterion", measured={"median_v_pu": vmed, "coi_f_pu": f},
+            setting={"v_pu": cfg.collapse_voltage_pu, "f_low_pu": cfg.collapse_f_low_pu,
+                     "f_high_pu": cfg.collapse_f_high_pu, "dwell_s": cfg.collapse_dwell_s},
+            island=key,
+        ))
+        if affected or self.island_sizes[k] > 0.5 * self.ss.Bus.n:
+            self.stopped_reason = f"collapse of island {k} at t={t:.3f} s"
+            self.ss.TDS.config.tf = min(float(self.ss.TDS.config.tf), t + 2 * float(self.ss.TDS.h) + 1e-6)
+
+    def _last_machine_check(self, i: int, t: float) -> bool:
+        k = int(self.island_of_bus[self.gen_bus_pos[i]])
+        if str(k) in self.collapse_declared or self.island_sizes[k] < 2:
+            return False
+        if np.any(self.gen_online & (self.island_of_bus[self.gen_bus_pos] == k)):
+            return False
+        v = np.asarray(self.ss.Bus.v.v, dtype=float)
+        vmed = float(np.median(v[self.island_of_bus == k]))
+        self._declare_collapse(k, t, "no online synchronous machine (last machine tripped)", vmed, float("nan"))
+        return True
+
+    def _record(self, t: float, v: np.ndarray, plant_v: np.ndarray, plant_p: np.ndarray, plant_q: np.ndarray,
+                island_f: dict[int, float], omega: np.ndarray) -> None:
+        row: dict[str, Any] = {"time_s": t}
+        for k, blk in enumerate(self.rs.blocks):
+            name = blk.spec.name
+            on = bool(self.plant_online[k])
+            row[f"{name}_v_pu"] = float(plant_v[k]) if on else float("nan")
+            row[f"{name}_v_raw_pu"] = float(plant_v[k])
+            row[f"{name}_hv_v_pu"] = float(v[self.bpos[blk.hv_bus]])
+            row[f"{name}_p_mw"] = float(plant_p[k]) if on else 0.0
+            row[f"{name}_q_mvar"] = float(plant_q[k]) if on else 0.0
+            row[f"{name}_online"] = int(on)
+            ov1 = self.plant_relays.get("OV1")
+            row[f"{name}_ov1_timer_s"] = float(ov1.timer[k]) if ov1 is not None else 0.0
+        self.collector_rows.append(row)
+        phys = v[: self.nphys]
+        area_phys = v[: self.nphys][self.area_mask[: self.nphys]]
+        pct = np.percentile(phys, [1, 10, 50, 90, 99])
+        aff = self.affected_island
+        f_aff = island_f.get(aff, float("nan"))
+        others = [f for k, f in island_f.items() if k != aff]
+        srow = {
+            "time_s": t,
+            "vmin_pu": float(phys.min()), "vmax_pu": float(phys.max()),
+            "v01_pu": float(pct[0]), "v10_pu": float(pct[1]), "v50_pu": float(pct[2]), "v90_pu": float(pct[3]), "v99_pu": float(pct[4]),
+            "area_vmin_pu": float(area_phys.min()), "area_vmax_pu": float(area_phys.max()),
+            "area_v50_pu": float(np.median(area_phys)),
+            "zone_hv_vmax_pu": float(max(v[self.bpos[b]] for b in self.rs.zone_buses)),
+            "gen_terminal_vmax_pu": float(np.max(v[self.gen_bus_pos[self.gen_online]])) if self.gen_online.any() else float("nan"),
+            "collector_vmax_online_pu": float(np.nanmax(np.where(self.plant_online[: len(self.rs.blocks)], plant_v[: len(self.rs.blocks)], np.nan))) if self.plant_online[: len(self.rs.blocks)].any() else float("nan"),
+            "affected_island_f_pu": f_aff,
+            "affected_island_f_eq_hz": NOMINAL_FREQ_EQ_HZ * f_aff if np.isfinite(f_aff) else float("nan"),
+            "rest_f_pu": float(others[0]) if len(others) == 1 else (float(np.nanmean(others)) if others else f_aff),
+            "system_coi_f_pu": self._coi(self.gen_online, omega),
+            "coi_angle_change_deg": float(math.degrees(abs(self._sep_unwrapped - self.coi_sep0))) if self.coi_sep0 is not None else 0.0,
+            "n_islands": int(self.n_islands),
+            "separated": int(self.separated),
+            "blocks_online": int(self.plant_online[: len(self.rs.blocks)].sum()),
+            "gens_online": int(self.gen_online.sum()),
+            "cum_lost_p_mw": self.cum_lost_p,
+            "cum_lost_q_absorption_mvar": self.cum_lost_q_abs,
+            "cum_ufls_shed_mw": self.cum_shed,
+            "cum_generator_trip_mw": self.cum_gen_trip_mw,
+            "cum_embedded_pv_lost_mw": self.dg_lost_mw,
+        }
+        self.system_rows.append(srow)
+
+
+@dataclass(slots=True)
+class RunResult:
+    cfg: ReplicaConfig
+    rs: ReplicaSystem
+    monitor: PhysicsMonitor
+    tds_ok: bool
+    final_time_s: float
+    wall_time_s: float
+    summary: dict[str, Any]
+    out_dir: Path | None = None
+
+
+def run_replica(cfg: ReplicaConfig, *, out_dir: Path | None = None, quiet: bool = True,
+                armed: bool = False, stall_guard: bool = False) -> RunResult:
+    t0 = time.time()
+    rs = build_replica_system(cfg, armed=armed, quiet=quiet)
+    build_s = time.time() - t0
+    monitor = PhysicsMonitor(rs)
+    monitor.stall_guard = stall_guard
+    ss = rs.system
+    ss.TDS.callpert = monitor
+    with QuietAndes(quiet):
+        tds_ok = bool(ss.TDS.run(no_summary=True))
+    final_t = float(ss.dae.t)
+    wall = time.time() - t0
+    if not tds_ok and monitor.stopped_reason is None:
+        monitor._event(EventRecord(
+            round(final_t, 6), "TDS_STOP", "tds_nonconvergence",
+            "ANDES TDS failed to converge (step size reduced to zero); the run is inconclusive beyond this time. "
+            "This is NOT declared a blackout.", "numerical",
+        ))
+    summary = summarize(cfg, rs, monitor, tds_ok=tds_ok, final_time_s=final_t, wall_s=wall, build_s=build_s)
+    summary["event_jump_solves"] = {
+        "count": int(monitor.jump_solves), "failures": list(monitor.jump_failures),
+        "note": "algebraic variables re-solved with states frozen after every switching event (exact event semantics)",
     }
-    for event in monitor.events:
-        if event.time_s > plot_end + 1e-9 and event.category not in system_chain:
+    summary["static_pv_q_limit_exceedance"] = {
+        "checked": int(len(monitor.spv_pos)),
+        "max_exceedance_mvar": float(monitor.spv_max_exceed),
+        "device": monitor.spv_worst,
+        "note": "static generators keep their power-flow PV/PQ status during TDS; a regulating static PV has unlimited Q",
+    }
+    result = RunResult(cfg, rs, monitor, tds_ok, final_t, wall, summary, out_dir)
+    if out_dir is not None:
+        write_outputs(result, out_dir)
+    return result
+
+
+def neighbour_rise(mon: "PhysicsMonitor", trips: Sequence[EventRecord], *, settle_s: float = 0.5,
+                   window_s: float = 2.0) -> list[dict[str, Any]]:
+    return neighbour_rise_from_traces(
+        mon.collector_rows, [b.spec.name for b in mon.rs.blocks],
+        [{"time_s": e.time_s, "code": e.code, "category": e.category,
+          "lost_q_absorption_mvar": e.lost_q_absorption_mvar, "lost_p_mw": e.lost_p_mw} for e in mon.events],
+        settle_s=settle_s, window_s=window_s)
+
+
+def neighbour_rise_from_traces(rows: Sequence[dict[str, Any]], names: Sequence[str], events: Sequence[dict[str, Any]],
+                               *, settle_s: float = 0.5, window_s: float = 2.0) -> list[dict[str, Any]]:
+    if not rows:
+        return []
+    t = np.asarray([float(r["time_s"]) for r in rows], dtype=float)
+    trips = [e for e in events if e["category"] == "plant_trip"]
+    stops = sorted(float(e["time_s"]) for e in events if e["category"] in {"plant_trip", "plant_trip_other", "generator_trip"})
+    out = []
+    for e in trips:
+        tk = float(e["time_s"])
+        name = str(e["code"]).replace("TRIP_", "")
+        i0 = int(np.searchsorted(t, tk + 1e-9) - 1)
+        if i0 < 0:
             continue
-        if event.category == "operator_action":
-            ax_v.axvline(event.time_s, color=action_color, lw=0.9, ls=(0, (3, 3)), alpha=0.72)
-            ax_trans.axvline(event.time_s, color=action_color, lw=0.65, ls=(0, (3, 3)), alpha=0.35)
-            ax_island.axvline(event.time_s, color=action_color, lw=0.65, ls=(0, (3, 3)), alpha=0.35)
-            ax_balance.axvline(event.time_s, color=action_color, lw=0.65, ls=(0, (3, 3)), alpha=0.35)
-        elif event.category == "protection_trip":
-            ax_v.axvline(event.time_s, color=trip_color, lw=0.8, alpha=0.35)
-            ax_trans.axvline(event.time_s, color=trip_color, lw=0.5, alpha=0.14)
-            ax_island.axvline(event.time_s, color=trip_color, lw=0.5, alpha=0.14)
-            ax_balance.axvline(event.time_s, color=trip_color, lw=0.5, alpha=0.14)
-        elif event.category in system_chain:
-            ax_v.axvline(event.time_s, color=blackout_color, lw=0.95, alpha=0.34)
-            ax_trans.axvline(event.time_s, color=blackout_color, lw=0.7, alpha=0.20)
-            ax_island.axvline(event.time_s, color=blackout_color, lw=0.7, alpha=0.20)
-            ax_balance.axvline(event.time_s, color=blackout_color, lw=0.7, alpha=0.20)
-
-    ax_v.set_ylabel("Collector\nvoltage (pu)", labelpad=5)
-    ax_v.yaxis.set_label_coords(-0.075, 0.5)
-    all_collector_v = np.concatenate(
-        [item[np.isfinite(item)] for item in collector_voltage_stack if np.isfinite(item).any()]
-    )
-    plot_min = float(
-        min(
-            np.nanmin(all_collector_v),
-            min(thresholds),
-        )
-    )
-    plot_max = float(
-        max(
-            np.nanmax(all_collector_v),
-            max(thresholds),
-        )
-    )
-    ax_v.set_ylim(max(0.65, plot_min - 0.035), min(1.34, max(plot_max + 0.040, max(thresholds) + 0.035)))
-    ax_v.set_xlim(0.0, x_right)
-    ax_v.grid(axis="y", color="#E7E1DA", lw=0.7)
-    ax_v.legend(
-        loc="lower left",
-        bbox_to_anchor=(0.0, 1.005, 1.0, 0.18),
-        mode="expand",
-        borderaxespad=0.0,
-        ncol=3,
-        frameon=False,
-        fontsize=6.0,
-        columnspacing=0.9,
-        handlelength=1.6,
-    )
-
-    trans_min = float(np.nanmin(physical_vmin_plot))
-    trans_max = float(np.nanmax(physical_vmax_plot))
-    ax_trans.set_ylabel("Transmission\nvoltage (pu)", labelpad=5)
-    ax_trans.yaxis.set_label_coords(-0.075, 0.5)
-    ax_trans.set_ylim(max(0.65, trans_min - 0.035), min(1.34, trans_max + 0.040))
-    ax_trans.grid(axis="y", color="#E7E1DA", lw=0.7)
-    ax_trans.legend(
-        loc="lower left",
-        bbox_to_anchor=(0.0, 1.000, 1.0, 0.18),
-        mode="expand",
-        borderaxespad=0.0,
-        ncol=5,
-        frameon=False,
-        fontsize=5.7,
-        columnspacing=0.7,
-        handlelength=1.4,
-    )
-
-    ax_island.plot(
-        sys_times_plot,
-        affected_vmin_plot,
-        color="#486AA8",
-        lw=1.55,
-        label="Affected-island $V_{\\min}$",
-    )
-    ax_island.plot(
-        sys_times_plot,
-        physical_vmin_plot,
-        color="#6D7F8F",
-        lw=1.05,
-        ls=(0, (3, 2)),
-        alpha=0.85,
-        label="System $V_{\\min}$",
-    )
-    ax_island.axhline(
-        cfg.island_blackout_criteria.voltage_pu,
-        color="#486AA8",
-        lw=0.85,
-        ls=(0, (2.4, 2.4)),
-        alpha=0.65,
-    )
-    ax_freq = ax_island.twinx()
-    ax_freq.plot(
-        sys_times_plot,
-        affected_frequency_plot,
-        color="#B75D69",
-        lw=1.25,
-        label="Affected-island frequency",
-    )
-    ax_freq.axhline(
-        cfg.island_blackout_criteria.frequency_hz,
-        color="#B75D69",
-        lw=0.85,
-        ls=(0, (2.4, 2.4)),
-        alpha=0.65,
-    )
-    ax_island.set_ylabel("Island voltage (pu)", labelpad=5)
-    ax_island.yaxis.set_label_coords(-0.075, 0.5)
-    finite_v = affected_vmin_plot[np.isfinite(affected_vmin_plot)]
-    if finite_v.size:
-        ax_island.set_ylim(max(0.65, min(float(np.nanmin(finite_v)) - 0.035, 0.84)), 1.18)
-    ax_freq.set_ylabel("Frequency (Hz)", color="#B75D69", labelpad=5)
-    ax_freq.tick_params(axis="y", colors="#B75D69")
-    finite_f = affected_frequency_plot[np.isfinite(affected_frequency_plot)]
-    if finite_f.size:
-        ax_freq.set_ylim(
-            min(47.0, float(np.nanmin(finite_f)) - 0.25),
-            max(50.4, float(np.nanmax(finite_f)) + 0.12),
-        )
-    ax_island.grid(axis="y", color="#E7E1DA", lw=0.65)
-    island_handles, island_labels = ax_island.get_legend_handles_labels()
-    freq_handles, freq_labels = ax_freq.get_legend_handles_labels()
-    ax_island.legend(
-        island_handles + freq_handles,
-        island_labels + freq_labels,
-        loc="upper left",
-        ncol=3,
-        frameon=False,
-        borderaxespad=0.0,
-        fontsize=5.9,
-        columnspacing=0.8,
-        handlelength=1.4,
-    )
-
-    ax_balance.step(
-        sys_times_plot,
-        lost_q_plot,
-        where="post",
-        color="#4F7F73",
-        lw=1.55,
-        label="Lost MVAr absorption",
-    )
-    ax_balance.step(
-        sys_times_plot,
-        lost_p_plot,
-        where="post",
-        color="#B75D69",
-        lw=1.35,
-        label="Tripped MW",
-    )
-    ax_balance.set_ylabel("Cumulative loss", labelpad=5)
-    ax_balance.yaxis.set_label_coords(-0.075, 0.5)
-    ax_balance.grid(axis="y", color="#E7E1DA", lw=0.65)
-    max_loss = max(
-        2200.0,
-        float(np.nanmax(lost_p_plot)) * 1.06 if lost_p_plot.size else 2200.0,
-        float(np.nanmax(lost_q_plot)) * 1.06 if lost_q_plot.size else 2200.0,
-    )
-    ax_balance.set_ylim(-75, max_loss)
-    ax_power = ax_balance.twinx()
-    ax_power.plot(
-        sys_times_plot,
-        affected_generation_plot,
-        color="#5D6870",
-        lw=1.15,
-        ls=(0, (5, 2.5)),
-        label="Online generation",
-    )
-    ax_power.plot(
-        sys_times_plot,
-        affected_load_plot,
-        color="#8B7D73",
-        lw=1.15,
-        ls=(0, (1.2, 2.0)),
-        label="Online load",
-    )
-    finite_power = np.concatenate(
-        [
-            affected_generation_plot[np.isfinite(affected_generation_plot)],
-            affected_load_plot[np.isfinite(affected_load_plot)],
-        ]
-    )
-    if finite_power.size:
-        ax_power.set_ylim(0.0, max(1000.0, float(np.nanmax(finite_power)) * 1.08))
-    ax_power.set_ylabel("Affected island MW", color="#5D6870", labelpad=5)
-    ax_power.tick_params(axis="y", colors="#5D6870")
-    balance_handles, balance_labels = ax_balance.get_legend_handles_labels()
-    power_handles, power_labels = ax_power.get_legend_handles_labels()
-    ax_balance.legend(
-        balance_handles + power_handles,
-        balance_labels + power_labels,
-        loc="upper left",
-        frameon=False,
-        ncol=2,
-        fontsize=5.9,
-        columnspacing=0.8,
-        handlelength=1.35,
-    )
-
-    ax_evt.axhline(0.0, color="#C9C2BA", lw=0.8)
-    for event in monitor.events:
-        if event.time_s > x_right + 1e-9:
+        nxt = min((x for x in stops if x > tk + 1e-9), default=float("inf"))
+        t_end = min(tk + window_s, nxt - 1e-9)
+        t_set = min(tk + settle_s, nxt - 1e-9)
+        after = rows[min(i0 + 1, len(rows) - 1)]
+        online_after = [n for n in names if n != name and float(after.get(f"{n}_online", 0) or 0) == 1.0]
+        per = {}
+        for n in online_after:
+            v = np.asarray([float(r[f"{n}_v_raw_pu"]) for r in rows], dtype=float)
+            v0 = v[i0]
+            m = (t > tk) & (t <= t_end)
+            vs = float(v[m][-1] if (np.any(m) and t_set < tk + settle_s) else np.interp(t_set, t, v)) - v0
+            vp = float(np.max(v[m]) - v0) if np.any(m) else float("nan")
+            per[n] = (vs, vp)
+        if not per:
             continue
-        if event.category == "operator_action":
-            ax_evt.plot(event.time_s, 0.0, marker="v", ms=4.2, color=action_color, clip_on=False)
-        elif event.category == "protection_trip":
-            ax_evt.plot(event.time_s, 0.0, marker="|", ms=9.0, mew=1.3, color=trip_color)
-        elif event.category in {"hvdc_block", "morocco_ac_trip", "out_of_step_trip", "generator_trip", "defense_action"}:
-            ax_evt.plot(
-                event.time_s,
-                0.0,
-                marker="D",
-                ms=3.6,
-                color=blackout_color,
-                mec="white",
-                mew=0.35,
-                clip_on=False,
-            )
-        elif event.category in {"island_blackout_declared", "system_blackout_declared", "blackout_declared"}:
-            ax_evt.plot(
-                event.time_s,
-                0.0,
-                marker="X",
-                ms=5.0,
-                color=blackout_color,
-                clip_on=False,
-            )
-
-    cluster_times: dict[str, list[float]] = defaultdict(list)
-    for collector in collector_list:
-        if collector.trip_time_s is not None:
-            cluster_times[collector.spec.report_cluster].append(float(collector.trip_time_s))
-
-    def _first_event_time(category: str) -> float | None:
-        values = [event.time_s for event in monitor.events if event.category == category]
-        return min(values) if values else None
-
-    event_label_rows: list[tuple[float, str, str, int]] = []
-    operator_times = [
-        event.time_s for event in monitor.events if event.category == "operator_action"
-    ]
-    if operator_times:
-        event_label_rows.append((float(np.median(operator_times)), "OA1-OA4", action_color, 8))
-    label_by_cluster = {"E3": "E3 Granada", "E4": "E4 Badajoz", "E5": "E5 multi-site"}
-    for cluster in ("E3", "E4", "E5"):
-        if cluster in cluster_times:
-            event_label_rows.append(
-                (
-                    float(np.median(cluster_times[cluster])),
-                    label_by_cluster[cluster],
-                    trip_color,
-                    15 if cluster == "E4" else 8,
-                )
-            )
-    label_by_category = [
-        ("generator_trip", "GEN"),
-        ("defense_action", "UFLS"),
-        ("morocco_ac_trip", "MA AC"),
-        ("out_of_step_trip", "FR AC"),
-        ("hvdc_block", "HVDC"),
-        ("island_blackout_declared", "BO"),
-    ]
-    for category, label in label_by_category:
-        time_value = _first_event_time(category)
-        if time_value is not None:
-            event_label_rows.append(
-                (
-                    float(time_value),
-                    label,
-                    blackout_color,
-                    14 if len(event_label_rows) % 2 else 7,
-                )
-            )
-
-    for x_pos, label, color, offset in event_label_rows:
-        if x_pos <= x_right + 1e-9:
-            ax_evt.annotate(
-                label,
-                xy=(x_pos, 0.0),
-                xytext=(0, offset),
-                textcoords="offset points",
-                ha="center",
-                va="bottom",
-                color=color,
-                fontsize=5.8,
-            )
-    ax_evt.text(
-        0.01,
-        0.08,
-        "operator actions, relay trips, defense, and island de-energization",
-        transform=ax_evt.transAxes,
-        ha="left",
-        va="bottom",
-        fontsize=7.2,
-        color="#6E6862",
-    )
-    ax_evt.set_ylim(-0.5, 0.55)
-    ax_evt.set_yticks([])
-    ax_evt.tick_params(axis="x", which="both", length=3.0, labelbottom=True, pad=2)
-    for name, spine in ax_evt.spines.items():
-        spine.set_visible(name == "bottom")
-    ax_evt.spines["bottom"].set_color("#C9C2BA")
-    ax_evt.set_xlabel("Time (s)", labelpad=4)
-
-    fig.align_ylabels([ax_v, ax_trans, ax_island, ax_balance])
-    fig.subplots_adjust(left=0.155, right=0.875, top=0.965, bottom=0.105, hspace=0.11)
-
-    written: list[Path] = []
-    for fmt in formats:
-        path = artifacts.output_dir / f"fig_replication_activsg2000.{fmt}"
-        save_kwargs: dict[str, Any] = {"bbox_inches": "tight", "pad_inches": 0.04}
-        if fmt == "png":
-            save_kwargs["dpi"] = 600
-        fig.savefig(path, **save_kwargs)
-        written.append(path)
-
-    if latex_fig_dir is not None:
-        latex_fig_dir.mkdir(parents=True, exist_ok=True)
-        for path in list(written):
-            target = latex_fig_dir / path.name
-            shutil.copy2(path, target)
-            written.append(target)
-
-    plt.close(fig)
-    artifacts.figure_paths = written
-    return written
+        sb = max(per, key=lambda n: per[n][0])
+        pb = max(per, key=lambda n: per[n][1])
+        out.append({
+            "trip": name, "t": tk, "lost_q_absorption_mvar": float(e.get("lost_q_absorption_mvar", 0.0)),
+            "lost_p_mw": float(e.get("lost_p_mw", 0.0)),
+            "max_dv_settle_pu": per[sb][0], "max_dv_settle_block": sb,
+            "max_dv_peak_pu": per[pb][1], "max_dv_peak_block": pb,
+            "median_dv_settle_pu": float(np.median([a for a, _ in per.values()])),
+            "window_end_s": t_end, "truncated_by_next_trip": bool(nxt < tk + window_s),
+        })
+    return out
 
 
-def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument(
-        "--out",
-        type=Path,
-        default=Path("results/activsg2000_iberian_replication"),
-        help="Directory for JSON/CSV/figure outputs.",
-    )
-    parser.add_argument("--tf", type=float, default=30.0, help="TDS horizon in seconds.")
-    parser.add_argument("--tstep", type=float, default=0.01, help="TDS step in seconds.")
-    parser.add_argument("--plot", action="store_true", help="Generate replication figure.")
-    parser.add_argument(
-        "--latex-fig-dir",
-        type=Path,
-        default=Path("LaTeX/figures/generated"),
-        help="Optional mirror directory for paper figures.",
-    )
-    parser.add_argument(
-        "--formats",
-        default="pdf,png,svg",
-        help="Comma-separated figure formats when --plot is set.",
-    )
-    parser.add_argument(
-        "--verbose-andes",
-        action="store_true",
-        help="Do not suppress ANDES init/run diagnostic tables.",
-    )
-    parser.add_argument(
-        "--allow-equivalent-blackout",
-        action="store_true",
-        help=(
-            "Enable the diagnostic PQ-imbalance blackout equivalent. "
-            "This is off by default and should not be used for the paper figure."
-        ),
-    )
-    parser.add_argument(
-        "--disable-post-cascade-relays",
-        action="store_true",
-        help="Negative-control mode: leave collector trips enabled but disable HVDC/tie/generator/defense relays.",
-    )
-    return parser.parse_args(argv)
+def trip_causes(events: Sequence[EventRecord], cfg: ReplicaConfig) -> dict[str, str]:
+    out: dict[str, str] = {}
+    actions = [a for a in cfg.pre_cascade_actions] if cfg.pre_cascade_enabled else []
+    trips = [e for e in events if e.category in {"plant_trip", "plant_trip_other", "generator_trip"}]
+    for e in events:
+        if e.category != "plant_trip":
+            continue
+        if e.trigger == "initiating_contingency":
+            out[e.code] = "initiating contingency"
+            continue
+        tp = float(e.measured.get("pickup_start_s", e.time_s))
+        prev = [x for x in trips if x.time_s <= tp + 1e-9 and x is not e]
+        ramps = [a for a in actions if a.duration_s > 0 and a.start_s <= tp <= a.start_s + a.duration_s + 1e-9]
+        discrete = [a for a in actions if a.duration_s == 0 and a.start_s <= tp + 1e-9]
+        last_action_t = max([a.start_s + a.duration_s for a in actions if a.start_s <= tp + 1e-9], default=-1.0)
+        if prev and prev[-1].time_s >= last_action_t:
+            out[e.code] = f"after trip {prev[-1].code.replace('TRIP_', '').replace('GTRIP_', '')} (t={prev[-1].time_s:.2f} s)"
+        elif ramps:
+            out[e.code] = "during ramp " + "+".join(a.code for a in ramps)
+        elif discrete and tp - max(a.start_s for a in discrete) < 1.0:
+            a = max(discrete, key=lambda a: a.start_s)
+            out[e.code] = f"after operator action {a.code} (t={a.start_s:.2f} s)"
+        else:
+            out[e.code] = "slow post-action dynamics (no preceding trip)"
+    return out
 
 
-def main(argv: list[str] | None = None) -> int:
-    args = parse_args(argv)
-    cfg = ReplicationConfig(
-        tf_s=float(args.tf),
-        tstep_s=float(args.tstep),
-        enable_post_cascade_relays=not args.disable_post_cascade_relays,
-    )
-    if args.allow_equivalent_blackout:
-        cfg = replace(
-            cfg,
-            allow_equivalent_blackout=True,
-            blackout_actions=_diagnostic_equivalent_blackout_actions(),
-        )
-    artifacts, summary, monitor = run_replication(
-        cfg,
-        out_dir=args.out,
-        quiet_andes=not args.verbose_andes,
-    )
-    if args.plot:
-        formats = tuple(item.strip().lower() for item in args.formats.split(",") if item.strip())
-        make_replication_plot(
-            artifacts,
-            cfg,
-            monitor,
-            latex_fig_dir=args.latex_fig_dir,
-            formats=formats,
-        )
-    return _print_summary(artifacts, summary, monitor)
+def summarize(cfg: ReplicaConfig, rs: ReplicaSystem, mon: PhysicsMonitor, *, tds_ok: bool, final_time_s: float,
+              wall_s: float, build_s: float) -> dict[str, Any]:
+    ev = mon.events
+    block_trips = [e for e in ev if e.category == "plant_trip"]
+    other_plant = [e for e in ev if e.category == "plant_trip_other"]
+    gen_trips = [e for e in ev if e.category == "generator_trip"]
+    ufls = [e for e in ev if e.category == "ufls"]
+    sep = [e for e in ev if e.category == "out_of_step_separation"]
+    collapse = [e for e in ev if e.category == "island_collapse"]
+    sys_rows = mon.system_rows
+
+    def col_max(key: str) -> float:
+        vals = [r[key] for r in sys_rows if r.get(key) is not None and np.isfinite(r[key])]
+        return float(max(vals)) if vals else float("nan")
+
+    def col_min(key: str) -> float:
+        vals = [r[key] for r in sys_rows if r.get(key) is not None and np.isfinite(r[key])]
+        return float(min(vals)) if vals else float("nan")
+
+    per_block = {}
+    for k, blk in enumerate(rs.blocks):
+        trip = next((e for e in block_trips if e.device == blk.pvd1_id), None)
+        per_block[blk.spec.name] = {
+            "hv_bus": blk.hv_bus, "collector_bus": blk.collector_bus, "p_mw": blk.p_sched_mw, "q_mvar": blk.q_sched_mvar,
+            "q_source": blk.q_source, "tap": blk.tap, "z0_pu": blk.z0_pu, "hv_v0_pu": blk.hv_v0_pu,
+            "margin_to_ov1_pu": 1.10 - blk.z0_pu,
+            "max_v_before_trip_pu": float(mon.plant_max_v[k]) if np.isfinite(mon.plant_max_v[k]) else None,
+            "max_v_time_s": float(mon.plant_max_v_t[k]) if np.isfinite(mon.plant_max_v_t[k]) else None,
+            "first_ov1_pickup_s": float(mon.plant_first_pickup[k]) if np.isfinite(mon.plant_first_pickup[k]) else None,
+            "trip_time_s": trip.time_s if trip else None, "trip_stage": trip.trigger if trip else None,
+            "trip_v_pu": trip.measured.get("v_pu") if trip else None,
+        }
+        for mode, sh in mon.shadow.items():
+            t_sh = sh["operate_time"][k]
+            per_block[blk.spec.name][f"shadow_{mode}_operate_s"] = float(t_sh) if np.isfinite(t_sh) else None
+            per_block[blk.spec.name][f"shadow_{mode}_stage"] = sh["stage"][k] or None
+    op_actions = [e for e in ev if e.category == "operator_action"]
+    causes = trip_causes(ev, cfg)
+    affected_collapse = [e for e in collapse if e.island == str(mon.affected_island)]
+    summary = {
+        "mode": cfg.mode,
+        "variant": cfg.variant,
+        "variant_description": VARIANTS.get(cfg.variant, ""),
+        "tds_ok": tds_ok,
+        "final_time_s": final_time_s,
+        "horizon_s": cfg.tf_s,
+        "stopped_reason": mon.stopped_reason,
+        "wall_time_s": wall_s,
+        "build_time_s": build_s,
+        "accepted_steps": mon.step_count,
+        "rejected_step_calls": mon.rejected_calls,
+        "gsu_tap": rs.tap,
+        "area_net_export_t0_mw": mon.export0_mw,
+        "operator_actions": [{"t": e.time_s, "code": e.code, "description": e.description} for e in op_actions],
+        "block_trips": len(block_trips),
+        "block_trip_sequence": [{"t": e.time_s, "block": e.code.replace("TRIP_", ""), "trigger": e.trigger,
+                                 "v_pu": e.measured.get("v_pu"), "p_mw": e.lost_p_mw,
+                                 "lost_q_absorption_mvar": e.lost_q_absorption_mvar,
+                                 "pickup_start_s": e.measured.get("pickup_start_s"),
+                                 "cause": causes.get(e.code, "")} for e in block_trips],
+        "trips_initiated_after_a_previous_trip": int(sum(1 for c in causes.values() if c.startswith("after trip"))),
+        "neighbour_rise_per_trip": neighbour_rise(mon, block_trips),
+        "other_plant_trips": len(other_plant),
+        "generator_trips": len(gen_trips),
+        "generator_trip_triggers": sorted({e.trigger for e in gen_trips}),
+        "ufls_stages_operated": len(ufls),
+        "ufls_shed_mw": float(mon.cum_shed),
+        "separation": bool(sep),
+        "separation_time_s": sep[0].time_s if sep else None,
+        "island_collapses": [{"t": e.time_s, "island": e.island, "description": e.description} for e in collapse],
+        "affected_area_collapse": bool(affected_collapse),
+        "blackout_emerged": bool(affected_collapse),
+        "lost_block_p_mw": float(sum(e.lost_p_mw for e in block_trips)),
+        "lost_block_q_absorption_mvar": float(sum(e.lost_q_absorption_mvar for e in block_trips)),
+        "lost_total_p_mw": float(mon.cum_lost_p),
+        "lost_total_q_absorption_mvar": float(mon.cum_lost_q_abs),
+        "max_collector_v_pu": float(np.nanmax([r["collector_vmax_online_pu"] for r in sys_rows])) if sys_rows else float("nan"),
+        "max_zone_hv_v_pu": col_max("zone_hv_vmax_pu"),
+        "max_area_v_pu": col_max("area_vmax_pu"),
+        "max_system_v_pu": col_max("vmax_pu"),
+        "max_gen_terminal_v_pu": col_max("gen_terminal_vmax_pu"),
+        "control_flatness": {k: (float(np.nanmax([r[k] for r in sys_rows]) - np.nanmin([r[k] for r in sys_rows]))
+                                 if sys_rows else None)
+                             for k in ("vmax_pu", "vmin_pu", "collector_vmax_online_pu", "zone_hv_vmax_pu",
+                                       "affected_island_f_pu")},
+        "commitment": {k: v for k, v in rs.base_notes.get("commitment", {}).items() if k != "decommitted"},
+        "plant_ov_mode": cfg.plant_ov_mode if cfg.plant_ov_enabled else "off",
+        "min_system_v_pu": col_min("vmin_pu"),
+        "min_area_v_pu": col_min("area_vmin_pu"),
+        "affected_f_eq_hz_min": NOMINAL_FREQ_EQ_HZ * col_min("affected_island_f_pu"),
+        "affected_f_eq_hz_max": NOMINAL_FREQ_EQ_HZ * col_max("affected_island_f_pu"),
+        "max_coi_angle_change_deg": col_max("coi_angle_change_deg"),
+        "per_block": per_block,
+        "initial_margin_min_pu": float(min(1.10 - b.z0_pu for b in rs.blocks)),
+        "initial_collector_v_pu": {b.spec.name: b.z0_pu for b in rs.blocks},
+    }
+    summary["interpretation"] = interpret(summary)
+    return summary
 
 
-def _print_summary(
-    artifacts: ReplicationArtifacts,
-    summary: dict[str, Any],
-    monitor: IberianReplicationMonitor,
-) -> int:
-    print(f"Output directory: {artifacts.output_dir}")
-    print(
-        "Trips: "
-        f"{summary['collector_trips']} collector relays, "
-        f"first={summary['first_trip_time_s']}, last={summary['last_trip_time_s']}"
-    )
-    print(
-        "Lost assets: "
-        f"{summary['total_lost_p_mw']:.1f} MW, "
-        f"{summary['total_lost_q_absorption_mvar']:.1f} MVAr absorption"
-    )
-    print(
-        "Post-cascade chain: "
-        f"Morocco AC trips={summary.get('morocco_ac_trip_events', 0)}, "
-        f"France AC separations={summary['tie_line_separation_events']}, "
-        f"HVDC blocks={summary['hvdc_blocks']}, "
-        f"generator protection={summary['generator_protection_events']}, "
-        f"defense actions={summary['defense_actions']}"
-    )
-    if summary.get("equivalent_blackout_enabled"):
-        print(
-            "Diagnostic equivalent blackout enabled: "
-            f"{summary['automatic_blackout_actions']} PQ imbalance actions"
-        )
-    print(
-        "Island blackout engine: "
-        f"de-energized islands={summary.get('deenergized_island_count', 0)}, "
-        f"recorded assets={summary.get('deenergized_asset_count', 0)}, "
-        f"island blackout events={summary.get('island_blackout_events', 0)}"
-    )
-    print(
-        "Physical-network voltage range during run: "
-        f"{summary['min_physical_voltage_pu']:.3f} to "
-        f"{summary['max_physical_voltage_pu']:.3f} pu"
-    )
-    if summary.get("blackout_detected"):
-        print(
-            "Blackout flag: "
-            f"time={summary.get('blackout_time_s')}, reason={summary.get('blackout_reason')}"
-        )
+def interpret(s: dict[str, Any]) -> str:
+    parts = []
+    n = s["block_trips"]
+    if n == 0:
+        parts.append("No protected plant tripped: the plant-side voltages stayed below the OV1 pickup (or the relays were disabled).")
     else:
-        print("Blackout flag: not triggered.")
-    print(f"Events: {artifacts.events_path}")
-    print(f"Collector traces: {artifacts.collector_trace_path}")
-    if artifacts.island_trace_path is not None:
-        print(f"Island traces: {artifacts.island_trace_path}")
-    if artifacts.deenergized_assets_path is not None:
-        print(f"De-energized assets: {artifacts.deenergized_assets_path}")
-    if artifacts.blackout_sequence_path is not None:
-        print(f"Blackout sequence: {artifacts.blackout_sequence_path}")
-    for path in artifacts.figure_paths:
-        print(f"Figure: {path}")
+        seq = s["block_trip_sequence"]
+        parts.append(f"{n} of 16 protected plants tripped between t={seq[0]['t']:.2f} s and t={seq[-1]['t']:.2f} s "
+                     f"({s['lost_block_p_mw']:.0f} MW, {s['lost_block_q_absorption_mvar']:.0f} MVAr absorption lost).")
+    parts.append(f"Generator trips: {s['generator_trips']}; UFLS stages: {s['ufls_stages_operated']}; "
+                 f"separation: {'yes' if s['separation'] else 'no'}; affected-area collapse: {'yes' if s['affected_area_collapse'] else 'no'}.")
+    parts.append(f"Affected-island frequency stayed within {s['affected_f_eq_hz_min']:.3f}-{s['affected_f_eq_hz_max']:.3f} Hz (50-Hz equivalent); "
+                 f"system voltage range {s['min_system_v_pu']:.3f}-{s['max_system_v_pu']:.3f} pu.")
+    if not s["tds_ok"] and not s["stopped_reason"]:
+        parts.append(f"TDS did not converge beyond t={s['final_time_s']:.3f} s (inconclusive, not a blackout).")
+    return " ".join(parts)
+
+
+def case_design(rs: ReplicaSystem) -> dict[str, Any]:
+    cfg = rs.cfg
+    ss = rs.system
+    return {
+        "config": _jsonable(asdict(cfg)),
+        "plant_protection": [asdict(s) for s in cfg.plant_stages()],
+        "generator_protection": [asdict(s) for s in cfg.generator_stages()] if cfg.generator_protection_enabled else [],
+        "ufls": {"stages_pu_fraction": cfg.ufls_stages, "delay_s": cfg.ufls_delay_s,
+                 "basis": "ENTSO-E NC ER (CE): 49.0->48.0 Hz, 6 steps x 7.5% (45% total), no intentional delay (~150 ms operating time)"},
+        "separation": {"threshold_deg": cfg.separation_angle_deg, "delay_s": cfg.separation_delay_s,
+                       "measured": "COI rotor-angle difference affected area vs rest, change from pre-disturbance value",
+                       "cut_set_branches": rs.area.cut_branch_ids},
+        "collapse": {"median_v_pu": cfg.collapse_voltage_pu, "f_low_pu": cfg.collapse_f_low_pu,
+                     "f_high_pu": cfg.collapse_f_high_pu, "dwell_s": cfg.collapse_dwell_s},
+        "affected_area": {"area_id": rs.area.area_id, "bus_count": len(rs.area.buses),
+                          "fragments_moved_out": rs.area.fragments_moved_out,
+                          "cut_set_size": len(rs.area.cut_branch_ids)},
+        "zone": {"center": rs.zone_center, "buses": rs.zone_buses},
+        "blocks": [
+            {"name": b.spec.name, "cluster": b.spec.report_cluster, "p_mw": b.p_sched_mw, "q_mvar": b.q_sched_mvar,
+             "q_source": b.q_source, "p_source": b.spec.source, "hv_bus": b.hv_bus,
+             "hv_kv": float(ss.Bus.Vn.v[_pos(ss.Bus, b.hv_bus)]), "collector_bus": b.collector_bus,
+             "gsu": b.gsu_id, "tap": b.tap, "x_pu_sys": b.x_sys, "r_pu_sys": b.r_sys, "sn_mva": b.sn_mva,
+             "zth_pu": b.zth_pu, "z0_pu": b.z0_pu, "hv_v0_pu": b.hv_v0_pu, "pvd1": b.pvd1_id}
+            for b in rs.blocks
+        ],
+        "gnet_pvd1": rs.gnet_pvd1_ids,
+        "meshing_lines": {"energized_circuits": rs.mesh_line_ids, "parallel_to": rs.mesh_source_lines},
+        "candidate_lines": rs.candidate_line_ids,
+        "candidate_capacitors": rs.candidate_cap_ids,
+        "regularization_and_corrections": rs.regularization,
+        "gsu_tap": rs.tap,
+        "notes": _jsonable(rs.base_notes),
+        "pre_cascade_actions": [asdict(a) for a in cfg.pre_cascade_actions] if cfg.pre_cascade_enabled else [],
+    }
+
+
+def write_outputs(result: RunResult, out_dir: Path) -> None:
+    out_dir.mkdir(parents=True, exist_ok=True)
+    mon = result.monitor
+    (out_dir / "summary.json").write_text(json.dumps(_jsonable(result.summary), indent=2) + "\n", encoding="utf-8")
+    (out_dir / "events.json").write_text(json.dumps(_jsonable([asdict(e) for e in mon.events]), indent=2) + "\n",
+                                         encoding="utf-8")
+    (out_dir / "case_design.json").write_text(json.dumps(_jsonable(case_design(result.rs)), indent=2) + "\n",
+                                              encoding="utf-8")
+    _write_csv(out_dir / "collector_traces.csv", mon.collector_rows)
+    _write_csv(out_dir / "system_traces.csv", mon.system_rows)
+
+
+def cut_branch_flows_mva(rs: ReplicaSystem) -> np.ndarray:
+    ss = rs.system
+    line = ss.Line
+    v = np.asarray(ss.Bus.v.v, dtype=float)
+    a = np.asarray(ss.Bus.a.v, dtype=float)
+    out = []
+    for p in rs.area.cut_branch_positions:
+        b1, b2 = int(line.bus1.v[p]), int(line.bus2.v[p])
+        i1, i2 = _pos(ss.Bus, b1), _pos(ss.Bus, b2)
+        v1 = v[i1] * np.exp(1j * a[i1])
+        v2 = v[i2] * np.exp(1j * a[i2])
+        y = 1.0 / complex(float(line.r.v[p]), float(line.x.v[p]))
+        t = (float(line.tap.v[p]) or 1.0) * np.exp(1j * float(line.phi.v[p]))
+        bc = 1j * float(line.b.v[p]) / 2.0
+        i_from = (v1 / t - v2) * y / np.conj(t) + v1 * bc / abs(t) ** 2
+        i_to = (v2 - v1 / t) * y + v2 * bc
+        out.append(v1 * np.conj(i_from) if b1 in rs.area.buses else v2 * np.conj(i_to))
+    return np.asarray(out, dtype=complex) * float(ss.config.mva)
+
+
+def area_net_export_mw(rs: ReplicaSystem) -> float:
+    return float(np.sum(cut_branch_flows_mva(rs).real))
+
+
+def islanding_check(cfg: ReplicaConfig | None = None, *, t_open_s: float = 1.0, tf_s: float = 10.0,
+                    quiet: bool = True, out_path: Path | None = None) -> dict[str, Any]:
+    base = cfg or ReplicaConfig()
+    probe = build_replica_system(replace(base, pre_cascade_enabled=False), armed=False, quiet=quiet, init_tds=False)
+    export = area_net_export_mw(probe)
+    out: dict[str, Any] = {"area_net_export_mw_base": export}
+    out["A_base_export"] = _islanding_case(base, t_open_s=t_open_s, tf_s=tf_s, quiet=quiet, balance_mw=0.0)
+    out["B_balanced"] = _islanding_case(base, t_open_s=t_open_s, tf_s=tf_s, quiet=quiet, balance_mw=export)
+    out["C_single_machine"] = small_island_check(base, quiet=quiet)
+    out["andes_can_integrate_an_island"] = bool(out["C_single_machine"]["tds_ok"])
+    out["affected_area_separation_integrable"] = bool(out["A_base_export"]["andes_handles_island"]
+                                                      and out["B_balanced"]["andes_handles_island"])
+    if out_path is not None:
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+        out_path.write_text(json.dumps(_jsonable(out), indent=2) + "\n", encoding="utf-8")
+    return out
+
+
+def small_island_check(base: ReplicaConfig | None = None, *, t_open_s: float = 1.0, tf_s: float = 4.0,
+                       quiet: bool = True) -> dict[str, Any]:
+    base = base or ReplicaConfig()
+    cfg = replace(base, variant="small_island_check", tf_s=tf_s, pre_cascade_enabled=False, plant_ov_enabled=False,
+                  generator_protection_enabled=False, ufls_stages=(), separation_enabled=False)
+    rs = build_replica_system(cfg, quiet=quiet)
+    ss = rs.system
+    line = ss.Line
+    g = ss.GENROU
+    adj: dict[int, list[tuple[int, int]]] = defaultdict(list)
+    for k in range(line.n):
+        if float(line.u.v[k]) > 0.5:
+            a, b = int(line.bus1.v[k]), int(line.bus2.v[k])
+            adj[a].append((b, k))
+            adj[b].append((a, k))
+    gen_bus = {int(g.bus.v[i]) for i in range(g.n) if float(g.u.v[i]) > 0.5}
+    found: tuple[int, set[int]] | None = None
+    for i in range(line.n):
+        if float(line.u.v[i]) <= 0.5:
+            continue
+        ends = (int(line.bus1.v[i]), int(line.bus2.v[i]))
+        if any(e in rs.area.buses for e in ends):
+            continue
+        for side in ends:
+            seen, stack, big = {side}, [side], False
+            while stack and not big:
+                c = stack.pop()
+                for o, k in adj[c]:
+                    if k == i or o in seen:
+                        continue
+                    seen.add(o)
+                    stack.append(o)
+                    if len(seen) > 15:
+                        big = True
+                        break
+            if not big and seen & gen_bus:
+                found = (i, seen)
+                break
+        if found:
+            break
+    if found is None:
+        return {"found": False}
+    branch, island = found
+    mon = PhysicsMonitor(rs)
+    state = {"done": False}
+
+    def cb(t: float, system: Any) -> None:
+        mon(t, system)
+        if not state["done"] and mon.last_t_acc is not None and mon.last_t_acc >= t_open_s - 1e-9:
+            set_line_status(system, system.Line.idx.v[branch], 0.0)
+            system.TDS.custom_event = True
+            state["done"] = True
+            mon._refresh_islands()
+
+    ss.TDS.callpert = cb
+    with QuietAndes(quiet):
+        ok = bool(ss.TDS.run(no_summary=True))
+    machines = [k for k in range(g.n) if int(g.bus.v[k]) in island and float(g.u.v[k]) > 0.5]
+    return {
+        "found": True, "branch_opened": str(line.idx.v[branch]), "island_buses": sorted(island),
+        "machines": [str(g.idx.v[k]) for k in machines], "tds_ok": ok, "final_time_s": float(ss.dae.t),
+        "islands_after": mon.n_islands, "island_machine_speed_pu_end": [float(g.omega.v[k]) for k in machines],
+        "note": "machine rejects its load with protection disabled; the overspeed is physical (no overspeed relay modeled)",
+    }
+
+
+def _islanding_case(base: ReplicaConfig, *, t_open_s: float, tf_s: float, quiet: bool,
+                    balance_mw: float) -> dict[str, Any]:
+    actions: tuple[PreCascadeAction, ...] = ()
+    if balance_mw > 0:
+        actions = (PreCascadeAction("BAL", "interchange_reduction", 0.0, 0.0, float(balance_mw), "MW",
+                                    "steady-state re-dispatch of the area export (islanding check only)", "check"),)
+    cfg = replace(base, variant="islanding_check", tf_s=tf_s, pre_cascade_actions=actions,
+                  pre_cascade_enabled=bool(actions), plant_ov_enabled=False,
+                  generator_protection_enabled=False, ufls_stages=(), separation_enabled=False,
+                  forced_separation_at_s=t_open_s)
+    res = run_replica(cfg, out_dir=None, quiet=quiet, armed=bool(actions), stall_guard=True)
+    mon = res.monitor
+    rows = mon.system_rows
+    after = [r for r in rows if r["time_s"] >= t_open_s + 0.5]
+    f_aff = [r["affected_island_f_pu"] for r in after]
+    f_rest = [r["rest_f_pu"] for r in after]
+    out = {
+        "t_open_s": t_open_s,
+        "tf_s": tf_s,
+        "tds_ok": res.tds_ok,
+        "final_time_s": res.final_time_s,
+        "islands_after_opening": mon.n_islands,
+        "island_sizes": mon.island_sizes,
+        "cut_set_size": len(mon.cut_pos),
+        "affected_island_f_pu_range": [float(np.nanmin(f_aff)), float(np.nanmax(f_aff))] if f_aff else None,
+        "rest_f_pu_range": [float(np.nanmin(f_rest)), float(np.nanmax(f_rest))] if f_rest else None,
+        "frequencies_diverge": bool(after and abs(np.nanmean(f_aff) - np.nanmean(f_rest)) > 1e-4),
+        "area_export_at_t0_mw": res.monitor.export0_mw,
+        "cut_set_sum_abs_p_at_t0_mw": res.monitor.cut_abs_p0_mw,
+        "min_bus_voltage_after_opening_pu": float(min((r["vmin_pu"] for r in after), default=float("nan"))),
+        "balance_redispatch_mw": balance_mw,
+        "rejected_step_calls": res.monitor.rejected_calls,
+        "stalled": res.monitor.stalled_reason,
+    }
+    out["andes_handles_island"] = bool(res.tds_ok and out["islands_after_opening"] == 2 and not res.monitor.stalled_reason)
+    return out
+
+
+@dataclass(slots=True)
+class ArmedReplica:
+    rs: ReplicaSystem
+    system: Any
+    protected_blocks: list[Any]
+    events: list[Any]
+    metadata: dict[str, Any]
+
+
+def build_armed_replica(cfg: ReplicaConfig | None = None, *, method: str = "powerflow", settle_s: float = 45.0,
+                        quiet: bool = True) -> ArmedReplica:
+    from .screening_library import protected_blocks_from_replica, replica_event_library
+
+    cfg = cfg or ReplicaConfig()
+    residual = 0.0
+    extra_meta: dict[str, Any] = {}
+    if method == "dynamic_equilibrium":
+        rs, extra_meta = _dynamic_equilibrium_state(cfg, settle_s=settle_s, quiet=quiet)
+        residual = float(extra_meta["polish"]["max_abs_f"])
+    elif method == "powerflow":
+        rs = build_replica_system(cfg, armed=True, quiet=quiet)
+        residual = float(rs.base_notes.get("init_max_abs_dxdt", 0.0))
+    elif method == "dynamic":
+        dyn_cfg = replace(cfg, plant_ov_enabled=False, tf_s=float(settle_s))
+        rs = build_replica_system(dyn_cfg, armed=False, quiet=quiet)
+        mon = PhysicsMonitor(rs)
+        ss = rs.system
+        ss.TDS.callpert = mon
+        with QuietAndes(quiet):
+            ok = bool(ss.TDS.run(no_summary=True))
+        ss.TDS.callpert = None
+        if not ok:
+            raise RuntimeError("dynamic arming run did not reach settle_s")
+        if mon.events and any(e.category not in {"operator_action"} for e in mon.events):
+            raise RuntimeError(f"protection operated during the dynamic arming run: {[e.code for e in mon.events]}")
+        v = np.asarray(ss.Bus.v.v, dtype=float)
+        for b in rs.blocks:
+            b.z0_pu = float(v[_pos(ss.Bus, b.collector_bus)])
+            b.hv_v0_pu = float(v[_pos(ss.Bus, b.hv_bus)])
+        residual, _ = max_abs_dxdt(rs)
+        rs.armed = True
+    else:
+        raise ValueError("method must be 'powerflow', 'dynamic' or 'dynamic_equilibrium'")
+    blocks = protected_blocks_from_replica(rs)
+    events = replica_event_library(rs)
+    meta = {
+        "armed": True,
+        "method": method,
+        "time_s": float(rs.system.dae.t),
+        "max_abs_dxdt": residual,
+        "gsu_tap": rs.tap,
+        "max_collector_v_pu": max(b.z0_pu for b in rs.blocks),
+        "min_margin_to_ov1_pu": min(1.10 - b.z0_pu for b in rs.blocks),
+        "families": sorted({e.family for e in events}),
+        "omitted_families": {"shunt_reactor_disconnection": "no shunt reactor exists in the affected area of ACTIVSg2000"},
+        "case_design": case_design(rs),
+        **extra_meta,
+    }
+    return ArmedReplica(rs=rs, system=rs.system, protected_blocks=blocks, events=events, metadata=meta)
+
+
+def agc_governor_mask(ss: Any) -> np.ndarray:
+    tg = ss.TGOV1
+    links = _genrou_links(ss)
+    gpos = {str(v): i for i, v in enumerate(ss.GENROU.idx.v)}
+    ue = np.asarray(tg.ue.v, dtype=float) if hasattr(tg, "ue") else np.asarray(tg.u.v, dtype=float)
+    mask = np.zeros(tg.n, dtype=bool)
+    for k in range(tg.n):
+        syn = str(tg.syn.v[k])
+        gi = gpos.get(syn)
+        if gi is None or ue[k] <= 0.5 or float(ss.GENROU.u.v[gi]) <= 0.5:
+            continue
+        exc_on = False
+        for ref in links[syn]["exciter"]:
+            name, idx = ref.split(":", 1)
+            model = getattr(ss, name)
+            exc_on = exc_on or float(model.u.v[_pos(model, idx)]) > 0.5
+        mask[k] = exc_on
+    return mask
+
+
+def agc_reset(ss: Any) -> dict[str, Any]:
+    tg = getattr(ss, "TGOV1", None)
+    if tg is None or not tg.n:
+        return {"governors": 0}
+    agc = agc_governor_mask(ss)
+    wd = np.asarray(tg.wd.v, dtype=float)
+    r = np.asarray(tg.R.v, dtype=float)
+    shift = np.where(agc, wd / r, 0.0)
+    tg.pref0.v[:] = np.asarray(tg.pref0.v, dtype=float) - shift
+    return {"governors": int(np.sum(agc)), "max_abs_pref_shift_pu": float(np.max(np.abs(shift))),
+            "sum_pref_shift_mw": float(-np.sum(shift)) * float(ss.config.mva),
+            "participants": "in-service TGOV1 of machines with an in-service exciter"}
+
+
+_DEBUG_POLISH = False
+
+
+def polish_equilibrium(ss: Any, *, h0: float = 0.1, h_max: float = 1e6, tol: float = 1e-10,
+                       max_iter: int = 80, secondary_control: bool = True, inner_iters: int = 1) -> dict[str, Any]:
+    from scipy import sparse
+    from scipy.sparse.linalg import spsolve
+
+    dae = ss.dae
+    n, m = int(dae.n), int(dae.m)
+    tf = np.asarray(dae.Tf, dtype=float).ravel()
+
+    def csc(mat: Any, shape: tuple[int, int]) -> Any:
+        return sparse.csc_matrix((np.asarray(mat.V).ravel(), (np.asarray(mat.I).ravel(), np.asarray(mat.J).ravel())),
+                                 shape=shape)
+
+    tg = getattr(ss, "TGOV1", None)
+    border = bool(secondary_control and tg is not None and tg.n)
+    if border:
+        r = np.asarray(tg.R.v, dtype=float)
+        on = agc_governor_mask(ss)
+        s_gain = float(np.sum(1.0 / r[on]))
+        col = sparse.csc_matrix((np.full(int(on.sum()), 1.0 / s_gain), (np.asarray(tg.pref.a)[on], np.zeros(int(on.sum()), dtype=int))),
+                                shape=(m, 1))
+        g_sl = next((i for i in range(ss.GENROU.n) if str(ss.GENROU.gen.v[i]) in {str(v) for v in ss.Slack.idx.v}
+                     and float(ss.GENROU.u.v[i]) > 0.5), None)
+        if g_sl is None:
+            g_sl = int(np.argmax(np.where(np.asarray(ss.GENROU.u.v) > 0.5, np.asarray(ss.GENROU.Sn.v), -1)))
+        w_addr = int(ss.GENROU.omega.a[g_sl])
+        k_agc = s_gain / 10.0
+    lam_total = 0.0
+
+    frozen_x: list[int] = []
+    frozen_y: list[int] = []
+    for model in ss.exist.pflow_tds.values():
+        if not getattr(model, "n", 0) or not hasattr(model, "u"):
+            continue
+        off = np.flatnonzero(np.asarray(model.u.v, dtype=float) <= 0.5)
+        if not off.size:
+            continue
+        for var in model.states.values():
+            frozen_x.extend(int(var.a[k]) for k in off)
+        for var in model.algebs.values():
+            frozen_y.extend(int(var.a[k]) for k in off)
+    frozen_x_arr = np.asarray(sorted(set(frozen_x)), dtype=int)
+    frozen_y_arr = np.asarray(sorted(set(frozen_y)), dtype=int)
+    keep_f = np.ones(n, dtype=bool)
+    keep_f[frozen_x_arr] = False
+    keep_g = np.ones(m, dtype=bool)
+    keep_g[frozen_y_arr] = False
+    frozen_all = np.concatenate([frozen_x_arr, n + frozen_y_arr]).astype(int)
+
+    def freeze_rows(mat: Any) -> Any:
+        if not frozen_all.size:
+            return mat
+        mat = mat.tolil()
+        for i in frozen_all:
+            mat.rows[i] = [int(i)]
+            mat.data[i] = [1.0]
+        return mat.tocsc()
+
+    def residual() -> tuple[np.ndarray, np.ndarray]:
+        ss.TDS.fg_update(ss.exist.pflow_tds)
+        f = np.asarray(dae.f, dtype=float).copy()
+        for item in ss.antiwindups:
+            for key, _, eqval in item.x_set:
+                np.put(f, key, eqval)
+        return f, np.asarray(dae.g, dtype=float).copy()
+
+    def measure(f: np.ndarray, g: np.ndarray) -> float:
+        agc = abs(float(dae.x[w_addr]) - 1.0) if border else 0.0
+        return max(float(np.max(np.abs(f[keep_f]))) if keep_f.any() else 0.0,
+                   float(np.max(np.abs(g[keep_g]))) if keep_g.any() else 0.0, agc)
+
+    f, g = residual()
+    res = measure(f, g)
+    history = [res]
+    h = float(h0)
+    it = 0
+    while it < max_iter and res > tol:
+        ss.j_update(models=ss.exist.pflow_tds)
+        blocks = [[sparse.diags(tf) - h * csc(dae.fx, (n, n)), -h * csc(dae.fy, (n, m))],
+                  [csc(dae.gx, (m, n)), csc(dae.gy, (m, m))]]
+        if border:
+            top = sparse.hstack([sparse.bmat(blocks), sparse.vstack([sparse.csc_matrix((n, 1)), col])])
+            row = sparse.csc_matrix(([h * k_agc, 1.0], ([0, 0], [w_addr, n + m])), shape=(1, n + m + 1))
+            a = sparse.vstack([top, row]).tocsc()
+            rhs = np.concatenate([h * f, -g, [-h * k_agc * (float(dae.x[w_addr]) - 1.0)]])
+        else:
+            a = sparse.bmat(blocks, format="csc")
+            rhs = np.concatenate([h * f, -g])
+        a = freeze_rows(a)
+        rhs[frozen_all] = 0.0
+        x_old = np.asarray(dae.x, dtype=float).copy()
+        y_old = np.asarray(dae.y, dtype=float).copy()
+        pref_old = np.asarray(tg.pref0.v, dtype=float).copy() if border else None
+        lam_step = 0.0
+        for inner in range(inner_iters):
+            d = spsolve(a, rhs)
+            dae.x[:] = np.asarray(dae.x, dtype=float) + d[:n]
+            dae.y[:] = np.asarray(dae.y, dtype=float) + d[n:n + m]
+            if border:
+                dl = float(d[n + m])
+                lam_step += dl
+                tg.pref0.v[:] = np.asarray(tg.pref0.v, dtype=float) + np.where(on, dl / (s_gain * r), 0.0)
+            ss.vars_to_models()
+            if inner == inner_iters - 1:
+                break
+            f_i, g_i = residual()
+            qx = tf * (np.asarray(dae.x, dtype=float) - x_old) - h * f_i
+            qx[frozen_x_arr] = 0.0
+            g_i = g_i.copy()
+            g_i[frozen_y_arr] = 0.0
+            ql = [lam_step + h * k_agc * (float(dae.x[w_addr]) - 1.0)] if border else []
+            if max(float(np.max(np.abs(qx))), float(np.max(np.abs(g_i)))) < 1e-10 * max(1.0, h):
+                break
+            ss.j_update(models=ss.exist.pflow_tds)
+            blocks = [[sparse.diags(tf) - h * csc(dae.fx, (n, n)), -h * csc(dae.fy, (n, m))],
+                      [csc(dae.gx, (m, n)), csc(dae.gy, (m, m))]]
+            if border:
+                top = sparse.hstack([sparse.bmat(blocks), sparse.vstack([sparse.csc_matrix((n, 1)), col])])
+                row = sparse.csc_matrix(([h * k_agc, 1.0], ([0, 0], [w_addr, n + m])), shape=(1, n + m + 1))
+                a = freeze_rows(sparse.vstack([top, row]).tocsc())
+                rhs = np.concatenate([-qx, -g_i, [-ql[0]]])
+            else:
+                a = freeze_rows(sparse.bmat(blocks, format="csc"))
+                rhs = np.concatenate([-qx, -g_i])
+            rhs[frozen_all] = 0.0
+        dlam = lam_step
+        f_new, g_new = residual()
+        res_new = measure(f_new, g_new)
+        if _DEBUG_POLISH:
+            jf = int(np.argmax(np.abs(np.where(keep_f, f_new, 0.0))))
+            print(f"polish it={it} h={h:.3g} res={res:.3e} -> {res_new:.3e} top_f={dae.x_name[jf]} {f_new[jf]:.3e} dmax={np.max(np.abs(d)):.3e}")
+        if not np.isfinite(res_new) or res_new > 10.0 * res + 1e-6:
+            dae.x[:] = x_old
+            dae.y[:] = y_old
+            if border:
+                tg.pref0.v[:] = pref_old
+            ss.vars_to_models()
+            f, g = residual()
+            h = max(h / 10.0, 1e-4)
+        else:
+            if border:
+                lam_total += dlam
+            f, g, res = f_new, g_new, res_new
+            h = min(h * 4.0, h_max)
+            history.append(res)
+        it += 1
+    return {"iterations": it, "max_abs_f": float(np.max(np.abs(f[keep_f]))) if keep_f.any() else 0.0,
+            "max_abs_g": float(np.max(np.abs(g[keep_g]))) if keep_g.any() else 0.0, "residual_history": history[-12:],
+            "final_h": h, "converged": bool(res <= tol), "frozen_variables": int(frozen_all.size),
+            "note": "residuals over variables of in-service devices (out-of-service devices are decoupled)",
+            "secondary_control_mw": lam_total * float(ss.config.mva) if border else None}
+
+
+def _dynamic_equilibrium_state(cfg: ReplicaConfig, *, settle_s: float, quiet: bool,
+                               ) -> tuple[ReplicaSystem, dict[str, Any]]:
+    dyn_cfg = replace(cfg, plant_ov_enabled=False, tf_s=float(settle_s))
+    rs = build_replica_system(dyn_cfg, armed=False, quiet=quiet)
+    mon = PhysicsMonitor(rs)
+    ss = rs.system
+    ss.TDS.callpert = mon
+    with QuietAndes(quiet):
+        ok = bool(ss.TDS.run(no_summary=True))
+    ss.TDS.callpert = None
+    if not ok:
+        raise RuntimeError("dynamic arming run did not reach settle_s")
+    other = [e.code for e in mon.events if e.category != "operator_action"]
+    if other:
+        raise RuntimeError(f"protection operated during the dynamic arming run: {other}")
+    v = np.asarray(ss.Bus.v.v, dtype=float)
+    plateau = {b.spec.name: float(v[_pos(ss.Bus, b.collector_bus)]) for b in rs.blocks}
+    omega = np.asarray(ss.GENROU.omega.v, dtype=float)[np.asarray(ss.GENROU.u.v, dtype=float) > 0.5]
+    dxdt_plateau, dxdt_plateau_state = max_abs_dxdt(rs)
+    agc = agc_reset(ss)
+    cont = polish_equilibrium(ss, h0=1.0, h_max=20.0, tol=1e-7, max_iter=250, inner_iters=10)
+    polish = polish_equilibrium(ss, h0=100.0, h_max=1e6, tol=1e-10, max_iter=60, inner_iters=1)
+    if not polish["converged"]:
+        raise RuntimeError(f"equilibrium polish did not converge: {polish}")
+    v = np.asarray(ss.Bus.v.v, dtype=float)
+    for b in rs.blocks:
+        b.z0_pu = float(v[_pos(ss.Bus, b.collector_bus)])
+        b.hv_v0_pu = float(v[_pos(ss.Bus, b.hv_bus)])
+    omega_eq = np.asarray(ss.GENROU.omega.v, dtype=float)[np.asarray(ss.GENROU.u.v, dtype=float) > 0.5]
+    dv = {b.spec.name: b.z0_pu - plateau[b.spec.name] for b in rs.blocks}
+    rs.armed = True
+    meta = {
+        "settle_s": float(settle_s),
+        "plateau_collector_v_pu": plateau,
+        "plateau_max_abs_dxdt": dxdt_plateau,
+        "plateau_max_abs_dxdt_state": dxdt_plateau_state,
+        "continuation": cont,
+        "plateau_omega_range_pu": [float(omega.min()), float(omega.max())],
+        "agc_reset": agc,
+        "polish": polish,
+        "equilibrium_omega_range_pu": [float(omega_eq.min()), float(omega_eq.max())],
+        "plateau_max_abs_dv_pu": float(max(abs(x) for x in dv.values())),
+        "plateau_dv_pu": dv,
+    }
+    return rs, meta
+
+
+def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
+    p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    p.add_argument("--variant", default="baseline", choices=sorted(VARIANTS))
+    p.add_argument("--out", type=Path, default=None, help="output directory (default results/revised/activsg2000/<variant>)")
+    p.add_argument("--tf", type=float, default=None)
+    p.add_argument("--tstep", type=float, default=None)
+    p.add_argument("--verbose-andes", action="store_true")
+    return p.parse_args(argv)
+
+
+def main(argv: Sequence[str] | None = None) -> int:
+    args = parse_args(argv)
+    overrides: dict[str, Any] = {}
+    if args.tf is not None:
+        overrides["tf_s"] = float(args.tf)
+    if args.tstep is not None:
+        overrides["tstep_s"] = float(args.tstep)
+    cfg = variant_config(args.variant, **overrides)
+    out = args.out or (DEFAULT_OUT_ROOT / args.variant)
+    res = run_replica(cfg, out_dir=out, quiet=not args.verbose_andes)
+    print(f"[{cfg.variant}] {res.summary['interpretation']}")
+    print(f"outputs: {out}")
     return 0
 
 

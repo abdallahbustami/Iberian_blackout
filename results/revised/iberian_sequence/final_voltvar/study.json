@@ -1,0 +1,268 @@
+{
+ "label": "final_voltvar",
+ "kwargs": {
+  "tie_scale": 15.0,
+  "voltage_control": "q_control",
+  "q_control_tc_s": 10.0,
+  "ehv_surplus_mvar": 1600.0,
+  "uel_tc_s": 1.0,
+  "load_model": "es",
+  "embedded_pv_share": 0.15,
+  "tap_margin_pu": 0.01,
+  "actions": {
+   "res_reduction_mw": 708.0,
+   "net_load_mw": 0.0
+  },
+  "voltage_mode_res": true
+ },
+ "record": {
+  "area_load_mw": 11444.966820000001,
+  "res_share": 0.45,
+  "fleet_blocks": 26,
+  "fleet_mw": 5446.0,
+  "commitment_c": 1.5,
+  "export_target_mw": 870.0,
+  "export_reduction_mw": 3300.5,
+  "export_base_case_mw": 860.3010227111514,
+  "tie_scale": 15.0,
+  "exciter_completion": "all",
+  "export_counterpart": "rest_load",
+  "pre_cascade_actions": [
+   "OA1a",
+   "OA1b",
+   "OA3"
+  ],
+  "initiating_block": null,
+  "initiating_time_s": 15.0,
+  "voltage_control": "q_control",
+  "q_control_tc_s": 10.0,
+  "tap_margin_pu": 0.01,
+  "initial_mesh_closed": 2,
+  "granada_instantaneous": true,
+  "documented_settings": false,
+  "actions": [
+   "RES500"
+  ],
+  "tf_s": 100.0,
+  "ehv_surplus_mvar": 1600.0,
+  "uel_tc_s": 1.0
+ },
+ "tds_ok": true,
+ "final_time_s": 100.0,
+ "stopped_reason": null,
+ "gsu_tap": 0.92732,
+ "block_trips": 0,
+ "lost_block_p_mw": 0.0,
+ "generator_trips": 0,
+ "ufls_stages_operated": 0,
+ "ufls_shed_mw": 0.0,
+ "separation": false,
+ "separation_time_s": null,
+ "affected_area_collapse": false,
+ "blackout_emerged": false,
+ "max_collector_v_pu": 1.098788450766013,
+ "area_net_export_t0_mw": 860.170371314133,
+ "timeline": [
+  [
+   0.0,
+   "operator_action",
+   "RES500"
+  ],
+  [
+   37.41,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   37.76,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   40.22,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   41.44,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   41.93,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   43.56,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   45.58,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   47.58,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   47.94,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   71.25,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   74.37,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   76.05,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   76.34,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   76.6,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   77.02,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   77.12,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   77.71,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   78.06,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   90.9,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   90.95,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   90.96,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   91.31,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   91.4,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   91.41,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   91.44,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   91.54,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   91.6,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   91.61,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   91.67,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   91.72,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   91.79,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   91.87,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   91.88,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   92.18,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   92.2,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   92.22,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   92.25,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   92.37,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   92.39,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ]
+ ],
+ "wall_s": 374.15915608406067
+}

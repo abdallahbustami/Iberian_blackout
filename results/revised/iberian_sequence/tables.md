@@ -1,0 +1,20 @@
+# Sequence-replica studies (time 0 = 12:32:00; 28 April: Granada 57.2 s, Badajoz 582 MW 76.46 s, loss of synchronism 79.62 s, AC separation 81.54 s, i.e. +5.1 s after Badajoz)
+
+| study | k | voltage control | surplus (MVAr) | UEL | margin (pu) | relays | RES share | PF | load | embedded PV | Granada tap | drivers | V plants t=0 (pu) | rise to first trip / 57 s (pu) | first trip (s) | first plant | observe only | lost in 4 s (MW) | separation after first trip (s) | collapse after first trip (s) | end |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| final_avr | 15.0 | avr | 1600.0 | yes | 0.01 | standard | 0.45 | 0.95 | es | 0.15 | no | RES -708 MW | 1.024 | 0.0102 | 19.74 | Badajoz145 | no | 18794.0 | 2.17 | - | TDS stops in collapse (all plants and >= 9 units tripped) |
+| final_fast | 15.0 | q_control | 1600.0 | yes | 0.01 | fast | 0.45 | 0.95 | es | 0.15 | no | RES -708 MW | 1.024 | 0.0093 | 14.23 | Seville550 | no | 33513.0 | 2.26 | - | TDS stops in collapse (all plants and >= 9 units tripped) |
+| final_granada | 15.0 | q_control | 1600.0 | yes | 0.005 | standard | 0.45 | 0.95 | es | 0.15 | yes | RES -708 MW | 1.024 | 0.0066 | 7.65 | Granada355 | no | 2199.0 | 9.01 | - | TDS stops in collapse (all plants and >= 9 units tripped) |
+| final_k10 | 10.0 | q_control | 1600.0 | yes | 0.01 | standard | 0.45 | 0.95 | es | 0.15 | no | RES -708 MW | 1.027 | 0.0092 | 17.07 | Seville550 | no | 1807.0 | 18.0 | - | TDS stops in collapse (all plants and >= 9 units tripped) |
+| final_k12 | 12.0 | q_control | 1600.0 | yes | 0.01 | standard | 0.45 | 0.95 | es | 0.15 | no | RES -708 MW | 1.026 | 0.0094 | 16.56 | Seville550 | no | 1903.0 | 9.35 | - | TDS stops in collapse (all plants and >= 9 units tripped) |
+| final_m02 | 15.0 | q_control | 1600.0 | yes | 0.02 | standard | 0.45 | 0.95 | es | 0.15 | no | RES -708 MW | 1.024 | 0.0174 | 22.74 | Badajoz145 | no | 2939.0 | 9.94 | - | TDS stops in collapse (all plants and >= 9 units tripped) |
+| final_m03 | 15.0 | q_control | 1600.0 | yes | 0.03 | standard | 0.45 | 0.95 | es | 0.15 | no | RES -708 MW | 1.024 | 0.0257 | 42.17 | Badajoz145 | no | 1418.0 | 17.21 | - | TDS stops in collapse (all plants and >= 9 units tripped) |
+| final_m04 | 15.0 | q_control | 1600.0 | yes | 0.04 | standard | 0.45 | 0.95 | es | 0.15 | no | RES -708 MW | 1.023 | 0.0187 | 79.45 | Granada355 | no | 2672.0 | 2.28 | - | TDS stops in collapse (all plants and >= 9 units tripped) |
+| final_main | 15.0 | q_control | 1600.0 | yes | 0.01 | standard | 0.45 | 0.95 | es | 0.15 | no | RES -708 MW | 1.024 | 0.0103 | 15.18 | Seville550 | no | 3566.0 | 4.07 | - | TDS stops in collapse (all plants and >= 9 units tripped) |
+| final_no_dg | 15.0 | q_control | 1600.0 | yes | 0.01 | standard | 0.45 | 0.95 | es | 0.0 | no | RES -708 MW | 1.024 | 0.0099 | 14.77 | Seville550 | no | 3735.0 | 5.98 | - | TDS stops in collapse (all plants and >= 9 units tripped) |
+| final_no_drivers | 15.0 | q_control | 1600.0 | yes | 0.01 | standard | 0.45 | 0.95 | es | 0.15 | no | none | 1.024 | 0.0 |  | - | no |  | - | - | survives |
+| final_no_ov | 15.0 | q_control | 1600.0 | yes | 0.01 | standard | 0.45 | 0.95 | es | 0.15 | no | RES -708 MW | 1.024 | 0.0281 |  | - | yes |  | - | - | survives |
+| final_no_surplus | 15.0 | q_control | 0.0 | yes | 0.01 | standard | 0.45 | 0.95 | es | 0.15 | no | RES -708 MW | 0.982 | 0.0126 | 22.93 | Badajoz582 | no | 1760.0 | 17.29 | - | TDS stops in collapse (all plants and >= 9 units tripped) |
+| final_preserved | 15.0 | q_control | 1600.0 | yes | 0.01 | standard | 0.45 | 0.95 | es | 0.15 | no | RES -708 MW | 1.024 | 0.0103 | 15.18 | Seville550 | no | 1567.0 | 39.97 | - | TDS stops in collapse (all plants and >= 9 units tripped) |
+| final_voltvar | 15.0 | q_control | 1600.0 | yes | 0.01 | standard | 0.45 | 0.95 | es | 0.15 | no | RES -708 MW | 1.024 | 0.0106 |  | - | no |  | - | - | survives |
+| final_zload | 15.0 | q_control | 1600.0 | yes | 0.01 | standard | 0.45 | 0.95 | z | 0.15 | no | RES -708 MW | 1.024 | 0.0152 | 16.21 | Badajoz145 | no | 2159.0 | 8.39 | - | TDS stops in collapse (all plants and >= 9 units tripped) |

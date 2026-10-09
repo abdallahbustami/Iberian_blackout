@@ -1,0 +1,5 @@
+seed_id,asset_id,is_self,asset_class,layer,score,predicted_trip,predicted_time_s,k_pk_seed,tds_trip_rel_s,tds_trip_in_window,tds_first_pickup_rel_s
+load_disconnection:PQ_1,RES01,false,certified,,0.48301490925561424,false,,0.48301490925561424,,false,
+load_disconnection:PQ_1,RES02,false,certified,,0.4646768591420773,false,,0.4646768591420773,,false,
+load_disconnection:PQ_1,RES03,false,certified,,0.6154682733101421,false,,0.6154682733101421,,false,
+load_disconnection:PQ_1,RES04,false,risky,,0.9624935251027706,false,,0.9624935251027706,,false,

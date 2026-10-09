@@ -1,246 +1,341 @@
+"""Unit tests of the 2000-bus simulation engine (no ANDES run)."""
+
 from __future__ import annotations
 
-import json
-from pathlib import Path
-from dataclasses import replace
+import dataclasses
 from types import SimpleNamespace
 
 import numpy as np
 import pytest
 
 from pa_dvsa.replication.activsg2000_engine import (
-    CollectorRuntime,
-    compute_island_snapshots,
-    OverVoltageRelayStage,
-    ReplicationConfig,
-    resolve_collector_specs,
+    REPORT_BLOCKS,
+    VARIANTS,
+    BlockSpec,
+    DefiniteTimeStage,
+    ReplicaConfig,
+    _components,
+    _new_relay_state,
+    accepted_sample,
+    advance_definite_time,
+    regularize_improper_ieeest,
     select_affected_area,
-    update_overvoltage_relay_timers,
+    variant_config,
 )
 
 
-class _Values:
+class _V:
     def __init__(self, values):
         self.v = np.asarray(values)
 
 
 def _model(**fields):
     ns = SimpleNamespace()
-    size = None
+    n = None
     for name, values in fields.items():
-        setattr(ns, name, _Values(values))
-        size = len(values)
-    ns.n = int(size or 0)
+        setattr(ns, name, _V(values))
+        n = len(values)
+    ns.n = int(n or 0)
     return ns
 
 
-def test_default_replication_config_has_no_equivalent_blackout_path():
-    cfg = ReplicationConfig()
+def _run(stage, values, dt=0.1):
+    st = _new_relay_state(1)
+    ops = []
+    for v in values:
+        ops.append(bool(advance_definite_time(st, stage, np.array([v]), dt, np.array([True]))[0]))
+    return ops, st
 
-    assert cfg.allow_equivalent_blackout is False
-    assert cfg.blackout_actions == ()
-    assert len(cfg.collector_specs) == 16
-    assert all(spec.min_trip_time_s == 0.0 for spec in cfg.collector_specs)
+
+def test_definite_time_over_element_times_from_pickup_and_holds_above_dropout():
+    stage = DefiniteTimeStage("OV1", "voltage", "over", 1.10, 0.3, 0.98)
+    ops, _ = _run(stage, [1.09, 1.10, 1.09, 1.095, 1.10])
+    assert ops == [False, False, False, False, True]
 
 
-def test_two_stage_overvoltage_relay_hysteresis_and_timing():
-    spec = ReplicationConfig().collector_specs[0]
-    spec = replace(
-        spec,
-        threshold_pu=1.10,
-        dwell_s=1.0,
-        relay_stages=(OverVoltageRelayStage("low", 1.10, 1.0, 0.95),),
+def test_definite_time_over_element_resets_below_dropout():
+    stage = DefiniteTimeStage("OV1", "voltage", "over", 1.10, 0.3, 0.98)
+    ops, _ = _run(stage, [1.11, 1.11, 1.07, 1.11, 1.11, 1.11])
+    assert not any(ops)
+    ops, st = _run(stage, [1.11, 1.11, 1.07, 1.11, 1.11, 1.11, 1.11])
+    assert ops[-1] is True
+    assert st.timer[0] == pytest.approx(0.3)
+
+
+def test_definite_time_under_frequency_element():
+    stage = DefiniteTimeStage("UF", "frequency", "under", 0.95, 0.2, 0.999)
+    ops, _ = _run(stage, [0.96, 0.949, 0.949, 0.949, 0.96])
+    assert ops == [False, False, False, True, False]
+
+
+def test_inactive_elements_never_time():
+    stage = DefiniteTimeStage("OV1", "voltage", "over", 1.10, 0.0, 0.98)
+    st = _new_relay_state(2)
+    op = advance_definite_time(st, stage, np.array([1.2, 1.2]), 0.1, np.array([True, False]))
+    assert op.tolist() == [True, False]
+
+
+def test_stage_validation():
+    with pytest.raises(ValueError):
+        DefiniteTimeStage("x", "current", "over", 1.0, 0.1)
+    with pytest.raises(ValueError):
+        DefiniteTimeStage("x", "voltage", "sideways", 1.0, 0.1)
+
+
+def test_accepted_sample_ignores_rejected_step_retries():
+    last = None
+    seen = []
+    for t_target, h in [(0.01, 0.01), (0.02, 0.01), (0.019, 0.009), (0.028, 0.009)]:
+        is_new, t_acc, dt = accepted_sample(last, t_target, h)
+        if is_new:
+            last = t_acc
+            seen.append((t_acc, round(dt, 9)))
+    assert seen == [(0.0, 0.0), (0.01, 0.01), (0.019, 0.009)]
+
+
+def test_accepted_sample_never_goes_backwards():
+    is_new, t_acc, dt = accepted_sample(1.0, 1.005, 0.01)
+    assert is_new is False and t_acc == 1.0 and dt == 0.0
+
+
+def test_report_blocks_use_report_mvar_only_where_given_and_no_inflation():
+    assert len(REPORT_BLOCKS) == 16
+    assert sum(b.p_mw for b in REPORT_BLOCKS) == pytest.approx(2906.0)
+    reported = {b.name: b.q_report_mvar for b in REPORT_BLOCKS if b.q_report_mvar is not None}
+    assert reported == {"Granada355": 165.0, "Badajoz582": 165.0, "Badajoz145": 37.0}
+    names = {f.name for f in dataclasses.fields(ReplicaConfig)}
+    assert not any("q_scale" in n or "absorption_scale" in n for n in names)
+    block_fields = {f.name for f in dataclasses.fields(BlockSpec)}
+    assert not block_fields & {"pickup_pu", "dwell_s", "tap", "threshold_pu", "report_time_s", "min_trip_time_s"}
+
+
+def test_no_gating_fields_in_physics_config():
+    names = {f.name for f in dataclasses.fields(ReplicaConfig)}
+    forbidden = ("require_", "min_trip_time", "min_time", "min_block_time", "after_hvdc", "hvdc")
+    assert not [n for n in names if any(tok in n for tok in forbidden)]
+
+
+def test_uniform_standard_plant_protection():
+    stages = {s.name: s for s in ReplicaConfig().plant_stages()}
+    assert (stages["OV1"].pickup, stages["OV1"].delay_s) == (1.10, 1.0)
+    assert (stages["OV2"].pickup, stages["OV2"].delay_s) == (1.20, 0.16)
+    assert stages["UF"].pickup == pytest.approx(0.95) and stages["OF"].pickup == pytest.approx(1.03)
+    assert all(s.basis for s in stages.values())
+
+
+def test_variants_implement_what_their_names_say():
+    assert set(VARIANTS) >= {"baseline", "no_ov_protection", "delayed_protection", "preserved_absorption",
+                             "voltage_mode_res", "no_pre_cascade_actions"}
+    base = variant_config("baseline")
+
+    def names(c):
+        return {s.name for s in c.plant_stages()}
+
+    assert {"OV1", "OV2"} <= names(base)
+    no_ov = variant_config("no_ov_protection")
+    assert not ({"OV1", "OV2"} & names(no_ov)) and {"UV1", "UF", "OF"} <= names(no_ov)
+    delayed = {s.name: s for s in variant_config("delayed_protection").plant_stages()}
+    assert delayed["OV1"].delay_s == 2.0 and delayed["OV1"].pickup == 1.10 and delayed["OV2"].delay_s == 0.16
+    assert variant_config("preserved_absorption").preserved_absorption is True
+    vm = variant_config("voltage_mode_res")
+    assert vm.voltage_mode_res is True and vm.volt_var_slope > 0
+    assert variant_config("no_pre_cascade_actions").pre_cascade_enabled is False
+    for name in VARIANTS:
+        cfg = variant_config(name)
+        for field in ("load_scale", "fixed_pf", "tap_rule", "tap_margin_pu", "affected_area", "blocks",
+                      "generator_protection_enabled", "ufls_stages", "separation_angle_deg"):
+            assert getattr(cfg, field) == getattr(base, field)
+
+
+def test_pre_cascade_actions_are_physical_and_documented():
+    acts = {a.code: a for a in ReplicaConfig().pre_cascade_actions}
+    assert acts["OA3"].kind == "fixed_pf_res_reduction" and acts["OA3"].size == 208.0
+    assert {a.kind for a in acts.values()} == {"line_energization", "interchange_reduction", "fixed_pf_res_reduction"}
+    assert all(a.description and a.justification for a in acts.values())
+
+
+def test_regularize_improper_ieeest_only_touches_improper_f2():
+    st = SimpleNamespace(
+        n=3, idx=_V(["P1", "P2", "P3"]),
+        A1=_V([1.0, 1.0, 0.0]), A2=_V([0.01, 0.01, 0.0]),
+        A3=_V([0.0, 0.2, 0.0]), A4=_V([0.0, 0.01, 0.0]),
+        A5=_V([1.013, 0.3, 0.0]), A6=_V([0.113, 0.02, 0.0]),
     )
-    relay = CollectorRuntime(
-        spec=spec,
-        collector_bus=1,
-        gsu_line_id="L",
-        pq_id="P",
-        main_q_shunt_id="S1",
-        fixed_pf_q_shunt_id="S2",
-    )
-
-    assert update_overvoltage_relay_timers(relay, 1.11, 0.4, 0.3) is None
-    assert update_overvoltage_relay_timers(relay, 1.06, 0.4, 0.3) is None
-    assert relay.stage_picked_up["low"] is True
-    assert update_overvoltage_relay_timers(relay, 1.04, 0.4, 0.3) is None
-    assert relay.stage_picked_up["low"] is False
+    system = SimpleNamespace(is_setup=False, IEEEST=st)
+    changes = regularize_improper_ieeest(system)
+    assert [c["idx"] for c in changes] == ["P1"]
+    assert st.A3.v[0] == pytest.approx(2e-3) and st.A4.v[0] == pytest.approx(1e-6)
+    assert st.A3.v[1] == 0.2 and st.A3.v[2] == 0.0
+    with pytest.raises(RuntimeError):
+        regularize_improper_ieeest(SimpleNamespace(is_setup=True, IEEEST=st))
 
 
-def test_affected_area_selector_is_deterministic_on_synthetic_grid():
+def test_components_union_find():
+    comps = _components([1, 2, 3, 4, 5], [(1, 2), (2, 3), (4, 5)])
+    assert [sorted(c) for c in comps] == [[1, 2, 3], [4, 5]]
+
+
+def test_affected_area_cut_set_is_complete_and_fragments_stay_outside():
     system = SimpleNamespace(
-        config=SimpleNamespace(mva=100.0),
-        Line=_model(
-            idx=["L12", "L23", "L34", "L35", "L45"],
-            bus1=[1, 2, 3, 3, 4],
-            bus2=[2, 3, 4, 5, 5],
-            u=[1, 1, 1, 1, 1],
-            r=[0.01, 0.02, 0.03, 0.01, 0.04],
-            x=[0.20, 0.10, 0.05, 0.07, 0.04],
-        ),
-        GENROU=_model(
-            idx=["G2", "G3", "G4"],
-            bus=[2, 3, 4],
-            Sn=[50.0, 200.0, 150.0],
-        ),
-        PQ=_model(
-            idx=["P2", "P3", "P5"],
-            bus=[2, 3, 5],
-            p0=[1.0, 2.0, 3.0],
-        ),
-        PV=_model(
-            idx=["V2", "V3", "V4"],
-            bus=[2, 3, 4],
-            p0=[0.5, 1.0, 1.5],
-        ),
+        Bus=_model(idx=[1, 2, 3, 4, 5, 6], area=[1, 1, 1, 2, 2, 1]),
+        Line=_model(idx=["a", "b", "c", "d", "e", "f"], bus1=[1, 2, 3, 3, 4, 5], bus2=[2, 3, 1, 4, 5, 6],
+                    u=[1, 1, 1, 1, 1, 1]),
     )
-    cfg = ReplicationConfig(
-        area_seed_buses=(1,),
-        area_bfs_radius=2,
-        area_max_radius=3,
-        area_min_genrou=2,
-        area_min_loads=2,
-        area_min_boundary_lines=1,
-    )
-
-    first = select_affected_area(system, cfg)
-    second = select_affected_area(system, cfg)
-
-    assert first.affected_buses == second.affected_buses
-    assert first.boundary_line_ids == second.boundary_line_ids
-    assert first.protected_genrou_ids == ["G3", "G2"]
-    assert first.selected_load_ids == ["P3", "P2"]
+    area = select_affected_area(system, 1)
+    assert area.buses == {1, 2, 3}
+    assert area.fragments_moved_out == [6]
+    assert area.cut_branch_ids == ["d"]
+    assert area.rest_buses == {4, 5, 6}
 
 
-def test_unpinned_report_collectors_are_assigned_to_high_voltage_buses():
+def test_affected_area_rejects_incomplete_cut():
     system = SimpleNamespace(
-        config=SimpleNamespace(mva=100.0),
-        Bus=_model(idx=[1, 2, 3, 4, 5], Vn=[500.0, 13.8, 230.0, 13.8, 500.0]),
-        Line=_model(
-            idx=["L12", "L23", "L34", "L45"],
-            bus1=[1, 2, 3, 4],
-            bus2=[2, 3, 4, 5],
-            u=[1, 1, 1, 1],
-            r=[0.01, 0.02, 0.03, 0.04],
-            x=[0.20, 0.10, 0.05, 0.04],
-        ),
-        GENROU=_model(idx=["G2", "G4"], bus=[2, 4], Sn=[300.0, 250.0]),
-        PQ=_model(idx=["P3"], bus=[3], p0=[1.0]),
-        PV=_model(idx=[], bus=[], p0=[]),
+        Bus=_model(idx=[1, 2, 3, 4, 5], area=[1, 1, 2, 2, 3]),
+        Line=_model(idx=["a", "b", "c", "d"], bus1=[1, 2, 3, 1], bus2=[2, 3, 4, 5], u=[1, 1, 1, 1]),
     )
-    cfg = ReplicationConfig(
-        area_seed_buses=(1,),
-        area_bfs_radius=4,
-        area_max_radius=4,
-        area_min_genrou=1,
-        area_min_loads=0,
-        area_min_boundary_lines=0,
-        collector_specs=(
-            ReplicationConfig().collector_specs[0],
-            ReplicationConfig().collector_specs[6],
-        ),
-    )
-
-    area = select_affected_area(system, cfg)
-    resolved = resolve_collector_specs(system, cfg, area)
-
-    assert resolved[1].transmission_bus in {3, 5}
+    with pytest.raises(RuntimeError):
+        select_affected_area(system, 1)
 
 
-def test_island_snapshot_accounting_is_deterministic():
+def test_water_fill_capped_respects_floor_cap_and_target():
+    from pa_dvsa.replication.activsg2000_engine import water_fill_capped
+
+    p0 = np.array([1.0, 2.0, 4.0])
+    floor = np.array([0.5, 0.2, 0.2])
+    cap = np.array([1.2, 2.5, 4.4])
+    k, p = water_fill_capped(p0, floor, cap, 6.0)
+    assert p.sum() == pytest.approx(6.0, abs=1e-9)
+    assert np.all(p >= floor - 1e-12) and np.all(p <= cap + 1e-12)
+    k, p = water_fill_capped(p0, floor, cap, 7.9)
+    assert p[2] == pytest.approx(4.4) and p.sum() == pytest.approx(7.9, abs=1e-9) and k > 1.0
+    with pytest.raises(RuntimeError):
+        water_fill_capped(p0, floor, cap, 9.0)
+    with pytest.raises(RuntimeError):
+        water_fill_capped(p0, floor, cap, 0.5)
+
+
+def test_decommitment_order_and_stop_rule():
+    from pa_dvsa.replication.activsg2000_engine import AffectedArea, decommit_area_units
+
     system = SimpleNamespace(
-        config=SimpleNamespace(mva=100.0),
-        Bus=_model(idx=[1, 2, 3, 4], v=[1.02, 1.01, 0.88, 0.91]),
-        Line=_model(
-            idx=["L12", "L23", "L34"],
-            bus1=[1, 2, 3],
-            bus2=[2, 3, 4],
-            u=[1, 1, 1],
-        ),
-        GENROU=_model(
-            idx=["G1", "G4"],
-            bus=[1, 4],
-            u=[1, 1],
-            Sn=[100.0, 120.0],
-            Pe=[0.5, 0.7],
-            omega=[1.0, 0.98],
-            delta=[0.0, 0.2],
-            M=[4.0, 6.0],
-        ),
-        PV=_model(idx=["PV3"], bus=[3], u=[1], p0=[0.2]),
-        PQ=_model(idx=["L3"], bus=[3], u=[1], p0=[0.3], q0=[0.1]),
-        Shunt=_model(idx=["SH3"], bus=[3], u=[1], b=[-0.05]),
+        GENROU=_model(idx=["G1", "G2", "G3", "G4", "G5"], gen=["P1", "P2", "P3", "P4", "SL"],
+                      bus=[1, 2, 3, 4, 5], u=[1.0, 1.0, 1.0, 1.0, 1.0], Sn=[50.0, 50.0, 300.0, 100.0, 10.0]),
+        PV=_model(idx=["P1", "P2", "P3", "P4"], u=[1.0, 1.0, 1.0, 1.0]),
+        Slack=_model(idx=["SL"]),
     )
+    area = AffectedArea(1, {1, 2, 3, 4, 5}, [], [], [], set())
+    info = decommit_area_units(system, area, 2.0, 150.0)
+    removed = [r["genrou"] for r in info["decommitted"]]
+    assert removed[:3] == ["G1", "G2", "G4"]
+    assert "G5" not in removed
+    online = sum(sn for sn, u in zip(system.GENROU.Sn.v, system.GENROU.u.v) if u > 0.5)
+    assert online <= 300.0
+    assert all(system.PV.u.v[["P1", "P2", "P3", "P4"].index(r["genrou"].replace("G", "P"))] == 0.0
+               for r in info["decommitted"])
 
-    islands = compute_island_snapshots(
-        system,
-        collectors=[],
-        affected_buses={3, 4},
-        ignored_line_ids={"L23"},
-        nominal_frequency_hz=50.0,
+
+def test_plant_ov_modes():
+    from pa_dvsa.replication.activsg2000_engine import plant_ov_stages
+
+    fast = plant_ov_stages("fast")
+    assert [(s.pickup, s.delay_s) for s in fast] == [(1.10, 0.05)]
+    std = plant_ov_stages("standard")
+    assert [(s.name, s.pickup, s.delay_s) for s in std] == [("OV1", 1.10, 1.0), ("OV2", 1.20, 0.16)]
+    names = {s.name for s in ReplicaConfig(plant_ov_mode="fast").plant_stages()}
+    assert "OVF" in names and "OV1" not in names and {"UV1", "UF", "OF"} <= names
+    with pytest.raises(ValueError):
+        plant_ov_stages("slow")
+
+
+def test_trip_classification_from_counterfactuals():
+    from pa_dvsa.replication.commitment_study import classify
+
+    base = {"block_trip_sequence": [
+        {"block": "A", "t": 2.0, "v_pu": 1.1, "p_mw": 100.0, "lost_q_absorption_mvar": 30.0},
+        {"block": "B", "t": 3.0, "v_pu": 1.1, "p_mw": 50.0, "lost_q_absorption_mvar": 10.0},
+        {"block": "C", "t": 4.0, "v_pu": 1.1, "p_mw": 20.0, "lost_q_absorption_mvar": 5.0}]}
+    cf = {"block_trip_sequence": [{"block": "A", "t": 2.0}, {"block": "B", "t": 3.4}]}
+    npr = {"per_block": {"A": {"shadow_standard_operate_s": 2.0}, "B": {"shadow_standard_operate_s": None},
+                         "C": {"shadow_standard_operate_s": None}}}
+    cls = {c["block"]: c["class"] for c in classify(base, cf, npr, "standard")}
+    assert cls == {"A": "action-driven", "B": "propagated (MW loss)", "C": "propagated (absorption loss)"}
+
+
+def test_iberian_options_default_to_the_committed_replica():
+    cfg = ReplicaConfig()
+    assert cfg.tie_impedance_scale == 1.0
+    assert cfg.export_reduction_mw == 0.0
+    assert cfg.exciter_completion == "none"
+    assert cfg.initiating_block is None
+
+
+def test_sequence_options_default_to_the_committed_replica():
+    cfg = ReplicaConfig()
+    assert cfg.initial_mesh_closed == 0
+    assert cfg.extra_plant_stages == ()
+    assert cfg.area_q_control_tc_s == 0.0
+    assert cfg.area_ehv_shunt_mvar == 0.0
+    assert cfg.area_uel_tc_s == 0.0
+
+
+def test_cut_set_scaling_changes_only_series_impedance_of_the_cut_set():
+    from pa_dvsa.replication.activsg2000_engine import AffectedArea, scale_cut_set_impedance
+
+    line = SimpleNamespace(x=_V([0.1, 0.2, 0.3]), r=_V([0.01, 0.02, 0.03]), b=_V([0.5, 0.6, 0.7]))
+    line.x.v = list(line.x.v)
+    line.r.v = list(line.r.v)
+    system = SimpleNamespace(Line=line)
+    area = AffectedArea(1, {1}, [], ["b"], [1], set())
+    assert scale_cut_set_impedance(system, area, 10.0) == 1
+    assert line.x.v == pytest.approx([0.1, 2.0, 0.3]) and line.r.v == pytest.approx([0.01, 0.2, 0.03])
+    assert list(line.b.v) == pytest.approx([0.5, 0.6, 0.7])
+    assert scale_cut_set_impedance(system, area, 1.0) == 0
+    with pytest.raises(ValueError):
+        scale_cut_set_impedance(system, area, 0.0)
+
+
+def test_exciter_completion_uses_the_case_generic_sexs_set():
+    from pa_dvsa.replication.activsg2000_engine import GENERIC_SEXS, complete_exciters
+
+    added = []
+    system = SimpleNamespace(
+        GENROU=_model(idx=["G1", "G2"], gen=["P1", "P2"], bus=[1, 2], u=[1.0, 0.0]),
+        SEXS=_model(idx=["E1"], syn=["G1"], u=[1.0]),
+        add=lambda model, params: added.append((model, params)),
     )
-
-    assert [sorted(island.buses) for island in islands] == [[1, 2], [3, 4]]
-    affected = islands[1]
-    assert affected.island_id == "I002"
-    assert affected.affected_bus_count == 2
-    assert affected.online_genrou_ids == ("G4",)
-    assert affected.online_pv_ids == ("PV3",)
-    assert affected.online_load_ids == ("L3",)
-    assert affected.generation_mw == pytest.approx(90.0)
-    assert affected.load_mw == pytest.approx(30.0)
-    assert affected.q_absorption_mvar == pytest.approx(5.0)
-    assert affected.vmin_pu == pytest.approx(0.88)
-    assert affected.frequency_hz == pytest.approx(49.0)
-    assert affected.has_voltage_reference is True
+    assert complete_exciters(system, "none")["added"] == 0 and not added
+    info = complete_exciters(system, "all")
+    assert info["added"] == 1
+    model, params = added[0]
+    assert model == "SEXS" and params["syn"] == "G2"
+    assert {k: params[k] for k in GENERIC_SEXS} == GENERIC_SEXS
+    with pytest.raises(ValueError):
+        complete_exciters(system, "some")
 
 
-def test_generated_activsg2000_replication_chronology():
-    events_path = Path("results/activsg2000_iberian_replication/events.json")
-    summary_path = Path("results/activsg2000_iberian_replication/summary.json")
-    island_path = Path("results/activsg2000_iberian_replication/island_traces.csv")
-    deenergized_path = Path("results/activsg2000_iberian_replication/deenergized_assets.csv")
-    sequence_path = Path("results/activsg2000_iberian_replication/blackout_sequence.json")
-    if not events_path.exists() or not summary_path.exists():
-        pytest.skip("ACTIVSg2000 replication artifacts have not been generated.")
+def test_scrx_completion_reparameterizes_andes_default_sexs_and_completes_the_rest():
+    from pa_dvsa.replication.activsg2000_engine import GENERIC_SEXS, SCRX_SEXS, complete_exciters
 
-    events = json.loads(events_path.read_text())
-    summary = json.loads(summary_path.read_text())
-    if "deenergized_island_count" not in summary:
-        pytest.skip("ACTIVSg2000 replication artifacts predate the island blackout engine.")
-    first_trip = summary["first_trip_time_s"]
-    last_operator_action = max(
-        event["time_s"] for event in events if event["category"] == "operator_action"
+    added = []
+    sexs = SimpleNamespace(n=2, idx=_V(["E1", "E2"]), syn=_V(["G1", "G2"]), u=_V([1.0, 1.0]),
+                           **{p: SimpleNamespace(v=[GENERIC_SEXS[p], GENERIC_SEXS[p] * 2.0]) for p in GENERIC_SEXS})
+    system = SimpleNamespace(
+        GENROU=_model(idx=["G1", "G2", "G3"], gen=["P1", "P2", "P3"], bus=[1, 2, 3], u=[1.0, 1.0, 1.0]),
+        SEXS=sexs,
+        add=lambda model, params: added.append((model, params)),
     )
+    info = complete_exciters(system, "all_scrx")
+    assert info["reparameterized_converted_sexs"] == 1
+    assert {p: sexs.__dict__[p].v[0] for p in SCRX_SEXS} == SCRX_SEXS
+    assert sexs.K.v[1] == GENERIC_SEXS["K"] * 2.0
+    assert info["added"] == 1 and added[0][1]["syn"] == "G3"
+    assert {k: added[0][1][k] for k in SCRX_SEXS} == SCRX_SEXS
 
-    assert summary["equivalent_blackout_enabled"] is False
-    assert summary["automatic_blackout_actions"] == 0
-    assert summary["blackout_detected"] is True
-    assert summary["collector_count"] >= 16
-    assert summary["collector_trips"] >= 6
-    assert summary["hvdc_blocks"] == 1
-    assert summary["morocco_ac_trip_events"] == 1
-    assert summary["tie_line_separation_events"] == 1
-    assert summary["generator_protection_events"] == 1
-    assert summary["defense_actions"] >= 1
-    assert summary["deenergized_island_count"] >= 1
-    assert summary["island_blackout_events"] >= 1
-    assert summary["deenergized_asset_count"] > 0
-    assert island_path.exists() and island_path.stat().st_size > 0
-    assert deenergized_path.exists() and deenergized_path.stat().st_size > 0
-    assert sequence_path.exists() and sequence_path.stat().st_size > 0
-    assert all(
-        event["time_s"] < first_trip
-        for event in events
-        if event["category"] == "operator_action"
-    )
-    assert first_trip > last_operator_action + 1.0
-    categories = [event["category"] for event in events]
-    assert categories.index("generator_trip") > categories.index("protection_trip")
-    assert categories.index("defense_action") > categories.index("generator_trip")
-    assert categories.index("morocco_ac_trip") > categories.index("defense_action")
-    assert categories.index("out_of_step_trip") > categories.index("morocco_ac_trip")
-    assert categories.index("hvdc_block") > categories.index("out_of_step_trip")
-    assert categories.index("island_blackout_declared") > categories.index("hvdc_block")
-    assert categories.index("system_blackout_declared") > categories.index("island_blackout_declared")
-    assert categories[-1] == "system_blackout_declared"
+
+def test_load_models_are_valid_zip_mixes():
+    from pa_dvsa.replication.activsg2000_engine import LOAD_MODELS
+
+    for mix in LOAD_MODELS.values():
+        assert mix["p2p"] + mix["p2i"] + mix["p2z"] == pytest.approx(1.0)
+        assert mix["q2q"] + mix["q2i"] + mix["q2z"] == pytest.approx(1.0)
+    assert LOAD_MODELS["z"]["p2z"] == 1.0

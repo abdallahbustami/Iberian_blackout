@@ -1,3 +1,5 @@
+"""Tests of the data classes."""
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -34,7 +36,6 @@ from pa_dvsa.data_model import (
     Interval,
     LimiterStateSpec,
     LimiterStatus,
-    LocationSpec,
     MitigationResult,
     ModeState,
     ParameterBound,

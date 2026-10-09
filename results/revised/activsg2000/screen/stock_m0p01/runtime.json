@@ -1,0 +1,15 @@
+{
+  "slug": "stock_m0p01",
+  "armed_build_s": 121.49267466600577,
+  "factory_build_s": 1.4270752079901285,
+  "engine_baseline_s": 0.007882500009145588,
+  "pre_mode_s": 7.690953416982666,
+  "screen_events_total_s": 98.4894161663251,
+  "screen_event_median_s": 2.550513292022515,
+  "n_events": 53,
+  "jump_checks_s": 112.2880934170098,
+  "tds_fast_n": 53,
+  "tds_fast_total_s": 906.7477138329996,
+  "tds_fast_median_s": 16.9237965830107,
+  "tds_over_screen_fast": 9.20654979111379
+}

@@ -1,0 +1,428 @@
+{
+ "label": "final_fast",
+ "kwargs": {
+  "tie_scale": 15.0,
+  "voltage_control": "q_control",
+  "q_control_tc_s": 10.0,
+  "ehv_surplus_mvar": 1600.0,
+  "uel_tc_s": 1.0,
+  "load_model": "es",
+  "embedded_pv_share": 0.15,
+  "tap_margin_pu": 0.01,
+  "actions": {
+   "res_reduction_mw": 708.0,
+   "net_load_mw": 0.0
+  },
+  "plant_ov_mode": "fast"
+ },
+ "record": {
+  "area_load_mw": 11444.966820000001,
+  "res_share": 0.45,
+  "fleet_blocks": 26,
+  "fleet_mw": 5446.0,
+  "commitment_c": 1.5,
+  "export_target_mw": 870.0,
+  "export_reduction_mw": 3300.5,
+  "export_base_case_mw": 860.3010227111514,
+  "tie_scale": 15.0,
+  "exciter_completion": "all",
+  "export_counterpart": "rest_load",
+  "pre_cascade_actions": [
+   "OA1a",
+   "OA1b",
+   "OA3"
+  ],
+  "initiating_block": null,
+  "initiating_time_s": 15.0,
+  "voltage_control": "q_control",
+  "q_control_tc_s": 10.0,
+  "tap_margin_pu": 0.01,
+  "initial_mesh_closed": 2,
+  "granada_instantaneous": true,
+  "documented_settings": false,
+  "actions": [
+   "RES500"
+  ],
+  "tf_s": 100.0,
+  "ehv_surplus_mvar": 1600.0,
+  "uel_tc_s": 1.0
+ },
+ "tds_ok": false,
+ "final_time_s": 16.9837427224754,
+ "stopped_reason": null,
+ "gsu_tap": 0.92732,
+ "block_trips": 26,
+ "lost_block_p_mw": 5252.670797941886,
+ "generator_trips": 10,
+ "ufls_stages_operated": 6,
+ "ufls_shed_mw": 6546.600946288789,
+ "separation": true,
+ "separation_time_s": 16.485436803,
+ "affected_area_collapse": false,
+ "blackout_emerged": false,
+ "max_collector_v_pu": 1.1446094844096235,
+ "area_net_export_t0_mw": 860.170371314133,
+ "timeline": [
+  [
+   0.0,
+   "operator_action",
+   "RES500"
+  ],
+  [
+   14.23,
+   "plant_trip",
+   "TRIP_Seville550"
+  ],
+  [
+   14.29,
+   "plant_trip",
+   "TRIP_RES05"
+  ],
+  [
+   14.29,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   14.35,
+   "plant_trip",
+   "TRIP_RES04"
+  ],
+  [
+   14.41,
+   "plant_trip",
+   "TRIP_Badajoz582"
+  ],
+  [
+   14.41,
+   "plant_trip",
+   "TRIP_RES03"
+  ],
+  [
+   14.47,
+   "plant_trip",
+   "TRIP_Cuenca530"
+  ],
+  [
+   14.47,
+   "plant_trip",
+   "TRIP_RES09"
+  ],
+  [
+   15.863,
+   "plant_trip",
+   "TRIP_Badajoz145"
+  ],
+  [
+   15.873,
+   "plant_trip",
+   "TRIP_Cadiz128"
+  ],
+  [
+   15.873,
+   "plant_trip",
+   "TRIP_Granada355"
+  ],
+  [
+   15.893,
+   "plant_trip",
+   "TRIP_Segovia94"
+  ],
+  [
+   15.893,
+   "plant_trip",
+   "TRIP_RES07"
+  ],
+  [
+   15.903,
+   "plant_trip",
+   "TRIP_Caceres38"
+  ],
+  [
+   15.903,
+   "plant_trip",
+   "TRIP_Badajoz16"
+  ],
+  [
+   15.903,
+   "plant_trip",
+   "TRIP_Cadiz26"
+  ],
+  [
+   15.913,
+   "plant_trip",
+   "TRIP_Badajoz118"
+  ],
+  [
+   15.913,
+   "plant_trip",
+   "TRIP_RES06"
+  ],
+  [
+   15.913,
+   "plant_trip",
+   "TRIP_RES10"
+  ],
+  [
+   15.923,
+   "plant_trip",
+   "TRIP_Segovia23"
+  ],
+  [
+   15.923,
+   "plant_trip",
+   "TRIP_Huelva34"
+  ],
+  [
+   15.923,
+   "plant_trip",
+   "TRIP_Caceres41"
+  ],
+  [
+   15.923,
+   "plant_trip",
+   "TRIP_RES01"
+  ],
+  [
+   15.933,
+   "plant_trip",
+   "TRIP_Badajoz72"
+  ],
+  [
+   15.933,
+   "plant_trip",
+   "TRIP_Malaga154"
+  ],
+  [
+   15.933,
+   "plant_trip",
+   "TRIP_RES02"
+  ],
+  [
+   15.933,
+   "plant_trip",
+   "TRIP_RES08"
+  ],
+  [
+   15.963,
+   "plant_trip_other",
+   "TRIP_GNET_435"
+  ],
+  [
+   15.963,
+   "plant_trip_other",
+   "TRIP_GNET_436"
+  ],
+  [
+   15.963,
+   "plant_trip_other",
+   "TRIP_GNET_437"
+  ],
+  [
+   15.963,
+   "plant_trip_other",
+   "TRIP_GNET_438"
+  ],
+  [
+   15.963,
+   "plant_trip_other",
+   "TRIP_GNET_439"
+  ],
+  [
+   15.973,
+   "plant_trip_other",
+   "TRIP_GNET_363"
+  ],
+  [
+   15.973,
+   "plant_trip_other",
+   "TRIP_GNET_364"
+  ],
+  [
+   15.973,
+   "plant_trip_other",
+   "TRIP_GNET_365"
+  ],
+  [
+   16.093,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   16.103,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   16.113,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   16.123,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   16.133,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   16.143,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   16.153,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   16.163,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   16.173,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   16.183,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   16.193,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   16.203,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   16.213,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   16.223,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   16.233,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   16.485,
+   "out_of_step_separation",
+   "SEPARATION"
+  ],
+  [
+   16.485,
+   "numerical",
+   "RETIRE_OTHER_ISLANDS"
+  ],
+  [
+   16.654,
+   "ufls",
+   "UFLS1"
+  ],
+  [
+   16.654,
+   "ufls",
+   "UFLS2"
+  ],
+  [
+   16.654,
+   "ufls",
+   "UFLS3"
+  ],
+  [
+   16.716,
+   "ufls",
+   "UFLS4"
+  ],
+  [
+   16.79,
+   "ufls",
+   "UFLS5"
+  ],
+  [
+   16.875,
+   "ufls",
+   "UFLS6"
+  ],
+  [
+   16.917,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   16.917,
+   "generator_trip",
+   "GTRIP_GENROU_369"
+  ],
+  [
+   16.925,
+   "embedded_pv_trip",
+   "EMBEDDED_PV_TRIP"
+  ],
+  [
+   16.935,
+   "generator_trip",
+   "GTRIP_GENROU_375"
+  ],
+  [
+   16.955,
+   "generator_trip",
+   "GTRIP_GENROU_296"
+  ],
+  [
+   16.955,
+   "generator_trip",
+   "GTRIP_GENROU_321"
+  ],
+  [
+   16.955,
+   "generator_trip",
+   "GTRIP_GENROU_322"
+  ],
+  [
+   16.955,
+   "generator_trip",
+   "GTRIP_GENROU_344"
+  ],
+  [
+   16.955,
+   "generator_trip",
+   "GTRIP_GENROU_351"
+  ],
+  [
+   16.975,
+   "generator_trip",
+   "GTRIP_GENROU_349"
+  ],
+  [
+   16.975,
+   "generator_trip",
+   "GTRIP_GENROU_350"
+  ],
+  [
+   16.975,
+   "generator_trip",
+   "GTRIP_GENROU_352"
+  ],
+  [
+   16.984,
+   "tds_nonconvergence",
+   "TDS_STOP"
+  ]
+ ],
+ "wall_s": 318.24055099487305
+}

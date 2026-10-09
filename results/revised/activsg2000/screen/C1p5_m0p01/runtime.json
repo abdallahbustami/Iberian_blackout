@@ -1,0 +1,15 @@
+{
+  "slug": "C1p5_m0p01",
+  "armed_build_s": 110.27673062500253,
+  "factory_build_s": 1.528694832988549,
+  "engine_baseline_s": 0.010743040998931974,
+  "pre_mode_s": 3.5869494160288014,
+  "screen_events_total_s": 71.4104366650572,
+  "screen_event_median_s": 1.8157911670277826,
+  "n_events": 53,
+  "jump_checks_s": 109.95343483303441,
+  "tds_fast_n": 53,
+  "tds_fast_total_s": 1050.6185111660452,
+  "tds_fast_median_s": 20.39241408399539,
+  "tds_over_screen_fast": 14.712394437438546
+}

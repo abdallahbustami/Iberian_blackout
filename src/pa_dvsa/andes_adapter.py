@@ -1,10 +1,4 @@
-"""ANDES adapter for benchmark loading and model/DAE introspection.
-
-This module is the only package layer that directly imports ANDES. It keeps the
-rest of the implementation independent of ANDES internals while exposing the
-quantities needed by the paper: benchmark cases, model families, device
-ownership and status, variable addresses, and DAE Jacobian blocks.
-"""
+"""Interface to ANDES: benchmark cases, device and variable lookup, and the blocks of the DAE Jacobian."""
 
 from __future__ import annotations
 
@@ -12,7 +6,7 @@ from contextlib import contextmanager, redirect_stderr, redirect_stdout
 from dataclasses import dataclass, field
 import io
 from pathlib import Path
-from typing import Any, Iterable, Mapping, Sequence
+from typing import Any, Mapping
 
 import numpy as np
 from scipy import sparse
@@ -21,13 +15,11 @@ from .common import project_root_from
 
 
 class AndesAdapterError(RuntimeError):
-    """Raised when ANDES loading or introspection fails."""
+    pass
 
 
 @dataclass(frozen=True, slots=True)
 class ResolvedCase:
-    """Concrete case path and optional companion dynamic file."""
-
     case_id: str
     case_path: Path
     addfile_path: Path | None = None
@@ -43,8 +35,6 @@ class ResolvedCase:
 
 @dataclass(frozen=True, slots=True)
 class AndesCaseSpec:
-    """User-facing benchmark loading request."""
-
     case: str | Path
     addfile: str | Path | None = None
     setup: bool = True
@@ -58,8 +48,6 @@ class AndesCaseSpec:
 
 @dataclass(frozen=True, slots=True)
 class VariableAddress:
-    """Address of one ANDES variable for one device."""
-
     model: str
     variable: str
     device_id: str
@@ -71,8 +59,6 @@ class VariableAddress:
 
 @dataclass(frozen=True, slots=True)
 class DeviceRecord:
-    """One loaded ANDES device."""
-
     model: str
     device_id: str
     position: int
@@ -83,8 +69,6 @@ class DeviceRecord:
 
 @dataclass(frozen=True, slots=True)
 class ModelRecord:
-    """Summary of one ANDES model class in the loaded system."""
-
     name: str
     group: str
     n: int
@@ -96,8 +80,6 @@ class ModelRecord:
 
 @dataclass(frozen=True, slots=True)
 class ModelFamilyRegistry:
-    """Registry of ANDES model families present in a loaded system."""
-
     families: Mapping[str, tuple[str, ...]]
     model_to_family: Mapping[str, str]
     explicit_control_models: tuple[str, ...]
@@ -107,13 +89,13 @@ class ModelFamilyRegistry:
 
 @dataclass(frozen=True, slots=True)
 class JacobianBlocks:
-    """ANDES DAE Jacobian blocks."""
-
     fx: sparse.csc_matrix
     fy: sparse.csc_matrix
     gx: sparse.csc_matrix
     gy: sparse.csc_matrix
     tf: np.ndarray
+    x_names: tuple[str, ...] | None = None
+    y_names: tuple[str, ...] | None = None
 
     @property
     def n_states(self) -> int:
@@ -209,8 +191,8 @@ def _maybe_quiet(enabled: bool):
 
 def _import_andes():
     try:
-        import andes  # type: ignore
-    except Exception as exc:  # pragma: no cover - environment dependent.
+        import andes
+    except Exception as exc:
         raise AndesAdapterError(f"ANDES import failed: {exc}") from exc
     return andes
 
@@ -222,16 +204,6 @@ def _project_cache(project_root: Path) -> Path:
 
 
 def _repair_esdc1a_limit_references(system: Any) -> list[str]:
-    """Repair a known ANDES ESDC1A limiter-reference issue.
-
-    ANDES derives ESDC1A from ESDC2A and replaces ``VRU``/``VRL`` with
-    constant services, but the anti-windup limiter can retain references to
-    the removed ESDC2A variable services.  Those stale services are not
-    evaluated and remain scalar zero, which breaks TDS initialization for
-    ACTIVSg2000-style data.  Rewiring the limiter to the active ESDC1A limit
-    services restores the intended ``VRMAX``/``VRMIN`` limits.
-    """
-
     if not hasattr(system, "ESDC1A"):
         return []
     model = system.ESDC1A
@@ -283,8 +255,6 @@ def _resolve_path(value: str | Path, project_root: Path) -> Path:
 
 
 def resolve_case(case: str | Path, project_root: str | Path = ".") -> ResolvedCase:
-    """Resolve a stock alias, local alias, or explicit path to a case."""
-
     root = project_root_from(project_root)
     andes = _import_andes()
     case_str = str(case)
@@ -323,8 +293,6 @@ def resolve_case(case: str | Path, project_root: str | Path = ".") -> ResolvedCa
 
 
 def available_benchmarks(project_root: str | Path = ".") -> dict[str, ResolvedCase]:
-    """Return known stock and local benchmark aliases with existence flags."""
-
     aliases = list(STOCK_CASE_ALIASES) + list(LOCAL_CASE_ALIASES)
     return {alias: resolve_case(alias, project_root) for alias in aliases}
 
@@ -407,8 +375,6 @@ def _family_for_group(group: str | None) -> str:
 
 
 def _kvxopt_to_csc(matrix: Any) -> sparse.csc_matrix:
-    """Convert kvxopt/sparse-like matrices to SciPy CSC."""
-
     if sparse.issparse(matrix):
         return matrix.tocsc()
     size = getattr(matrix, "size", None)
@@ -423,8 +389,6 @@ def _kvxopt_to_csc(matrix: Any) -> sparse.csc_matrix:
 
 
 class AndesCase:
-    """Wrapper around an ANDES ``System`` with stable accessors."""
-
     def __init__(
         self,
         spec: AndesCaseSpec,
@@ -465,8 +429,6 @@ class AndesCase:
         return case
 
     def load_system(self) -> Any:
-        """Load the ANDES system according to the case spec."""
-
         if not self.resolved.exists:
             raise AndesAdapterError(f"Case path does not exist: {self.resolved}")
 
@@ -682,8 +644,6 @@ class AndesCase:
         variable_name: str,
         device_id: str | int | float,
     ) -> int:
-        """Return a dynamic-state address and verify the variable is a state."""
-
         address = self.variable_address(model_name, variable_name, device_id)
         if address.domain != "state":
             raise AndesAdapterError(
@@ -697,8 +657,6 @@ class AndesCase:
         variable_name: str,
         device_id: str | int | float,
     ) -> int:
-        """Return an algebraic variable/equation address in the DAE y/g ordering."""
-
         address = self.variable_address(model_name, variable_name, device_id)
         if address.domain != "algebraic":
             raise AndesAdapterError(
@@ -709,52 +667,9 @@ class AndesCase:
     def bus_voltage_addresses(self) -> dict[str, int]:
         return {item.device_id: item.address for item in self.variable_addresses("Bus", "v")}
 
-    def bus_angle_addresses(self) -> dict[str, int]:
-        return {item.device_id: item.address for item in self.variable_addresses("Bus", "a")}
-
-    def state_addresses(self, *, nonempty: bool = True) -> tuple[VariableAddress, ...]:
-        records: list[VariableAddress] = []
-        for model_name in self.model_names(nonempty=nonempty):
-            model = self.get_model(model_name)
-            for attr_name in dir(model):
-                if attr_name.startswith("_"):
-                    continue
-                try:
-                    variable = getattr(model, attr_name)
-                except Exception:
-                    continue
-                if _variable_domain(variable) != "state":
-                    continue
-                records.extend(self.variable_addresses(model_name, attr_name))
-        return tuple(records)
-
-    def algebraic_addresses(self, *, nonempty: bool = True) -> tuple[VariableAddress, ...]:
-        records: list[VariableAddress] = []
-        for model_name in self.model_names(nonempty=nonempty):
-            model = self.get_model(model_name)
-            for attr_name in dir(model):
-                if attr_name.startswith("_"):
-                    continue
-                try:
-                    variable = getattr(model, attr_name)
-                except Exception:
-                    continue
-                if _variable_domain(variable) != "algebraic":
-                    continue
-                records.extend(self.variable_addresses(model_name, attr_name))
-        return tuple(records)
-
-    def jacobians(self) -> JacobianBlocks:
+    def jacobians(self, *, update: bool = False) -> JacobianBlocks:
         self.setup()
-        system = self.require_system()
-        dae = system.dae
-        return JacobianBlocks(
-            fx=_kvxopt_to_csc(dae.fx),
-            fy=_kvxopt_to_csc(dae.fy),
-            gx=_kvxopt_to_csc(dae.gx),
-            gy=_kvxopt_to_csc(dae.gy),
-            tf=np.asarray(getattr(dae, "Tf", np.array([])), dtype=float).reshape(-1),
-        )
+        return system_jacobians(self.require_system(), update=update)
 
     def summary(self) -> dict[str, Any]:
         system = self.require_system()
@@ -774,3 +689,34 @@ class AndesCase:
             "dae_m": int(getattr(system.dae, "m", 0)),
             "families": {key: len(value) for key, value in registry.families.items()},
         }
+
+
+def system_jacobians(system: Any, *, update: bool = False, corrected: bool = True) -> JacobianBlocks:
+    if update:
+        system.TDS.fg_update(system.exist.pflow_tds)
+        system.j_update(models=system.exist.pflow_tds)
+    dae = system.dae
+    x_names = tuple(str(item) for item in getattr(dae, "x_name", ()) or ())
+    y_names = tuple(str(item) for item in getattr(dae, "y_name", ()) or ())
+    n = int(getattr(dae, "n", 0))
+    m = int(getattr(dae, "m", 0))
+    blocks = {
+        "fx": _kvxopt_to_csc(dae.fx),
+        "fy": _kvxopt_to_csc(dae.fy),
+        "gx": _kvxopt_to_csc(dae.gx),
+        "gy": _kvxopt_to_csc(dae.gy),
+    }
+    tds = getattr(system, "TDS", None)
+    if corrected and tds is not None and getattr(tds, "initialized", False):
+        from .jacobian_corrections import apply_corrections
+
+        blocks = apply_corrections(system, blocks)
+    return JacobianBlocks(
+        fx=blocks["fx"],
+        fy=blocks["fy"],
+        gx=blocks["gx"],
+        gy=blocks["gy"],
+        tf=np.asarray(getattr(dae, "Tf", np.array([])), dtype=float).reshape(-1),
+        x_names=x_names if len(x_names) == n else None,
+        y_names=y_names if len(y_names) == m else None,
+    )

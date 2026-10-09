@@ -1,0 +1,2 @@
+seed_id,control_id,control_class,alpha
+fixed_pf_ramp:RES07,plant_q_command:RES07,plant_q_command,0.6202007031398957

@@ -1,0 +1,2 @@
+slug,armed_build_s,factory_build_s,engine_baseline_s,pre_mode_s,screen_events_total_s,screen_event_median_s,n_events,jump_checks_s,tds_fast_n,tds_fast_total_s,tds_fast_median_s,tds_over_screen_fast,tds_ov1_n,tds_ov1_total_s,tds_ov1_median_s,tds_over_screen_ov1
+sequence_k15_m0p01,46.03793837502599,2.83607837499585,0.022847832995466888,5.667847082950175,211.5722010859172,3.991878895991249,74,,74,4713.260554629145,31.11559306300478,22.277314932858978,74,11148.420717919013,92.61295943701407,52.69322085178742

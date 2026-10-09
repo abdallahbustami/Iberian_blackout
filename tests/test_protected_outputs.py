@@ -1,3 +1,5 @@
+"""Tests of the relay voltages and margins."""
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -154,4 +156,3 @@ class ProtectedOutputTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-

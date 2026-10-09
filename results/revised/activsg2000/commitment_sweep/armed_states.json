@@ -1,0 +1,733 @@
+[
+  {
+    "level": "stock",
+    "ok": true,
+    "margin_pu": 0.01,
+    "wall_s": 131.6606011390686,
+    "oa1_circuits": {
+      "PAR_Line_2154": {
+        "u": 1.0,
+        "ghk": 9.447415540837037,
+        "bhk": -114.96424662608611,
+        "series_admittance_ok": true
+      },
+      "PAR_Line_1848": {
+        "u": 1.0,
+        "ghk": 9.645985734451974,
+        "bhk": -116.15790550755867,
+        "series_admittance_ok": true
+      }
+    },
+    "polish": {
+      "iterations": 9,
+      "max_abs_f": 4.4940939858406637e-11,
+      "max_abs_g": 3.2711611197555612e-12,
+      "residual_history": [
+        8.372813884073813e-08,
+        2.8775417361634922e-08,
+        4.47277721526973e-08,
+        2.1324462196048444e-08,
+        8.240956805849464e-09,
+        2.855252034805744e-09,
+        1.0450889043056577e-09,
+        3.587539154636943e-10,
+        1.3090684092276206e-10,
+        4.4940939858406637e-11
+      ],
+      "final_h": 1000000.0,
+      "converged": true,
+      "frozen_variables": 2820,
+      "note": "residuals over variables of in-service devices (out-of-service devices are decoupled)",
+      "secondary_control_mw": 0.0003934178155502641
+    },
+    "stage1": {
+      "iterations": 47,
+      "max_abs_f": 8.372813884073813e-08,
+      "max_abs_g": 2.7417419445896486e-10,
+      "residual_history": [
+        2.147845632686494e-06,
+        1.599018851647232e-06,
+        1.1905610034749515e-06,
+        8.864451829285478e-07,
+        6.600102906269308e-07,
+        4.914160330663463e-07,
+        3.658878411436515e-07,
+        2.724247822954914e-07,
+        2.025316226389543e-07,
+        1.5086911912581458e-07,
+        1.1239532066714286e-07,
+        8.372813884073813e-08
+      ],
+      "final_h": 20.0,
+      "converged": true,
+      "frozen_variables": 2820,
+      "note": "residuals over variables of in-service devices (out-of-service devices are decoupled)",
+      "secondary_control_mw": 238.13249353006097
+    },
+    "agc_reset": {
+      "governors": 52,
+      "max_abs_pref_shift_pu": 0.0358733450350157,
+      "sum_pref_shift_mw": 50.45444829118648,
+      "participants": "in-service TGOV1 of machines with an in-service exciter"
+    },
+    "max_abs_dxdt_recheck": 6.129763363560414e-11,
+    "worst_state": "LL_x TGOV1 194",
+    "max_abs_dxdt_incl_out_of_service": 6.129763363560414e-11,
+    "worst_state_incl_out_of_service": "LL_x TGOV1 194",
+    "plateau_max_abs_dv_pu": 0.00037161648741124154,
+    "equilibrium_omega_range_pu": [
+      1.0,
+      1.0
+    ],
+    "plateau_omega_range_pu": [
+      0.9998212843243185,
+      0.9998502220291806
+    ],
+    "plateau_max_abs_dxdt": 0.07791211498802397,
+    "plateau_max_abs_dxdt_state": "LL_x TGOV1 168",
+    "protected_v_equilibrium_pu": {
+      "Granada355": 1.063635531597579,
+      "Badajoz582": 1.1000727865441995,
+      "Badajoz145": 1.098030440144488,
+      "Segovia23": 1.0719487239013572,
+      "Seville550": 1.0769116389439155,
+      "Segovia94": 1.0941081649477782,
+      "Badajoz118": 1.0702150191747368,
+      "Huelva34": 1.0689149258353114,
+      "Caceres38": 1.075718540921538,
+      "Badajoz72": 1.068489973591745,
+      "Badajoz16": 1.0724464609652846,
+      "Caceres41": 1.075222446849655,
+      "Cadiz26": 1.081910587952954,
+      "Cadiz128": 1.0893097742166062,
+      "Malaga154": 1.075532156458215,
+      "Cuenca530": 1.0770509015515397
+    },
+    "protected_v_plateau_pu": {
+      "Granada355": 1.0634160483330894,
+      "Badajoz582": 1.0997011700567882,
+      "Badajoz145": 1.097802175077309,
+      "Segovia23": 1.0718094127125632,
+      "Seville550": 1.0765865038443343,
+      "Segovia94": 1.0939267192941815,
+      "Badajoz118": 1.0701474602784922,
+      "Huelva34": 1.0688864595171188,
+      "Caceres38": 1.0754558249398092,
+      "Badajoz72": 1.0685549386640174,
+      "Badajoz16": 1.0722878431092995,
+      "Caceres41": 1.0749660741988198,
+      "Cadiz26": 1.0817605771526888,
+      "Cadiz128": 1.0891222944121224,
+      "Malaga154": 1.0753661038595064,
+      "Cuenca530": 1.0768140045475239
+    },
+    "protected_v_powerflow_armed_pu": {
+      "Granada355": 1.0606841191436664,
+      "Badajoz582": 1.0923035496283025,
+      "Badajoz145": 1.0908536064878485,
+      "Segovia23": 1.0695263534228532,
+      "Seville550": 1.072843205516529,
+      "Segovia94": 1.0880149434846504,
+      "Badajoz118": 1.068084222018303,
+      "Huelva34": 1.0671516078663166,
+      "Caceres38": 1.07209716510705,
+      "Badajoz72": 1.0672049035860451,
+      "Badajoz16": 1.0698216243687138,
+      "Caceres41": 1.0716834763616938,
+      "Cadiz26": 1.0760599850560684,
+      "Cadiz128": 1.0827175573340482,
+      "Malaga154": 1.0698663222308662,
+      "Cuenca530": 1.0744697858326533
+    },
+    "max_protected_v_equilibrium_pu": 1.1000727865441995,
+    "max_protected_v_powerflow_armed_pu": 1.0923035496283025,
+    "blocks_at_or_above_ov1_pickup": [
+      "Badajoz582"
+    ],
+    "n_events": 53
+  },
+  {
+    "level": "stock",
+    "ok": true,
+    "margin_pu": 0.02,
+    "wall_s": 131.49579691886902,
+    "oa1_circuits": {
+      "PAR_Line_2154": {
+        "u": 1.0,
+        "ghk": 9.447415540837037,
+        "bhk": -114.96424662608611,
+        "series_admittance_ok": true
+      },
+      "PAR_Line_1848": {
+        "u": 1.0,
+        "ghk": 9.645985734451974,
+        "bhk": -116.15790550755867,
+        "series_admittance_ok": true
+      }
+    },
+    "polish": {
+      "iterations": 9,
+      "max_abs_f": 4.497469063835524e-11,
+      "max_abs_g": 3.2871483313101635e-12,
+      "residual_history": [
+        8.379820314312614e-08,
+        2.8799148818895373e-08,
+        4.476450321533321e-08,
+        2.1341716394118748e-08,
+        8.247731386745727e-09,
+        2.857568848213532e-09,
+        1.046005948523998e-09,
+        3.5903324757668997e-10,
+        1.3100054374604042e-10,
+        4.497469063835524e-11
+      ],
+      "final_h": 1000000.0,
+      "converged": true,
+      "frozen_variables": 2820,
+      "note": "residuals over variables of in-service devices (out-of-service devices are decoupled)",
+      "secondary_control_mw": 0.0003937409987940522
+    },
+    "stage1": {
+      "iterations": 47,
+      "max_abs_f": 8.379820314312614e-08,
+      "max_abs_g": 2.7441329208954814e-10,
+      "residual_history": [
+        2.149735317984293e-06,
+        1.6004194261698184e-06,
+        1.1915991605576468e-06,
+        8.872147183310004e-07,
+        6.605806826896212e-07,
+        4.918388045827268e-07,
+        3.662012052009866e-07,
+        2.726569487741929e-07,
+        2.027034768955882e-07,
+        1.509965658407318e-07,
+        1.124898279519649e-07,
+        8.379820314312614e-08
+      ],
+      "final_h": 20.0,
+      "converged": true,
+      "frozen_variables": 2820,
+      "note": "residuals over variables of in-service devices (out-of-service devices are decoupled)",
+      "secondary_control_mw": 238.36835144139218
+    },
+    "agc_reset": {
+      "governors": 52,
+      "max_abs_pref_shift_pu": 0.03591474197260883,
+      "sum_pref_shift_mw": 50.5140432168792,
+      "participants": "in-service TGOV1 of machines with an in-service exciter"
+    },
+    "max_abs_dxdt_recheck": 6.137756969337715e-11,
+    "worst_state": "LL_x TGOV1 194",
+    "max_abs_dxdt_incl_out_of_service": 6.137756969337715e-11,
+    "worst_state_incl_out_of_service": "LL_x TGOV1 194",
+    "plateau_max_abs_dv_pu": 0.0003682679328000926,
+    "equilibrium_omega_range_pu": [
+      1.0,
+      1.0
+    ],
+    "plateau_omega_range_pu": [
+      0.9998210829777275,
+      0.9998500350209968
+    ],
+    "plateau_max_abs_dxdt": 0.07791651431477042,
+    "plateau_max_abs_dxdt_state": "LL_x TGOV1 168",
+    "protected_v_equilibrium_pu": {
+      "Granada355": 1.053464699256213,
+      "Badajoz582": 1.090063703886636,
+      "Badajoz145": 1.0880568868239953,
+      "Segovia23": 1.0619801657727053,
+      "Seville550": 1.0668835642898125,
+      "Segovia94": 1.0840375919451033,
+      "Badajoz118": 1.0602460913524003,
+      "Huelva34": 1.058971913193077,
+      "Caceres38": 1.06569771150601,
+      "Badajoz72": 1.0585960640116465,
+      "Badajoz16": 1.0624684745694026,
+      "Caceres41": 1.065207022976663,
+      "Cadiz26": 1.071917126604447,
+      "Cadiz128": 1.0792699407484312,
+      "Malaga154": 1.0655841725418562,
+      "Cuenca530": 1.0670227107579706
+    },
+    "protected_v_plateau_pu": {
+      "Granada355": 1.0532465606429793,
+      "Badajoz582": 1.089695435953836,
+      "Badajoz145": 1.0878306105159548,
+      "Segovia23": 1.0618416267356956,
+      "Seville550": 1.0665605574515789,
+      "Segovia94": 1.0838576404574745,
+      "Badajoz118": 1.060178812903649,
+      "Huelva34": 1.058943442376049,
+      "Caceres38": 1.065436664328553,
+      "Badajoz72": 1.0586603557197172,
+      "Badajoz16": 1.0623107741209465,
+      "Caceres41": 1.064952272623833,
+      "Cadiz26": 1.0717682224874623,
+      "Cadiz128": 1.0790839544369817,
+      "Malaga154": 1.065419311544633,
+      "Cuenca530": 1.0667873412992364
+    },
+    "protected_v_powerflow_armed_pu": {
+      "Granada355": 1.0505632798017521,
+      "Badajoz582": 1.0823503394856118,
+      "Badajoz145": 1.0809254320051485,
+      "Segovia23": 1.0595824608488462,
+      "Seville550": 1.0628522129753775,
+      "Segovia94": 1.0779813336988224,
+      "Badajoz118": 1.0581493214546376,
+      "Huelva34": 1.057235164869674,
+      "Caceres38": 1.0621101353694944,
+      "Badajoz72": 1.0573238437182344,
+      "Badajoz16": 1.059871514430598,
+      "Caceres41": 1.0617013029847866,
+      "Cadiz26": 1.0660904135965892,
+      "Cadiz128": 1.0727116204155254,
+      "Malaga154": 1.0599365709702964,
+      "Cuenca530": 1.064481014430159
+    },
+    "max_protected_v_equilibrium_pu": 1.090063703886636,
+    "max_protected_v_powerflow_armed_pu": 1.0823503394856118,
+    "blocks_at_or_above_ov1_pickup": [],
+    "n_events": 53
+  },
+  {
+    "level": "C2.0",
+    "ok": true,
+    "margin_pu": 0.01,
+    "wall_s": 131.2336940765381,
+    "oa1_circuits": {
+      "PAR_Line_2154": {
+        "u": 1.0,
+        "ghk": 9.447415540837037,
+        "bhk": -114.96424662608611,
+        "series_admittance_ok": true
+      },
+      "PAR_Line_1848": {
+        "u": 1.0,
+        "ghk": 9.645985734451974,
+        "bhk": -116.15790550755867,
+        "series_admittance_ok": true
+      }
+    },
+    "polish": {
+      "iterations": 9,
+      "max_abs_f": 5.597522445555114e-11,
+      "max_abs_g": 4.246025753218421e-12,
+      "residual_history": [
+        9.632552462152777e-08,
+        3.2502260657653115e-08,
+        5.0170593457465884e-08,
+        2.3336569121568118e-08,
+        9.373623655051233e-09,
+        3.255310243588383e-09,
+        1.2409437921689914e-09,
+        4.2754555451551823e-10,
+        1.624451684278938e-10,
+        5.597522445555114e-11
+      ],
+      "final_h": 1000000.0,
+      "converged": true,
+      "frozen_variables": 4884,
+      "note": "residuals over variables of in-service devices (out-of-service devices are decoupled)",
+      "secondary_control_mw": 0.00041436287695922734
+    },
+    "stage1": {
+      "iterations": 47,
+      "max_abs_f": 9.632552462152777e-08,
+      "max_abs_g": 3.332786491228035e-10,
+      "residual_history": [
+        2.643702294361239e-06,
+        1.956377766098281e-06,
+        1.447603699732317e-06,
+        1.0712828486771042e-06,
+        7.927955370672182e-07,
+        5.867005545044844e-07,
+        4.341817014820597e-07,
+        3.2131170981528585e-07,
+        2.377834258394836e-07,
+        1.7567150548136786e-07,
+        1.30076386395572e-07,
+        9.632552462152777e-08
+      ],
+      "final_h": 20.0,
+      "converged": true,
+      "frozen_variables": 4884,
+      "note": "residuals over variables of in-service devices (out-of-service devices are decoupled)",
+      "secondary_control_mw": 302.02919479479084
+    },
+    "agc_reset": {
+      "governors": 44,
+      "max_abs_pref_shift_pu": 0.04605536190873216,
+      "sum_pref_shift_mw": 64.6333047166865,
+      "participants": "in-service TGOV1 of machines with an in-service exciter"
+    },
+    "max_abs_dxdt_recheck": 7.722089634398799e-11,
+    "worst_state": "LL_x TGOV1 194",
+    "max_abs_dxdt_incl_out_of_service": 12.10498741445315,
+    "worst_state_incl_out_of_service": "LA_y ESDC1A 8",
+    "plateau_max_abs_dv_pu": 0.0004176409085963062,
+    "equilibrium_omega_range_pu": [
+      1.0,
+      1.0
+    ],
+    "plateau_omega_range_pu": [
+      0.9997644647051912,
+      0.9997796361946769
+    ],
+    "plateau_max_abs_dxdt": 0.0887947142198909,
+    "plateau_max_abs_dxdt_state": "delta GENROU 29",
+    "protected_v_equilibrium_pu": {
+      "Granada355": 1.0578909097049944,
+      "Badajoz582": 1.102854239237407,
+      "Badajoz145": 1.0959997699501884,
+      "Segovia23": 1.0684778294579478,
+      "Seville550": 1.073075843349546,
+      "Segovia94": 1.089898681155388,
+      "Badajoz118": 1.0660357090714982,
+      "Huelva34": 1.0651728825643338,
+      "Caceres38": 1.0718078672357192,
+      "Badajoz72": 1.0670161864821261,
+      "Badajoz16": 1.0682493561053905,
+      "Caceres41": 1.0712631468227833,
+      "Cadiz26": 1.0787959306661838,
+      "Cadiz128": 1.0829676760966622,
+      "Malaga154": 1.071478404715511,
+      "Cuenca530": 1.0703816185458757
+    },
+    "protected_v_plateau_pu": {
+      "Granada355": 1.057703673375389,
+      "Badajoz582": 1.1024365983288107,
+      "Badajoz145": 1.0957448992934464,
+      "Segovia23": 1.0683564754330461,
+      "Seville550": 1.0727517775578488,
+      "Segovia94": 1.0897065573293032,
+      "Badajoz118": 1.0659955469228934,
+      "Huelva34": 1.0651722277262532,
+      "Caceres38": 1.071549280716029,
+      "Badajoz72": 1.0671099298882256,
+      "Badajoz16": 1.0681103523928333,
+      "Caceres41": 1.0710121311358338,
+      "Cadiz26": 1.078628209419553,
+      "Cadiz128": 1.0827615786667124,
+      "Malaga154": 1.0712984256611429,
+      "Cuenca530": 1.0701725286267458
+    },
+    "protected_v_powerflow_armed_pu": {
+      "Granada355": 1.0518080631961824,
+      "Badajoz582": 1.0921787677770807,
+      "Badajoz145": 1.0859653213563332,
+      "Segovia23": 1.0624375703011864,
+      "Seville550": 1.0633630952570208,
+      "Segovia94": 1.081022857993659,
+      "Badajoz118": 1.0612495380062534,
+      "Huelva34": 1.060962762678299,
+      "Caceres38": 1.06309880941781,
+      "Badajoz72": 1.0638919656237145,
+      "Badajoz16": 1.0619250262498963,
+      "Caceres41": 1.0627569248228026,
+      "Cadiz26": 1.0699304741924887,
+      "Cadiz128": 1.0734611928400368,
+      "Malaga154": 1.0628022173130303,
+      "Cuenca530": 1.064610592988243
+    },
+    "max_protected_v_equilibrium_pu": 1.102854239237407,
+    "max_protected_v_powerflow_armed_pu": 1.0921787677770807,
+    "blocks_at_or_above_ov1_pickup": [
+      "Badajoz582"
+    ],
+    "n_events": 53
+  },
+  {
+    "level": "C1.5",
+    "ok": true,
+    "margin_pu": 0.01,
+    "wall_s": 117.86648178100586,
+    "oa1_circuits": {
+      "PAR_Line_2154": {
+        "u": 1.0,
+        "ghk": 9.447415540837037,
+        "bhk": -114.96424662608611,
+        "series_admittance_ok": true
+      },
+      "PAR_Line_1848": {
+        "u": 1.0,
+        "ghk": 9.645985734451974,
+        "bhk": -116.15790550755867,
+        "series_admittance_ok": true
+      }
+    },
+    "polish": {
+      "iterations": 9,
+      "max_abs_f": 5.1525006483643665e-11,
+      "max_abs_g": 4.10977918363642e-12,
+      "residual_history": [
+        8.410248479089241e-08,
+        2.758570541696418e-08,
+        4.2112157760954005e-08,
+        1.886224731961761e-08,
+        7.934291446076713e-09,
+        2.739854121358576e-09,
+        1.0963914220951665e-09,
+        3.7615954795455764e-10,
+        1.50013779176561e-10,
+        5.1525006483643665e-11
+      ],
+      "final_h": 1000000.0,
+      "converged": true,
+      "frozen_variables": 6114,
+      "note": "residuals over variables of in-service devices (out-of-service devices are decoupled)",
+      "secondary_control_mw": 0.0003198240577262168
+    },
+    "stage1": {
+      "iterations": 47,
+      "max_abs_f": 8.410248479089241e-08,
+      "max_abs_g": 3.0900420000534727e-10,
+      "residual_history": [
+        2.5815461338790946e-06,
+        1.891036484103755e-06,
+        1.3850541495380193e-06,
+        1.014624057249411e-06,
+        7.432702040490223e-07,
+        5.444851381388369e-07,
+        3.988641868390279e-07,
+        2.921891518777811e-07,
+        2.1404397438443542e-07,
+        1.5649514867342045e-07,
+        1.1471727843511116e-07,
+        8.410248479089241e-08
+      ],
+      "final_h": 20.0,
+      "converged": true,
+      "frozen_variables": 6114,
+      "note": "residuals over variables of in-service devices (out-of-service devices are decoupled)",
+      "secondary_control_mw": 399.9777931663073
+    },
+    "agc_reset": {
+      "governors": 39,
+      "max_abs_pref_shift_pu": 0.06990731530443865,
+      "sum_pref_shift_mw": 88.80493382260832,
+      "participants": "in-service TGOV1 of machines with an in-service exciter"
+    },
+    "max_abs_dxdt_recheck": 7.206324426078936e-11,
+    "worst_state": "LL_x TGOV1 194",
+    "max_abs_dxdt_incl_out_of_service": 0.0027783337987383194,
+    "worst_state_incl_out_of_service": "LAW_y SEXS 93",
+    "plateau_max_abs_dv_pu": 0.0002808472752318103,
+    "equilibrium_omega_range_pu": [
+      1.0,
+      1.0
+    ],
+    "plateau_omega_range_pu": [
+      0.9996536867097571,
+      0.9996690853207015
+    ],
+    "plateau_max_abs_dxdt": 0.130557034616123,
+    "plateau_max_abs_dxdt_state": "delta GENROU 293",
+    "protected_v_equilibrium_pu": {
+      "Granada355": 1.0516148497623024,
+      "Badajoz582": 1.108053334861462,
+      "Badajoz145": 1.098639321554257,
+      "Segovia23": 1.0656307030803975,
+      "Seville550": 1.068815717673966,
+      "Segovia94": 1.0919214330560263,
+      "Badajoz118": 1.0617337553786546,
+      "Huelva34": 1.061942487395237,
+      "Caceres38": 1.0679426632005788,
+      "Badajoz72": 1.0657837254947404,
+      "Badajoz16": 1.065123243812341,
+      "Caceres41": 1.0674708455325914,
+      "Cadiz26": 1.0788068521333847,
+      "Cadiz128": 1.0839050768780931,
+      "Malaga154": 1.070502795842571,
+      "Cuenca530": 1.0660488512532214
+    },
+    "protected_v_plateau_pu": {
+      "Granada355": 1.0517465253843106,
+      "Badajoz582": 1.107788016538678,
+      "Badajoz145": 1.0985529193300598,
+      "Segovia23": 1.0657564801053545,
+      "Seville550": 1.0687875407890348,
+      "Segovia94": 1.0919205979633546,
+      "Badajoz118": 1.0619512730415805,
+      "Huelva34": 1.0621787353468366,
+      "Caceres38": 1.067961943695883,
+      "Badajoz72": 1.0660645727699722,
+      "Badajoz16": 1.0652417919714068,
+      "Caceres41": 1.0674952135166063,
+      "Cadiz26": 1.0787934539809771,
+      "Cadiz128": 1.083844903334296,
+      "Malaga154": 1.0704717850689616,
+      "Cuenca530": 1.0661252429710653
+    },
+    "protected_v_powerflow_armed_pu": {
+      "Granada355": 1.0478914458155348,
+      "Badajoz582": 1.0925110068226829,
+      "Badajoz145": 1.085581716775652,
+      "Segovia23": 1.0615070032257623,
+      "Seville550": 1.062503271197216,
+      "Segovia94": 1.080747342194757,
+      "Badajoz118": 1.058673313668999,
+      "Huelva34": 1.0591326572229989,
+      "Caceres38": 1.0621622746752093,
+      "Badajoz72": 1.0633231907584628,
+      "Badajoz16": 1.0607939438242528,
+      "Caceres41": 1.0618066856677217,
+      "Cadiz26": 1.0692162987940281,
+      "Cadiz128": 1.0727550552553293,
+      "Malaga154": 1.061782024099519,
+      "Cuenca530": 1.062221048443843
+    },
+    "max_protected_v_equilibrium_pu": 1.108053334861462,
+    "max_protected_v_powerflow_armed_pu": 1.0925110068226829,
+    "blocks_at_or_above_ov1_pickup": [
+      "Badajoz582"
+    ],
+    "n_events": 53
+  },
+  {
+    "level": "C1.5",
+    "ok": true,
+    "margin_pu": 0.02,
+    "wall_s": 117.94795966148376,
+    "oa1_circuits": {
+      "PAR_Line_2154": {
+        "u": 1.0,
+        "ghk": 9.447415540837037,
+        "bhk": -114.96424662608611,
+        "series_admittance_ok": true
+      },
+      "PAR_Line_1848": {
+        "u": 1.0,
+        "ghk": 9.645985734451974,
+        "bhk": -116.15790550755867,
+        "series_admittance_ok": true
+      }
+    },
+    "polish": {
+      "iterations": 9,
+      "max_abs_f": 5.1537440981519467e-11,
+      "max_abs_g": 4.102584938436849e-12,
+      "residual_history": [
+        8.413688912575677e-08,
+        2.7596378294568084e-08,
+        4.212813653481362e-08,
+        1.88689419644561e-08,
+        7.937349444375741e-09,
+        2.7408355585123445e-09,
+        1.0968155272905733e-09,
+        3.7634340088743556e-10,
+        1.5009948839406206e-10,
+        5.1537440981519467e-11
+      ],
+      "final_h": 1000000.0,
+      "converged": true,
+      "frozen_variables": 6114,
+      "note": "residuals over variables of in-service devices (out-of-service devices are decoupled)",
+      "secondary_control_mw": 0.00031994557598034873
+    },
+    "stage1": {
+      "iterations": 47,
+      "max_abs_f": 8.413688912575677e-08,
+      "max_abs_g": 3.0913662740772454e-10,
+      "residual_history": [
+        2.58281536922552e-06,
+        1.8919519658756383e-06,
+        1.3857141519181605e-06,
+        1.0150998583184354e-06,
+        7.436130754738505e-07,
+        5.447322885006058e-07,
+        3.9904215184127034e-07,
+        2.9231731011787194e-07,
+        2.1413626338489273e-07,
+        1.5656140422340862e-07,
+        1.1476499247616392e-07,
+        8.413688912575677e-08
+      ],
+      "final_h": 20.0,
+      "converged": true,
+      "frozen_variables": 6114,
+      "note": "residuals over variables of in-service devices (out-of-service devices are decoupled)",
+      "secondary_control_mw": 400.26407161214246
+    },
+    "agc_reset": {
+      "governors": 39,
+      "max_abs_pref_shift_pu": 0.06997112865427871,
+      "sum_pref_shift_mw": 88.88346613148359,
+      "participants": "in-service TGOV1 of machines with an in-service exciter"
+    },
+    "max_abs_dxdt_recheck": 7.206280017157951e-11,
+    "worst_state": "LL_x TGOV1 194",
+    "max_abs_dxdt_incl_out_of_service": 0.002777832592153362,
+    "worst_state_incl_out_of_service": "LAW_y SEXS 93",
+    "plateau_max_abs_dv_pu": 0.00027912906696281325,
+    "equilibrium_omega_range_pu": [
+      1.0,
+      1.0
+    ],
+    "plateau_omega_range_pu": [
+      0.999653375946829,
+      0.9996688076616481
+    ],
+    "plateau_max_abs_dxdt": 0.1306741894799382,
+    "plateau_max_abs_dxdt_state": "delta GENROU 293",
+    "protected_v_equilibrium_pu": {
+      "Granada355": 1.0415112673937896,
+      "Badajoz582": 1.0979670613731007,
+      "Badajoz145": 1.0886400701489676,
+      "Segovia23": 1.0556928918836708,
+      "Seville550": 1.0588293326133063,
+      "Segovia94": 1.0818398388963737,
+      "Badajoz118": 1.051811232515929,
+      "Huelva34": 1.0520356054539337,
+      "Caceres38": 1.0579612106124,
+      "Badajoz72": 1.055897330744082,
+      "Badajoz16": 1.055183036687737,
+      "Caceres41": 1.057494806513397,
+      "Cadiz26": 1.0688149361180557,
+      "Cadiz128": 1.0738813015349307,
+      "Malaga154": 1.0605726322001405,
+      "Cuenca530": 1.0560848545611905
+    },
+    "protected_v_plateau_pu": {
+      "Granada355": 1.0416426876511558,
+      "Badajoz582": 1.097705078806926,
+      "Badajoz145": 1.0885551746133326,
+      "Segovia23": 1.0558182057713859,
+      "Seville550": 1.0588019271501632,
+      "Segovia94": 1.0818396708211198,
+      "Badajoz118": 1.0520276794835222,
+      "Huelva34": 1.0522705900291003,
+      "Caceres38": 1.057980885279007,
+      "Badajoz72": 1.0561764598110448,
+      "Badajoz16": 1.055301210732797,
+      "Caceres41": 1.057519526477293,
+      "Cadiz26": 1.0688021246656974,
+      "Cadiz128": 1.0738221902780123,
+      "Malaga154": 1.0605423119081074,
+      "Cuenca530": 1.0561612849380482
+    },
+    "protected_v_powerflow_armed_pu": {
+      "Granada355": 1.0378165198651406,
+      "Badajoz582": 1.0825434123725615,
+      "Badajoz145": 1.0756819235004615,
+      "Segovia23": 1.0515973197818078,
+      "Seville550": 1.0525638078183233,
+      "Segovia94": 1.0707497127546182,
+      "Badajoz118": 1.0487723896416177,
+      "Huelva34": 1.0492444306131161,
+      "Caceres38": 1.052223255841435,
+      "Badajoz72": 1.0534489368625255,
+      "Badajoz16": 1.0508840846881835,
+      "Caceres41": 1.0518720891341635,
+      "Cadiz26": 1.059296032629038,
+      "Cadiz128": 1.0628144498368128,
+      "Malaga154": 1.0519167600799626,
+      "Cuenca530": 1.0522867391946529
+    },
+    "max_protected_v_equilibrium_pu": 1.0979670613731007,
+    "max_protected_v_powerflow_armed_pu": 1.0825434123725615,
+    "blocks_at_or_above_ov1_pickup": [],
+    "n_events": 53
+  }
+]

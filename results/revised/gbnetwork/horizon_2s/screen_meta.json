@@ -1,0 +1,417 @@
+{
+ "system": "gbnetwork",
+ "variant": "baseline",
+ "fingerprint": "5be0563c4f41d6d5b1c75ccd16fee4d7295db154",
+ "settings": {
+  "T_window_s": 2.0,
+  "dt_s": 0.005,
+  "epsilon": 0.05,
+  "t_seed_s": 0.5,
+  "tds_t_end_s": 3.5,
+  "tds_tstep_s": 0.002,
+  "eps_meas_pu": 0.002
+ },
+ "assets": [
+  {
+   "asset_id": "RES01",
+   "collector_bus": 900001,
+   "hv_bus": 163,
+   "z0_pu": 1.0734736842105264,
+   "margin_pu": 0.02652631578947373,
+   "tap": 0.9602094134037605,
+   "pickup_pu": 1.1,
+   "dwell_s": 0.05
+  },
+  {
+   "asset_id": "RES02",
+   "collector_bus": 900002,
+   "hv_bus": 98,
+   "z0_pu": 1.0869473684210527,
+   "margin_pu": 0.013052631578947427,
+   "tap": 0.9461078947858058,
+   "pickup_pu": 1.1,
+   "dwell_s": 0.05
+  },
+  {
+   "asset_id": "RES03",
+   "collector_bus": 900003,
+   "hv_bus": 323,
+   "z0_pu": 1.0667368421052632,
+   "margin_pu": 0.03326315789473688,
+   "tap": 0.965831263519535,
+   "pickup_pu": 1.1,
+   "dwell_s": 0.05
+  },
+  {
+   "asset_id": "RES04",
+   "collector_bus": 900004,
+   "hv_bus": 358,
+   "z0_pu": 1.0818947368421052,
+   "margin_pu": 0.018105263157894846,
+   "tap": 0.9505073571868924,
+   "pickup_pu": 1.1,
+   "dwell_s": 0.05
+  },
+  {
+   "asset_id": "RES05",
+   "collector_bus": 900005,
+   "hv_bus": 315,
+   "z0_pu": 1.0616842105263158,
+   "margin_pu": 0.0383157894736843,
+   "tap": 0.9712603663138564,
+   "pickup_pu": 1.1,
+   "dwell_s": 0.05
+  },
+  {
+   "asset_id": "RES06",
+   "collector_bus": 900006,
+   "hv_bus": 1406,
+   "z0_pu": 1.076842105263158,
+   "margin_pu": 0.023157894736842044,
+   "tap": 0.9533915952073697,
+   "pickup_pu": 1.1,
+   "dwell_s": 0.05
+  },
+  {
+   "asset_id": "RES07",
+   "collector_bus": 900007,
+   "hv_bus": 1479,
+   "z0_pu": 1.0903157894736843,
+   "margin_pu": 0.00968421052631574,
+   "tap": 0.9376419956774712,
+   "pickup_pu": 1.1,
+   "dwell_s": 0.05
+  },
+  {
+   "asset_id": "RES08",
+   "collector_bus": 900008,
+   "hv_bus": 1445,
+   "z0_pu": 1.070105263157895,
+   "margin_pu": 0.029894736842105196,
+   "tap": 0.943203013782154,
+   "pickup_pu": 1.1,
+   "dwell_s": 0.05
+  },
+  {
+   "asset_id": "RES09",
+   "collector_bus": 900009,
+   "hv_bus": 1486,
+   "z0_pu": 1.0835789473684212,
+   "margin_pu": 0.016421052631578892,
+   "tap": 0.9279073578664785,
+   "pickup_pu": 1.1,
+   "dwell_s": 0.05
+  },
+  {
+   "asset_id": "RES10",
+   "collector_bus": 900010,
+   "hv_bus": 280,
+   "z0_pu": 1.0633684210526317,
+   "margin_pu": 0.03663157894736835,
+   "tap": 0.9495991871005959,
+   "pickup_pu": 1.1,
+   "dwell_s": 0.05
+  },
+  {
+   "asset_id": "RES11",
+   "collector_bus": 900011,
+   "hv_bus": 427,
+   "z0_pu": 1.0785263157894738,
+   "margin_pu": 0.02147368421052631,
+   "tap": 0.9352305934111905,
+   "pickup_pu": 1.1,
+   "dwell_s": 0.05
+  },
+  {
+   "asset_id": "RES12",
+   "collector_bus": 900012,
+   "hv_bus": 437,
+   "z0_pu": 1.092,
+   "margin_pu": 0.008000000000000007,
+   "tap": 0.9280994217750723,
+   "pickup_pu": 1.1,
+   "dwell_s": 0.05
+  },
+  {
+   "asset_id": "RES13",
+   "collector_bus": 900013,
+   "hv_bus": 415,
+   "z0_pu": 1.0717894736842106,
+   "margin_pu": 0.028210526315789464,
+   "tap": 0.9500343638107166,
+   "pickup_pu": 1.1,
+   "dwell_s": 0.05
+  },
+  {
+   "asset_id": "RES14",
+   "collector_bus": 900014,
+   "hv_bus": 428,
+   "z0_pu": 1.085263157894737,
+   "margin_pu": 0.01473684210526316,
+   "tap": 0.9283255037387044,
+   "pickup_pu": 1.1,
+   "dwell_s": 0.05
+  },
+  {
+   "asset_id": "RES15",
+   "collector_bus": 900015,
+   "hv_bus": 434,
+   "z0_pu": 1.0650526315789475,
+   "margin_pu": 0.034947368421052616,
+   "tap": 0.9308398046145365,
+   "pickup_pu": 1.1,
+   "dwell_s": 0.05
+  },
+  {
+   "asset_id": "RES16",
+   "collector_bus": 900016,
+   "hv_bus": 168,
+   "z0_pu": 1.0802105263157895,
+   "margin_pu": 0.01978947368421058,
+   "tap": 0.9252413277385991,
+   "pickup_pu": 1.1,
+   "dwell_s": 0.05
+  },
+  {
+   "asset_id": "RES17",
+   "collector_bus": 900017,
+   "hv_bus": 293,
+   "z0_pu": 1.06,
+   "margin_pu": 0.040000000000000036,
+   "tap": 0.9510220645804143,
+   "pickup_pu": 1.1,
+   "dwell_s": 0.05
+  },
+  {
+   "asset_id": "RES18",
+   "collector_bus": 900018,
+   "hv_bus": 173,
+   "z0_pu": 1.075157894736842,
+   "margin_pu": 0.024842105263158,
+   "tap": 0.9510464134625634,
+   "pickup_pu": 1.1,
+   "dwell_s": 0.05
+  },
+  {
+   "asset_id": "RES19",
+   "collector_bus": 900019,
+   "hv_bus": 298,
+   "z0_pu": 1.0886315789473684,
+   "margin_pu": 0.011368421052631694,
+   "tap": 0.9273843734530455,
+   "pickup_pu": 1.1,
+   "dwell_s": 0.05
+  },
+  {
+   "asset_id": "RES20",
+   "collector_bus": 900020,
+   "hv_bus": 367,
+   "z0_pu": 1.068421052631579,
+   "margin_pu": 0.03157894736842115,
+   "tap": 0.9475694632077946,
+   "pickup_pu": 1.1,
+   "dwell_s": 0.05
+  }
+ ],
+ "outputs": [
+  "V_900001",
+  "V_900002",
+  "V_900003",
+  "V_900004",
+  "V_900005",
+  "V_900006",
+  "V_900007",
+  "V_900008",
+  "V_900009",
+  "V_900010",
+  "V_900011",
+  "V_900012",
+  "V_900013",
+  "V_900014",
+  "V_900015",
+  "V_900016",
+  "V_900017",
+  "V_900018",
+  "V_900019",
+  "V_900020",
+  "V_163",
+  "V_98",
+  "V_323",
+  "V_358",
+  "V_315",
+  "V_1406",
+  "V_1479",
+  "V_1445",
+  "V_1486",
+  "V_280",
+  "V_427",
+  "V_437",
+  "V_415",
+  "V_428",
+  "V_434",
+  "V_168",
+  "V_293",
+  "V_173",
+  "V_298",
+  "V_367"
+ ],
+ "pre_mode": {
+  "mode_id": "pre_event",
+  "n_states": 868,
+  "n_algebraic": 9202,
+  "max_real_eigenvalue": -2.061351089821528e-12,
+  "stability": "marginal",
+  "gy_condition_estimate": 25097345.926755235,
+  "log_norm_mu": 32.861250058378424,
+  "removed_algebraic": 909,
+  "unstable_flag": false,
+  "warnings": [
+   "reduced_state_matrix_marginal_max_real=-2.06135e-12"
+  ]
+ },
+ "engine_warnings": [],
+ "designated_seed": "fixed_pf_ramp:RES07",
+ "plot_seed": "fixed_pf_ramp:RES07",
+ "mitigation_seeds": [
+  "plant_trip:RES06",
+  "plant_trip:RES07",
+  "plant_trip:RES08",
+  "plant_trip:RES09",
+  "plant_trip:RES10",
+  "plant_trip:RES11",
+  "plant_trip:RES16",
+  "plant_trip:RES17",
+  "plant_trip:RES18",
+  "plant_trip:RES20",
+  "fixed_pf_ramp:RES02",
+  "fixed_pf_ramp:RES06",
+  "fixed_pf_ramp:RES07",
+  "fixed_pf_ramp:RES08",
+  "fixed_pf_ramp:RES09",
+  "fixed_pf_ramp:RES11",
+  "fixed_pf_ramp:RES12",
+  "fixed_pf_ramp:RES14",
+  "fixed_pf_ramp:RES16",
+  "fixed_pf_ramp:RES19",
+  "load_disconnection:PQ_25",
+  "load_disconnection:PQ_189",
+  "shunt_reactor_disconnection:SHR02",
+  "shunt_reactor_disconnection:SHR03",
+  "capacitor_switching:SHC02"
+ ],
+ "failed_events": {},
+ "failed_controls": {},
+ "requested_studies": [
+  "S1",
+  "S2",
+  "S3",
+  "S4"
+ ],
+ "studies_run": [
+  "S1",
+  "S2",
+  "S3",
+  "S4"
+ ],
+ "scenario": {
+  "name": "light_load",
+  "load_scale": 0.6,
+  "res_share": 0.39,
+  "tap_range": [
+   0.9,
+   1.1
+  ],
+  "dispatch_rule": "proportional_must_run",
+  "must_run_fraction": 0.2,
+  "description": "light load (every PQ load at 60 % of the stock P and Q), RES = 50 % of the scaled load, all synchronous units online with one common dispatch factor and a must-run minimum, stock voltage set points, taps within +/-10 %",
+  "res_share_requested": 0.5,
+  "res_share_capped": true,
+  "res_share_reason": "capped by must-run: 22237 MW committed minimum vs 18787 MW required at the requested share 0.50 (scaled load 36047 MW - RES 18023 MW + losses 763 MW); 0 of 309 units on the governor-minimum basis",
+  "res_share_search": [
+   {
+    "res_share": 0.5,
+    "feasible": false,
+    "must_run_mw": 22237.04573999998,
+    "required_mw": 18786.757317241874,
+    "losses_mw": 763.4893172418515,
+    "balance_share": 0.4042823858925556
+   },
+   {
+    "res_share": 0.4,
+    "feasible": false,
+    "must_run_mw": 22237.04573999998,
+    "required_mw": 22137.486924366982,
+    "losses_mw": 509.5653243669574,
+    "balance_share": 0.397238047627295
+   },
+   {
+    "res_share": 0.39,
+    "feasible": true
+   }
+  ],
+  "res_share_cap_detail": {
+   "scenario": "light_load",
+   "must_run_total_mw": 22237.04573999998,
+   "sync_needed_mw": 18786.757317241874,
+   "scaled_load_mw": 36046.536000000044,
+   "res_share": 0.5,
+   "res_mw": 18023.268000000022,
+   "losses_mw": 763.4893172418515,
+   "n_units_online": 309,
+   "n_units_governor_minimum": 0,
+   "slack_at_all_must_run_mw": -3150.2884227581076,
+   "slack_must_run_mw": 300.0,
+   "max_feasible_res_share": 0.4042823858925556,
+   "largest_must_run_units": [
+    {
+     "unit": 204,
+     "must_run_mw": 313.8041,
+     "basis": "20 % capability",
+     "stock_mw": 313.8041
+    },
+    {
+     "unit": 206,
+     "must_run_mw": 300.0,
+     "basis": "20 % capability",
+     "stock_mw": 310.63265435184985
+    },
+    {
+     "unit": 28,
+     "must_run_mw": 194.70000000000002,
+     "basis": "20 % capability",
+     "stock_mw": 288.1762
+    },
+    {
+     "unit": 29,
+     "must_run_mw": 194.70000000000002,
+     "basis": "20 % capability",
+     "stock_mw": 288.17629999999997
+    },
+    {
+     "unit": 30,
+     "must_run_mw": 194.70000000000002,
+     "basis": "20 % capability",
+     "stock_mw": 288.1758
+    },
+    {
+     "unit": 31,
+     "must_run_mw": 194.70000000000002,
+     "basis": "20 % capability",
+     "stock_mw": 288.5539
+    },
+    {
+     "unit": 32,
+     "must_run_mw": 194.70000000000002,
+     "basis": "20 % capability",
+     "stock_mw": 288.5536
+    },
+    {
+     "unit": 33,
+     "must_run_mw": 194.70000000000002,
+     "basis": "20 % capability",
+     "stock_mw": 288.585
+    }
+   ]
+  }
+ }
+}

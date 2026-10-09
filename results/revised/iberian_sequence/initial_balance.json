@@ -1,0 +1,276 @@
+{
+  "final_main": {
+    "kwargs": {
+      "tie_scale": 15.0,
+      "voltage_control": "q_control",
+      "q_control_tc_s": 10.0,
+      "ehv_surplus_mvar": 1600.0,
+      "uel_tc_s": 1.0,
+      "load_model": "es",
+      "embedded_pv_share": 0.15,
+      "tap_margin_pu": 0.01,
+      "actions": {
+        "res_reduction_mw": 708.0,
+        "net_load_mw": 0.0
+      }
+    },
+    "gsu_tap": 0.92732,
+    "plants": {
+      "n": 26,
+      "p_mw": 5446.000000000001,
+      "q_mvar": -1801.377435000559
+    },
+    "plant_hv_v_pu": {
+      "median": 1.0242404959458695,
+      "min": 1.012677113191074,
+      "max": 1.041583982298204
+    },
+    "added_surplus_mvar_at_operating_voltage": 1727.9825610315713,
+    "sync_units": {
+      "n": 12,
+      "net_q_mvar": 123.27125351191889,
+      "absorbing": 7,
+      "at_qmin": 5,
+      "units": [
+        {
+          "genrou": "GENROU_278",
+          "sn_mva": 1625.16,
+          "p_mw": 1240.666,
+          "q_mvar": 108.25028380637227,
+          "qmin_mvar": -111.05000000000001,
+          "at_qmin": false
+        },
+        {
+          "genrou": "GENROU_279",
+          "sn_mva": 1625.16,
+          "p_mw": 1171.6526808026845,
+          "q_mvar": -63.07384745263735,
+          "qmin_mvar": -111.05000000000001,
+          "at_qmin": false
+        },
+        {
+          "genrou": "GENROU_296",
+          "sn_mva": 456.84,
+          "p_mw": 329.35686856822355,
+          "q_mvar": -42.26,
+          "qmin_mvar": -42.26,
+          "at_qmin": true
+        },
+        {
+          "genrou": "GENROU_321",
+          "sn_mva": 918.0,
+          "p_mw": 661.8282680124153,
+          "q_mvar": -84.92,
+          "qmin_mvar": -84.92,
+          "at_qmin": true
+        },
+        {
+          "genrou": "GENROU_322",
+          "sn_mva": 918.0,
+          "p_mw": 661.8282680124153,
+          "q_mvar": -84.92,
+          "qmin_mvar": -84.92,
+          "at_qmin": true
+        },
+        {
+          "genrou": "GENROU_344",
+          "sn_mva": 544.2,
+          "p_mw": 119.55807799921212,
+          "q_mvar": -1.4248081362104814,
+          "qmin_mvar": -55.33,
+          "at_qmin": false
+        },
+        {
+          "genrou": "GENROU_349",
+          "sn_mva": 821.04,
+          "p_mw": 516.0586798862878,
+          "q_mvar": 66.31476244997486,
+          "qmin_mvar": -75.95,
+          "at_qmin": false
+        },
+        {
+          "genrou": "GENROU_350",
+          "sn_mva": 821.04,
+          "p_mw": 512.7845184584595,
+          "q_mvar": 110.45703455708171,
+          "qmin_mvar": -75.95,
+          "at_qmin": false
+        },
+        {
+          "genrou": "GENROU_351",
+          "sn_mva": 821.04,
+          "p_mw": 512.7845184584595,
+          "q_mvar": 109.62431818988385,
+          "qmin_mvar": -75.95,
+          "at_qmin": false
+        },
+        {
+          "genrou": "GENROU_352",
+          "sn_mva": 821.04,
+          "p_mw": 512.739405476412,
+          "q_mvar": 115.02351009745404,
+          "qmin_mvar": -75.95,
+          "at_qmin": false
+        },
+        {
+          "genrou": "GENROU_369",
+          "sn_mva": 651.36,
+          "p_mw": 469.59491104945596,
+          "q_mvar": -60.25,
+          "qmin_mvar": -60.25,
+          "at_qmin": true
+        },
+        {
+          "genrou": "GENROU_375",
+          "sn_mva": 535.68,
+          "p_mw": 386.1966232759688,
+          "q_mvar": -49.55,
+          "qmin_mvar": -49.55,
+          "at_qmin": true
+        }
+      ]
+    },
+    "embedded_pv": {
+      "n_buses": 241,
+      "p_mw": 1716.7450230000009
+    },
+    "area_net_export_mw": 860.170371314133
+  },
+  "final_no_surplus": {
+    "kwargs": {
+      "tie_scale": 15.0,
+      "voltage_control": "q_control",
+      "q_control_tc_s": 10.0,
+      "ehv_surplus_mvar": 0.0,
+      "uel_tc_s": 1.0,
+      "load_model": "es",
+      "embedded_pv_share": 0.15,
+      "tap_margin_pu": 0.01,
+      "actions": {
+        "res_reduction_mw": 708.0,
+        "net_load_mw": 0.0
+      }
+    },
+    "gsu_tap": 0.91179,
+    "plants": {
+      "n": 26,
+      "p_mw": 5446.000000000001,
+      "q_mvar": -1801.377435000559
+    },
+    "plant_hv_v_pu": {
+      "median": 0.981808483141655,
+      "min": 0.970038483183086,
+      "max": 1.020208121724314
+    },
+    "added_surplus_mvar_at_operating_voltage": 0,
+    "sync_units": {
+      "n": 12,
+      "net_q_mvar": 2273.084956615197,
+      "absorbing": 2,
+      "at_qmin": 2,
+      "units": [
+        {
+          "genrou": "GENROU_278",
+          "sn_mva": 1625.16,
+          "p_mw": 1240.666,
+          "q_mvar": 231.74989466923773,
+          "qmin_mvar": -111.05000000000001,
+          "at_qmin": false
+        },
+        {
+          "genrou": "GENROU_279",
+          "sn_mva": 1625.16,
+          "p_mw": 1170.191713040098,
+          "q_mvar": 244.7764735658084,
+          "qmin_mvar": -111.05000000000001,
+          "at_qmin": false
+        },
+        {
+          "genrou": "GENROU_296",
+          "sn_mva": 456.84,
+          "p_mw": 328.94618392144326,
+          "q_mvar": -42.26,
+          "qmin_mvar": -42.26,
+          "at_qmin": true
+        },
+        {
+          "genrou": "GENROU_321",
+          "sn_mva": 918.0,
+          "p_mw": 661.0030151198326,
+          "q_mvar": 147.11713777356997,
+          "qmin_mvar": -84.92,
+          "at_qmin": false
+        },
+        {
+          "genrou": "GENROU_322",
+          "sn_mva": 918.0,
+          "p_mw": 661.0030151198326,
+          "q_mvar": 204.58561580437126,
+          "qmin_mvar": -84.92,
+          "at_qmin": false
+        },
+        {
+          "genrou": "GENROU_344",
+          "sn_mva": 544.2,
+          "p_mw": 119.40899755875772,
+          "q_mvar": 211.33,
+          "qmin_mvar": -55.33,
+          "at_qmin": false
+        },
+        {
+          "genrou": "GENROU_349",
+          "sn_mva": 821.04,
+          "p_mw": 515.4151913275451,
+          "q_mvar": 177.86989021124785,
+          "qmin_mvar": -75.95,
+          "at_qmin": false
+        },
+        {
+          "genrou": "GENROU_350",
+          "sn_mva": 821.04,
+          "p_mw": 512.145112546711,
+          "q_mvar": 310.3849464200515,
+          "qmin_mvar": -75.95,
+          "at_qmin": false
+        },
+        {
+          "genrou": "GENROU_351",
+          "sn_mva": 821.04,
+          "p_mw": 512.145112546711,
+          "q_mvar": 307.7818223239809,
+          "qmin_mvar": -75.95,
+          "at_qmin": false
+        },
+        {
+          "genrou": "GENROU_352",
+          "sn_mva": 821.04,
+          "p_mw": 512.1000558173513,
+          "q_mvar": 335.23217848557766,
+          "qmin_mvar": -75.95,
+          "at_qmin": false
+        },
+        {
+          "genrou": "GENROU_369",
+          "sn_mva": 651.36,
+          "p_mw": 469.0093595137842,
+          "q_mvar": 194.06699736135178,
+          "qmin_mvar": -60.25,
+          "at_qmin": false
+        },
+        {
+          "genrou": "GENROU_375",
+          "sn_mva": 535.68,
+          "p_mw": 385.715063487927,
+          "q_mvar": -49.55,
+          "qmin_mvar": -49.55,
+          "at_qmin": true
+        }
+      ]
+    },
+    "embedded_pv": {
+      "n_buses": 241,
+      "p_mw": 1716.7450230000009
+    },
+    "area_net_export_mw": 858.6212716832961
+  }
+}

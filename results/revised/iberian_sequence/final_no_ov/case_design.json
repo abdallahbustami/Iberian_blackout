@@ -1,0 +1,3336 @@
+{
+  "config": {
+    "case_id": "activsg2000_stable",
+    "variant": "iberian_sequence:final_no_ov",
+    "mode": "physics",
+    "tf_s": 100.0,
+    "tstep_s": 0.01,
+    "tds_tol": 0.0001,
+    "tds_max_iter": 25,
+    "pflow_tol": 1e-08,
+    "affected_area": 7,
+    "load_scale": 0.63,
+    "blocks": [
+      {
+        "name": "Granada355",
+        "p_mw": 355.0,
+        "q_report_mvar": 165.0,
+        "report_cluster": "E3",
+        "source": "ENTSO-E final report p.14 (355 MW, 165 MVAr absorbed)"
+      },
+      {
+        "name": "Badajoz582",
+        "p_mw": 582.0,
+        "q_report_mvar": 165.0,
+        "report_cluster": "E4",
+        "source": "report event chronology (E4a)"
+      },
+      {
+        "name": "Badajoz145",
+        "p_mw": 145.0,
+        "q_report_mvar": 37.0,
+        "report_cluster": "E4",
+        "source": "report event chronology (E4b)"
+      },
+      {
+        "name": "Segovia23",
+        "p_mw": 23.0,
+        "q_report_mvar": null,
+        "report_cluster": "E5",
+        "source": "report table MW; PF assumption"
+      },
+      {
+        "name": "Seville550",
+        "p_mw": 550.0,
+        "q_report_mvar": null,
+        "report_cluster": "E5",
+        "source": "report table MW; PF assumption"
+      },
+      {
+        "name": "Segovia94",
+        "p_mw": 94.0,
+        "q_report_mvar": null,
+        "report_cluster": "E5",
+        "source": "report table MW; PF assumption"
+      },
+      {
+        "name": "Badajoz118",
+        "p_mw": 118.0,
+        "q_report_mvar": null,
+        "report_cluster": "E5",
+        "source": "report table MW; PF assumption"
+      },
+      {
+        "name": "Huelva34",
+        "p_mw": 34.0,
+        "q_report_mvar": null,
+        "report_cluster": "E5",
+        "source": "report table MW; PF assumption"
+      },
+      {
+        "name": "Caceres38",
+        "p_mw": 38.0,
+        "q_report_mvar": null,
+        "report_cluster": "E5",
+        "source": "report table MW; PF assumption"
+      },
+      {
+        "name": "Badajoz72",
+        "p_mw": 72.0,
+        "q_report_mvar": null,
+        "report_cluster": "E5",
+        "source": "report table MW; PF assumption"
+      },
+      {
+        "name": "Badajoz16",
+        "p_mw": 16.0,
+        "q_report_mvar": null,
+        "report_cluster": "E5",
+        "source": "report table MW; PF assumption"
+      },
+      {
+        "name": "Caceres41",
+        "p_mw": 41.0,
+        "q_report_mvar": null,
+        "report_cluster": "E5",
+        "source": "report table MW; PF assumption"
+      },
+      {
+        "name": "Cadiz26",
+        "p_mw": 26.0,
+        "q_report_mvar": null,
+        "report_cluster": "E5",
+        "source": "report table MW; PF assumption"
+      },
+      {
+        "name": "Cadiz128",
+        "p_mw": 128.0,
+        "q_report_mvar": null,
+        "report_cluster": "E5",
+        "source": "report table MW; PF assumption"
+      },
+      {
+        "name": "Malaga154",
+        "p_mw": 154.0,
+        "q_report_mvar": null,
+        "report_cluster": "E5",
+        "source": "report table MW; PF assumption"
+      },
+      {
+        "name": "Cuenca530",
+        "p_mw": 530.0,
+        "q_report_mvar": null,
+        "report_cluster": "E5",
+        "source": "report table MW; PF assumption"
+      },
+      {
+        "name": "RES01",
+        "p_mw": 120.0,
+        "q_report_mvar": null,
+        "report_cluster": "fleet",
+        "source": "generic RES fleet block (fixed size pattern)"
+      },
+      {
+        "name": "RES02",
+        "p_mw": 180.0,
+        "q_report_mvar": null,
+        "report_cluster": "fleet",
+        "source": "generic RES fleet block (fixed size pattern)"
+      },
+      {
+        "name": "RES03",
+        "p_mw": 250.0,
+        "q_report_mvar": null,
+        "report_cluster": "fleet",
+        "source": "generic RES fleet block (fixed size pattern)"
+      },
+      {
+        "name": "RES04",
+        "p_mw": 320.0,
+        "q_report_mvar": null,
+        "report_cluster": "fleet",
+        "source": "generic RES fleet block (fixed size pattern)"
+      },
+      {
+        "name": "RES05",
+        "p_mw": 400.0,
+        "q_report_mvar": null,
+        "report_cluster": "fleet",
+        "source": "generic RES fleet block (fixed size pattern)"
+      },
+      {
+        "name": "RES06",
+        "p_mw": 120.0,
+        "q_report_mvar": null,
+        "report_cluster": "fleet",
+        "source": "generic RES fleet block (fixed size pattern)"
+      },
+      {
+        "name": "RES07",
+        "p_mw": 180.0,
+        "q_report_mvar": null,
+        "report_cluster": "fleet",
+        "source": "generic RES fleet block (fixed size pattern)"
+      },
+      {
+        "name": "RES08",
+        "p_mw": 250.0,
+        "q_report_mvar": null,
+        "report_cluster": "fleet",
+        "source": "generic RES fleet block (fixed size pattern)"
+      },
+      {
+        "name": "RES09",
+        "p_mw": 320.0,
+        "q_report_mvar": null,
+        "report_cluster": "fleet",
+        "source": "generic RES fleet block (fixed size pattern)"
+      },
+      {
+        "name": "RES10",
+        "p_mw": 400.0,
+        "q_report_mvar": null,
+        "report_cluster": "fleet",
+        "source": "generic RES fleet block (fixed size pattern)"
+      }
+    ],
+    "fixed_pf": 0.95,
+    "zone_size": 26,
+    "zone_min_kv": 230.0,
+    "gsu_x_on_rating": 0.12,
+    "gsu_rating_factor": 1.15,
+    "gsu_x_over_r": 40.0,
+    "collector_kv": 34.5,
+    "tap_rule": "margin",
+    "tap_fixed": 0.95,
+    "tap_margin_pu": 0.01,
+    "tap_override": 0.92732,
+    "pvd1_ialim": 1.3,
+    "plant_ov_enabled": false,
+    "plant_ov1_delay_s": 1.0,
+    "generator_protection_enabled": true,
+    "pole_slip_deg": 180.0,
+    "ufls_stages": [
+      [
+        0.98,
+        0.075
+      ],
+      [
+        0.976,
+        0.075
+      ],
+      [
+        0.972,
+        0.075
+      ],
+      [
+        0.968,
+        0.075
+      ],
+      [
+        0.964,
+        0.075
+      ],
+      [
+        0.96,
+        0.075
+      ]
+    ],
+    "ufls_delay_s": 0.15,
+    "separation_enabled": true,
+    "separation_angle_deg": 120.0,
+    "separation_delay_s": 0.05,
+    "collapse_voltage_pu": 0.5,
+    "collapse_f_low_pu": 0.95,
+    "collapse_f_high_pu": 1.05,
+    "collapse_dwell_s": 0.5,
+    "pre_cascade_actions": [
+      {
+        "code": "RES500",
+        "kind": "fixed_pf_res_reduction",
+        "start_s": 0.0,
+        "duration_s": 48.0,
+        "size": 708.0,
+        "unit": "MW",
+        "description": "Output of the protected plants reduced pro rata at fixed power factor (P and Q together).",
+        "justification": "Final report p. 13: large RES at fixed PF reduced output by about 500 MW between 12:32:00 and 12:32:48."
+      }
+    ],
+    "pre_cascade_enabled": true,
+    "preserved_absorption": false,
+    "voltage_mode_res": false,
+    "volt_var_slope": 7.33,
+    "candidate_capacitors_mvar": [
+      50.0,
+      100.0
+    ],
+    "record_every": 2,
+    "forced_separation_at_s": null,
+    "commitment_c": 1.5,
+    "dispatch_rule": "must_run",
+    "must_run_fraction": 0.2,
+    "plant_ov_mode": "standard",
+    "shadow_plant_ov": true,
+    "oa2_counterpart": "exciter_units",
+    "tie_impedance_scale": 15.0,
+    "export_reduction_mw": 3300.5,
+    "export_counterpart": "rest_load",
+    "exciter_completion": "all",
+    "completion_sexs": [],
+    "initiating_block": null,
+    "initiating_time_s": 15.0,
+    "freeze_other_islands_after_separation": true,
+    "load_model": "es",
+    "initial_mesh_closed": 2,
+    "extra_plant_stages": [],
+    "area_q_control_tc_s": 10.0,
+    "q_control_gain": 8.0,
+    "area_ehv_shunt_mvar": 1600.0,
+    "area_uel_tc_s": 1.0,
+    "embedded_pv_share": 0.15,
+    "embedded_pv_tranches": [
+      0.01,
+      0.02,
+      0.03,
+      0.045,
+      0.06
+    ],
+    "embedded_pv_ov": [
+      [
+        1.1,
+        1.5
+      ],
+      [
+        1.148,
+        0.2
+      ]
+    ],
+    "plant_relay_side": "collector",
+    "block_tap_factor": [],
+    "area_pss_completion": false
+  },
+  "plant_protection": [
+    {
+      "name": "UV1",
+      "quantity": "voltage",
+      "direction": "under",
+      "pickup": 0.75,
+      "delay_s": 2.0,
+      "dropout_ratio": 0.98,
+      "basis": "NERC PRC-024-3 LVRT boundary point (0.75 pu, 2.0 s)"
+    },
+    {
+      "name": "UV2",
+      "quantity": "voltage",
+      "direction": "under",
+      "pickup": 0.45,
+      "delay_s": 0.15,
+      "dropout_ratio": 0.98,
+      "basis": "NERC PRC-024-3 LVRT boundary point (0.45 pu, 0.15 s)"
+    },
+    {
+      "name": "UF",
+      "quantity": "frequency",
+      "direction": "under",
+      "pickup": 0.95,
+      "delay_s": 0.2,
+      "dropout_ratio": 0.999,
+      "basis": "ENTSO-E RfG: units may disconnect below 47.5 Hz (0.95 pu); 0.2 s relay+breaker"
+    },
+    {
+      "name": "OF",
+      "quantity": "frequency",
+      "direction": "over",
+      "pickup": 1.03,
+      "delay_s": 0.2,
+      "dropout_ratio": 0.999,
+      "basis": "ENTSO-E RfG: units may disconnect above 51.5 Hz (1.03 pu); 0.2 s relay+breaker"
+    }
+  ],
+  "generator_protection": [
+    {
+      "name": "OV1",
+      "quantity": "voltage",
+      "direction": "over",
+      "pickup": 1.1,
+      "delay_s": 1.0,
+      "dropout_ratio": 0.98,
+      "basis": "NERC PRC-024-3 HVRT boundary (1.10 pu, 1.0 s)"
+    },
+    {
+      "name": "OV2",
+      "quantity": "voltage",
+      "direction": "over",
+      "pickup": 1.2,
+      "delay_s": 0.16,
+      "dropout_ratio": 0.98,
+      "basis": "1.20 pu, 0.16 s (as plants)"
+    },
+    {
+      "name": "UV1",
+      "quantity": "voltage",
+      "direction": "under",
+      "pickup": 0.75,
+      "delay_s": 2.0,
+      "dropout_ratio": 0.98,
+      "basis": "NERC PRC-024-3 LVRT boundary point (0.75 pu, 2.0 s)"
+    },
+    {
+      "name": "UV2",
+      "quantity": "voltage",
+      "direction": "under",
+      "pickup": 0.45,
+      "delay_s": 0.15,
+      "dropout_ratio": 0.98,
+      "basis": "NERC PRC-024-3 LVRT boundary point (0.45 pu, 0.15 s)"
+    },
+    {
+      "name": "UF",
+      "quantity": "frequency",
+      "direction": "under",
+      "pickup": 0.95,
+      "delay_s": 0.2,
+      "dropout_ratio": 0.999,
+      "basis": "ENTSO-E RfG 47.5 Hz (0.95 pu)"
+    },
+    {
+      "name": "OF",
+      "quantity": "frequency",
+      "direction": "over",
+      "pickup": 1.03,
+      "delay_s": 0.2,
+      "dropout_ratio": 0.999,
+      "basis": "ENTSO-E RfG 51.5 Hz (1.03 pu)"
+    }
+  ],
+  "ufls": {
+    "stages_pu_fraction": [
+      [
+        0.98,
+        0.075
+      ],
+      [
+        0.976,
+        0.075
+      ],
+      [
+        0.972,
+        0.075
+      ],
+      [
+        0.968,
+        0.075
+      ],
+      [
+        0.964,
+        0.075
+      ],
+      [
+        0.96,
+        0.075
+      ]
+    ],
+    "delay_s": 0.15,
+    "basis": "ENTSO-E NC ER (CE): 49.0->48.0 Hz, 6 steps x 7.5% (45% total), no intentional delay (~150 ms operating time)"
+  },
+  "separation": {
+    "threshold_deg": 120.0,
+    "delay_s": 0.05,
+    "measured": "COI rotor-angle difference affected area vs rest, change from pre-disturbance value",
+    "cut_set_branches": [
+      "Line_403",
+      "Line_404",
+      "Line_405",
+      "Line_407",
+      "Line_573",
+      "Line_578",
+      "Line_1304",
+      "Line_1369",
+      "Line_1376",
+      "Line_1439",
+      "Line_1503",
+      "Line_1515",
+      "Line_1543",
+      "Line_1550",
+      "Line_1597",
+      "Line_1604",
+      "Line_1624",
+      "Line_1703",
+      "Line_1940",
+      "Line_2040",
+      "Line_2188"
+    ]
+  },
+  "collapse": {
+    "median_v_pu": 0.5,
+    "f_low_pu": 0.95,
+    "f_high_pu": 1.05,
+    "dwell_s": 0.5
+  },
+  "affected_area": {
+    "area_id": 7,
+    "bus_count": 431,
+    "fragments_moved_out": [
+      7432
+    ],
+    "cut_set_size": 21
+  },
+  "zone": {
+    "center": 7274,
+    "buses": [
+      7274,
+      7019,
+      7029,
+      7043,
+      7042,
+      7415,
+      7018,
+      7058,
+      7407,
+      7095,
+      7059,
+      7304,
+      7096,
+      7341,
+      7305,
+      7186,
+      7346,
+      7342,
+      7125,
+      7261,
+      7187,
+      7409,
+      7327,
+      7331,
+      7347,
+      7366
+    ]
+  },
+  "blocks": [
+    {
+      "name": "Granada355",
+      "cluster": "E3",
+      "p_mw": 355.0,
+      "q_mvar": -165.0,
+      "q_source": "report",
+      "p_source": "ENTSO-E final report p.14 (355 MW, 165 MVAr absorbed)",
+      "hv_bus": 7187,
+      "hv_kv": 230.0,
+      "collector_bus": 8161,
+      "gsu": "GSU_Granada355",
+      "tap": 0.92732,
+      "x_pu_sys": 0.0293937538273117,
+      "r_pu_sys": 0.0007348438456827925,
+      "sn_mva": 408.24999999999994,
+      "zth_pu": 0.00376720658285296,
+      "z0_pu": 1.0647229952175483,
+      "hv_v0_pu": 1.0314133841198738,
+      "pvd1": "PVD1_Granada355"
+    },
+    {
+      "name": "Badajoz582",
+      "cluster": "E4",
+      "p_mw": 582.0,
+      "q_mvar": -165.0,
+      "q_source": "report",
+      "p_source": "report event chronology (E4a)",
+      "hv_bus": 7346,
+      "hv_kv": 500.0,
+      "collector_bus": 8162,
+      "gsu": "GSU_Badajoz582",
+      "tap": 0.92732,
+      "x_pu_sys": 0.017929179740026894,
+      "r_pu_sys": 0.00044822949350067237,
+      "sn_mva": 669.3,
+      "zth_pu": 0.0019180301845542808,
+      "z0_pu": 1.0849969912882749,
+      "hv_v0_pu": 1.0331053504164427,
+      "pvd1": "PVD1_Badajoz582"
+    },
+    {
+      "name": "Badajoz145",
+      "cluster": "E4",
+      "p_mw": 145.0,
+      "q_mvar": -37.0,
+      "q_source": "report",
+      "p_source": "report event chronology (E4b)",
+      "hv_bus": 7042,
+      "hv_kv": 500.0,
+      "collector_bus": 8163,
+      "gsu": "GSU_Badajoz145",
+      "tap": 0.92732,
+      "x_pu_sys": 0.07196401799100449,
+      "r_pu_sys": 0.0017991004497751122,
+      "sn_mva": 166.75,
+      "zth_pu": 0.0069748708385576185,
+      "z0_pu": 1.0859403199061912,
+      "hv_v0_pu": 1.0314295478760036,
+      "pvd1": "PVD1_Badajoz145"
+    },
+    {
+      "name": "Segovia23",
+      "cluster": "E5",
+      "p_mw": 23.0,
+      "q_mvar": -7.559734419113854,
+      "q_source": "PF 0.95 absorbing (assumption)",
+      "p_source": "report table MW; PF assumption",
+      "hv_bus": 7261,
+      "hv_kv": 230.0,
+      "collector_bus": 8164,
+      "gsu": "GSU_Segovia23",
+      "tap": 0.92732,
+      "x_pu_sys": 0.45368620037807184,
+      "r_pu_sys": 0.011342155009451797,
+      "sn_mva": 26.45,
+      "zth_pu": 0.021232655849661244,
+      "z0_pu": 1.0662711078458456,
+      "hv_v0_pu": 1.0204439036053417,
+      "pvd1": "PVD1_Segovia23"
+    },
+    {
+      "name": "Seville550",
+      "cluster": "E5",
+      "p_mw": 550.0,
+      "q_mvar": -180.77625784837477,
+      "q_source": "PF 0.95 absorbing (assumption)",
+      "p_source": "report table MW; PF assumption",
+      "hv_bus": 7366,
+      "hv_kv": 500.0,
+      "collector_bus": 8165,
+      "gsu": "GSU_Seville550",
+      "tap": 0.92732,
+      "x_pu_sys": 0.018972332015810278,
+      "r_pu_sys": 0.00047430830039525695,
+      "sn_mva": 632.5,
+      "zth_pu": 0.0020448353223374792,
+      "z0_pu": 1.0899924600521345,
+      "hv_v0_pu": 1.041583982298204,
+      "pvd1": "PVD1_Seville550"
+    },
+    {
+      "name": "Segovia94",
+      "cluster": "E5",
+      "p_mw": 94.0,
+      "q_mvar": -30.896305886813142,
+      "q_source": "PF 0.95 absorbing (assumption)",
+      "p_source": "report table MW; PF assumption",
+      "hv_bus": 7043,
+      "hv_kv": 230.0,
+      "collector_bus": 8166,
+      "gsu": "GSU_Segovia94",
+      "tap": 0.92732,
+      "x_pu_sys": 0.11100832562442184,
+      "r_pu_sys": 0.002775208140610546,
+      "sn_mva": 108.1,
+      "zth_pu": 0.012702698005434339,
+      "z0_pu": 1.071415877830169,
+      "hv_v0_pu": 1.025024692660088,
+      "pvd1": "PVD1_Segovia94"
+    },
+    {
+      "name": "Badajoz118",
+      "cluster": "E5",
+      "p_mw": 118.0,
+      "q_mvar": -38.784724411105856,
+      "q_source": "PF 0.95 absorbing (assumption)",
+      "p_source": "report table MW; PF assumption",
+      "hv_bus": 7059,
+      "hv_kv": 230.0,
+      "collector_bus": 8167,
+      "gsu": "GSU_Badajoz118",
+      "tap": 0.92732,
+      "x_pu_sys": 0.08843036109064113,
+      "r_pu_sys": 0.0022107590272660285,
+      "sn_mva": 135.7,
+      "zth_pu": 0.012499888398511263,
+      "z0_pu": 1.0672239885061598,
+      "hv_v0_pu": 1.021292145423289,
+      "pvd1": "PVD1_Badajoz118"
+    },
+    {
+      "name": "Huelva34",
+      "cluster": "E5",
+      "p_mw": 34.0,
+      "q_mvar": -11.175259576081348,
+      "q_source": "PF 0.95 absorbing (assumption)",
+      "p_source": "report table MW; PF assumption",
+      "hv_bus": 7274,
+      "hv_kv": 230.0,
+      "collector_bus": 8168,
+      "gsu": "GSU_Huelva34",
+      "tap": 0.92732,
+      "x_pu_sys": 0.30690537084398983,
+      "r_pu_sys": 0.007672634271099746,
+      "sn_mva": 39.099999999999994,
+      "zth_pu": 0.018787259130118646,
+      "z0_pu": 1.062386447706277,
+      "hv_v0_pu": 1.0169866581667333,
+      "pvd1": "PVD1_Huelva34"
+    },
+    {
+      "name": "Caceres38",
+      "cluster": "E5",
+      "p_mw": 38.0,
+      "q_mvar": -12.489995996796802,
+      "q_source": "PF 0.95 absorbing (assumption)",
+      "p_source": "report table MW; PF assumption",
+      "hv_bus": 7019,
+      "hv_kv": 230.0,
+      "collector_bus": 8169,
+      "gsu": "GSU_Caceres38",
+      "tap": 0.92732,
+      "x_pu_sys": 0.2745995423340961,
+      "r_pu_sys": 0.006864988558352403,
+      "sn_mva": 43.699999999999996,
+      "zth_pu": 0.016660352425140766,
+      "z0_pu": 1.0680869673656155,
+      "hv_v0_pu": 1.022060435911077,
+      "pvd1": "PVD1_Caceres38"
+    },
+    {
+      "name": "Badajoz72",
+      "cluster": "E5",
+      "p_mw": 72.0,
+      "q_mvar": -23.665255572878152,
+      "q_source": "PF 0.95 absorbing (assumption)",
+      "p_source": "report table MW; PF assumption",
+      "hv_bus": 7096,
+      "hv_kv": 230.0,
+      "collector_bus": 8170,
+      "gsu": "GSU_Badajoz72",
+      "tap": 0.92732,
+      "x_pu_sys": 0.14492753623188406,
+      "r_pu_sys": 0.0036231884057971015,
+      "sn_mva": 82.8,
+      "zth_pu": 0.014539747798277573,
+      "z0_pu": 1.0608046935896076,
+      "hv_v0_pu": 1.0155793296529927,
+      "pvd1": "PVD1_Badajoz72"
+    },
+    {
+      "name": "Badajoz16",
+      "cluster": "E5",
+      "p_mw": 16.0,
+      "q_mvar": -5.258945682861811,
+      "q_source": "PF 0.95 absorbing (assumption)",
+      "p_source": "report table MW; PF assumption",
+      "hv_bus": 7415,
+      "hv_kv": 230.0,
+      "collector_bus": 8171,
+      "gsu": "GSU_Badajoz16",
+      "tap": 0.92732,
+      "x_pu_sys": 0.6521739130434783,
+      "r_pu_sys": 0.016304347826086956,
+      "sn_mva": 18.4,
+      "zth_pu": 0.023035445204353255,
+      "z0_pu": 1.070035012561115,
+      "hv_v0_pu": 1.0237949727431088,
+      "pvd1": "PVD1_Badajoz16"
+    },
+    {
+      "name": "Caceres41",
+      "cluster": "E5",
+      "p_mw": 41.0,
+      "q_mvar": -13.476048312333392,
+      "q_source": "PF 0.95 absorbing (assumption)",
+      "p_source": "report table MW; PF assumption",
+      "hv_bus": 7327,
+      "hv_kv": 230.0,
+      "collector_bus": 8172,
+      "gsu": "GSU_Caceres41",
+      "tap": 0.92732,
+      "x_pu_sys": 0.25450689289501593,
+      "r_pu_sys": 0.006362672322375399,
+      "sn_mva": 47.15,
+      "zth_pu": 0.016399896501489573,
+      "z0_pu": 1.0697428003072826,
+      "hv_v0_pu": 1.0235347648144308,
+      "pvd1": "PVD1_Caceres41"
+    },
+    {
+      "name": "Cadiz26",
+      "cluster": "E5",
+      "p_mw": 26.0,
+      "q_mvar": -8.545786734650443,
+      "q_source": "PF 0.95 absorbing (assumption)",
+      "p_source": "report table MW; PF assumption",
+      "hv_bus": 7029,
+      "hv_kv": 230.0,
+      "collector_bus": 8173,
+      "gsu": "GSU_Cadiz26",
+      "tap": 0.92732,
+      "x_pu_sys": 0.4013377926421405,
+      "r_pu_sys": 0.010033444816053512,
+      "sn_mva": 29.9,
+      "zth_pu": 0.019364413654090282,
+      "z0_pu": 1.0680013826925288,
+      "hv_v0_pu": 1.021984239799647,
+      "pvd1": "PVD1_Cadiz26"
+    },
+    {
+      "name": "Cadiz128",
+      "cluster": "E5",
+      "p_mw": 128.0,
+      "q_mvar": -42.07156546289449,
+      "q_source": "PF 0.95 absorbing (assumption)",
+      "p_source": "report table MW; PF assumption",
+      "hv_bus": 7018,
+      "hv_kv": 500.0,
+      "collector_bus": 8174,
+      "gsu": "GSU_Cadiz128",
+      "tap": 0.92732,
+      "x_pu_sys": 0.08152173913043478,
+      "r_pu_sys": 0.0020380434782608695,
+      "sn_mva": 147.2,
+      "zth_pu": 0.007326530628545017,
+      "z0_pu": 1.081713894151742,
+      "hv_v0_pu": 1.034200791553125,
+      "pvd1": "PVD1_Cadiz128"
+    },
+    {
+      "name": "Malaga154",
+      "cluster": "E5",
+      "p_mw": 154.0,
+      "q_mvar": -50.61735219754493,
+      "q_source": "PF 0.95 absorbing (assumption)",
+      "p_source": "report table MW; PF assumption",
+      "hv_bus": 7304,
+      "hv_kv": 500.0,
+      "collector_bus": 8175,
+      "gsu": "GSU_Malaga154",
+      "tap": 0.92732,
+      "x_pu_sys": 0.06775832862789384,
+      "r_pu_sys": 0.001693958215697346,
+      "sn_mva": 177.1,
+      "zth_pu": 0.005390732984293332,
+      "z0_pu": 1.0606132853258827,
+      "hv_v0_pu": 1.01540904046275,
+      "pvd1": "PVD1_Malaga154"
+    },
+    {
+      "name": "Cuenca530",
+      "cluster": "E5",
+      "p_mw": 530.0,
+      "q_mvar": -174.20257574479749,
+      "q_source": "PF 0.95 absorbing (assumption)",
+      "p_source": "report table MW; PF assumption",
+      "hv_bus": 7125,
+      "hv_kv": 500.0,
+      "collector_bus": 8176,
+      "gsu": "GSU_Cuenca530",
+      "tap": 0.92732,
+      "x_pu_sys": 0.019688269073010665,
+      "r_pu_sys": 0.0004922067268252667,
+      "sn_mva": 609.5,
+      "zth_pu": 0.0024458467422142,
+      "z0_pu": 1.0800425955252255,
+      "hv_v0_pu": 1.0327109317504553,
+      "pvd1": "PVD1_Cuenca530"
+    },
+    {
+      "name": "RES01",
+      "cluster": "fleet",
+      "p_mw": 120.0,
+      "q_mvar": -39.44209262146359,
+      "q_source": "PF 0.95 absorbing (assumption)",
+      "p_source": "generic RES fleet block (fixed size pattern)",
+      "hv_bus": 7305,
+      "hv_kv": 230.0,
+      "collector_bus": 8177,
+      "gsu": "GSU_RES01",
+      "tap": 0.92732,
+      "x_pu_sys": 0.08695652173913043,
+      "r_pu_sys": 0.002173913043478261,
+      "sn_mva": 138.0,
+      "zth_pu": 0.010411612790295269,
+      "z0_pu": 1.0679556414500553,
+      "hv_v0_pu": 1.0219435118039393,
+      "pvd1": "PVD1_RES01"
+    },
+    {
+      "name": "RES02",
+      "cluster": "fleet",
+      "p_mw": 180.0,
+      "q_mvar": -59.16313893219538,
+      "q_source": "PF 0.95 absorbing (assumption)",
+      "p_source": "generic RES fleet block (fixed size pattern)",
+      "hv_bus": 7095,
+      "hv_kv": 500.0,
+      "collector_bus": 8178,
+      "gsu": "GSU_RES02",
+      "tap": 0.92732,
+      "x_pu_sys": 0.05797101449275363,
+      "r_pu_sys": 0.0014492753623188408,
+      "sn_mva": 206.99999999999997,
+      "zth_pu": 0.0052530595473932,
+      "z0_pu": 1.0575419599588778,
+      "hv_v0_pu": 1.012677113191074,
+      "pvd1": "PVD1_RES02"
+    },
+    {
+      "name": "RES03",
+      "cluster": "fleet",
+      "p_mw": 250.0,
+      "q_mvar": -82.1710262947158,
+      "q_source": "PF 0.95 absorbing (assumption)",
+      "p_source": "generic RES fleet block (fixed size pattern)",
+      "hv_bus": 7342,
+      "hv_kv": 230.0,
+      "collector_bus": 8179,
+      "gsu": "GSU_RES03",
+      "tap": 0.92732,
+      "x_pu_sys": 0.04173913043478261,
+      "r_pu_sys": 0.0010434782608695653,
+      "sn_mva": 287.5,
+      "zth_pu": 0.004913088295081375,
+      "z0_pu": 1.0798123949189722,
+      "hv_v0_pu": 1.0325057566756952,
+      "pvd1": "PVD1_RES03"
+    },
+    {
+      "name": "RES04",
+      "cluster": "fleet",
+      "p_mw": 320.0,
+      "q_mvar": -105.17891365723622,
+      "q_source": "PF 0.95 absorbing (assumption)",
+      "p_source": "generic RES fleet block (fixed size pattern)",
+      "hv_bus": 7409,
+      "hv_kv": 230.0,
+      "collector_bus": 8180,
+      "gsu": "GSU_RES04",
+      "tap": 0.92732,
+      "x_pu_sys": 0.03260869565217391,
+      "r_pu_sys": 0.0008152173913043478,
+      "sn_mva": 368.0,
+      "zth_pu": 0.0039054390743845763,
+      "z0_pu": 1.0841369795353595,
+      "hv_v0_pu": 1.0363612074547774,
+      "pvd1": "PVD1_RES04"
+    },
+    {
+      "name": "RES05",
+      "cluster": "fleet",
+      "p_mw": 400.0,
+      "q_mvar": -131.47364207154527,
+      "q_source": "PF 0.95 absorbing (assumption)",
+      "p_source": "generic RES fleet block (fixed size pattern)",
+      "hv_bus": 7331,
+      "hv_kv": 500.0,
+      "collector_bus": 8181,
+      "gsu": "GSU_RES05",
+      "tap": 0.92732,
+      "x_pu_sys": 0.026086956521739132,
+      "r_pu_sys": 0.0006521739130434783,
+      "sn_mva": 459.99999999999994,
+      "zth_pu": 0.00254296779898854,
+      "z0_pu": 1.0882022902038222,
+      "hv_v0_pu": 1.0399869473986871,
+      "pvd1": "PVD1_RES05"
+    },
+    {
+      "name": "RES06",
+      "cluster": "fleet",
+      "p_mw": 120.0,
+      "q_mvar": -39.44209262146359,
+      "q_source": "PF 0.95 absorbing (assumption)",
+      "p_source": "generic RES fleet block (fixed size pattern)",
+      "hv_bus": 7407,
+      "hv_kv": 230.0,
+      "collector_bus": 8182,
+      "gsu": "GSU_RES06",
+      "tap": 0.92732,
+      "x_pu_sys": 0.08695652173913043,
+      "r_pu_sys": 0.002173913043478261,
+      "sn_mva": 138.0,
+      "zth_pu": 0.01183301962159657,
+      "z0_pu": 1.0671206269635927,
+      "hv_v0_pu": 1.0212001298163413,
+      "pvd1": "PVD1_RES06"
+    },
+    {
+      "name": "RES07",
+      "cluster": "fleet",
+      "p_mw": 180.0,
+      "q_mvar": -59.16313893219538,
+      "q_source": "PF 0.95 absorbing (assumption)",
+      "p_source": "generic RES fleet block (fixed size pattern)",
+      "hv_bus": 7058,
+      "hv_kv": 500.0,
+      "collector_bus": 8183,
+      "gsu": "GSU_RES07",
+      "tap": 0.92732,
+      "x_pu_sys": 0.05797101449275363,
+      "r_pu_sys": 0.0014492753623188408,
+      "sn_mva": 206.99999999999997,
+      "zth_pu": 0.005376613196962702,
+      "z0_pu": 1.073597361556305,
+      "hv_v0_pu": 1.026967741800006,
+      "pvd1": "PVD1_RES07"
+    },
+    {
+      "name": "RES08",
+      "cluster": "fleet",
+      "p_mw": 250.0,
+      "q_mvar": -82.1710262947158,
+      "q_source": "PF 0.95 absorbing (assumption)",
+      "p_source": "generic RES fleet block (fixed size pattern)",
+      "hv_bus": 7341,
+      "hv_kv": 500.0,
+      "collector_bus": 8184,
+      "gsu": "GSU_RES08",
+      "tap": 0.92732,
+      "x_pu_sys": 0.04173913043478261,
+      "r_pu_sys": 0.0010434782608695653,
+      "sn_mva": 287.5,
+      "zth_pu": 0.0049873980726865205,
+      "z0_pu": 1.063429784158678,
+      "hv_v0_pu": 1.0179150555045637,
+      "pvd1": "PVD1_RES08"
+    },
+    {
+      "name": "RES09",
+      "cluster": "fleet",
+      "p_mw": 320.0,
+      "q_mvar": -105.17891365723622,
+      "q_source": "PF 0.95 absorbing (assumption)",
+      "p_source": "generic RES fleet block (fixed size pattern)",
+      "hv_bus": 7347,
+      "hv_kv": 230.0,
+      "collector_bus": 8185,
+      "gsu": "GSU_RES09",
+      "tap": 0.92732,
+      "x_pu_sys": 0.03260869565217391,
+      "r_pu_sys": 0.0008152173913043478,
+      "sn_mva": 368.0,
+      "zth_pu": 0.004608959892486946,
+      "z0_pu": 1.0794603022311418,
+      "hv_v0_pu": 1.0321919257674887,
+      "pvd1": "PVD1_RES09"
+    },
+    {
+      "name": "RES10",
+      "cluster": "fleet",
+      "p_mw": 400.0,
+      "q_mvar": -131.47364207154527,
+      "q_source": "PF 0.95 absorbing (assumption)",
+      "p_source": "generic RES fleet block (fixed size pattern)",
+      "hv_bus": 7186,
+      "hv_kv": 500.0,
+      "collector_bus": 8186,
+      "gsu": "GSU_RES10",
+      "tap": 0.92732,
+      "x_pu_sys": 0.026086956521739132,
+      "r_pu_sys": 0.0006521739130434783,
+      "sn_mva": 459.99999999999994,
+      "zth_pu": 0.0030493949545305227,
+      "z0_pu": 1.0710356142307742,
+      "hv_v0_pu": 1.0246860191486304,
+      "pvd1": "PVD1_RES10"
+    }
+  ],
+  "gnet_pvd1": [
+    "GNET_363",
+    "GNET_364",
+    "GNET_365",
+    "GNET_435",
+    "GNET_436",
+    "GNET_437",
+    "GNET_438",
+    "GNET_439"
+  ],
+  "meshing_lines": {
+    "energized_circuits": [
+      "PAR_Line_2154",
+      "PAR_Line_1848"
+    ],
+    "parallel_to": [
+      "Line_2154",
+      "Line_1848"
+    ]
+  },
+  "candidate_lines": [
+    "PAR_Line_1766",
+    "PAR_Line_1723"
+  ],
+  "candidate_capacitors": [
+    "CAPCAND_1_7274",
+    "CAPCAND_2_7019"
+  ],
+  "regularization_and_corrections": [
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_1",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_2",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_3",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_4",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_5",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_6",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_7",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_8",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_9",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_10",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_11",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_12",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_13",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_14",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_15",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_16",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_17",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_18",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_19",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_20",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_21",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_22",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_23",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_24",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_25",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_26",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_27",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_28",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_29",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_30",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_31",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_32",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_33",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_34",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_35",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_36",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_37",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_38",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_39",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_40",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_41",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_42",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_43",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_44",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_45",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_46",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_47",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_48",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_49",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_50",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_51",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_52",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_53",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_54",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_55",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_56",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_57",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_58",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_59",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_60",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_61",
+      "block": "F2",
+      "block_class": "LeadLag2ndOrd",
+      "action": "not_regularized",
+      "reason": "T1=T2=0 with nonzero T3/T4 (improper lead-lag)",
+      "source": "pa_dvsa.andes_regularization"
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_1",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_2",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_3",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_4",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_5",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_6",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_7",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_8",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_9",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_10",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_11",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_12",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_13",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_14",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_15",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_16",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_17",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_18",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_19",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_20",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_21",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_22",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_23",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_24",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_25",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_26",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_27",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_28",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_29",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_30",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_31",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_32",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_33",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_34",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_35",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_36",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_37",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_38",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_39",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_40",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_41",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_42",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_43",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_44",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_45",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_46",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_47",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_48",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_49",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_50",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_51",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_52",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_53",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_54",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_55",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_56",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_57",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_58",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_59",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_60",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "IEEEST",
+      "idx": "IEEEST_61",
+      "reason": "improper F2 (A3=A4=0, A5/A6 != 0): output frozen by diag_eps in TDS; fast double pole added",
+      "old": {
+        "A3": 0.0,
+        "A4": 0.0
+      },
+      "new": {
+        "A3": 0.002,
+        "A4": 1e-06
+      }
+    },
+    {
+      "model": "ESDC1A",
+      "idx": "ESDC1A_8",
+      "reason": "exciter not in equilibrium at TDS init (regulator limits); disabled -> constant field"
+    },
+    {
+      "model": "IEEET1",
+      "idx": "IEEET1_21",
+      "reason": "exciter not in equilibrium at TDS init (regulator limits); disabled -> constant field"
+    }
+  ],
+  "gsu_tap": 0.92732,
+  "notes": {
+    "load_scale": 0.63,
+    "area_load_mw_before_scaling": 18166.614,
+    "area_load_reduction_mw": 6721.647180000001,
+    "area_sync_dispatch_mw_before": 21322.529999999995,
+    "sync_dispatch_factor": 0.42935255900683444,
+    "block_total_mw": 5446.0,
+    "armed_res_reduction_fraction": 0.0,
+    "interchange_reduction_mw": 0.0,
+    "interchange_counterpart_areas": [
+      4,
+      6,
+      8
+    ],
+    "interchange_area_governors": 9,
+    "interchange_counterpart_governors": 82,
+    "commitment": {
+      "commitment_c": 1.5,
+      "dispatch_rule": "must_run",
+      "rule": "ascending MVA rating, then bus id, then idx; slack unit kept; stop at capacity <= C x dispatch",
+      "c_ratio": 1.5,
+      "dispatch_mw_for_rule": 7095.048819999995,
+      "capacity_limit_mva": 10642.573229999993,
+      "before": {
+        "units": 137,
+        "mva": 31278.500000000015
+      },
+      "decommitted": [
+        {
+          "genrou": "GENROU_381",
+          "bus": 7422,
+          "sn_mva": 8.16,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_311",
+          "bus": 7189,
+          "sn_mva": 8.28,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_315",
+          "bus": 7193,
+          "sn_mva": 9.0,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_301",
+          "bus": 7146,
+          "sn_mva": 12.24,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_402",
+          "bus": 7428,
+          "sn_mva": 14.04,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_291",
+          "bus": 7133,
+          "sn_mva": 19.56,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_353",
+          "bus": 7357,
+          "sn_mva": 19.56,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_261",
+          "bus": 7021,
+          "sn_mva": 26.88,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_314",
+          "bus": 7192,
+          "sn_mva": 42.0,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_262",
+          "bus": 7022,
+          "sn_mva": 56.88,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_263",
+          "bus": 7023,
+          "sn_mva": 56.88,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_312",
+          "bus": 7190,
+          "sn_mva": 57.6,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_281",
+          "bus": 7108,
+          "sn_mva": 61.2,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_282",
+          "bus": 7109,
+          "sn_mva": 61.2,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_297",
+          "bus": 7139,
+          "sn_mva": 70.8,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_298",
+          "bus": 7140,
+          "sn_mva": 70.8,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_299",
+          "bus": 7141,
+          "sn_mva": 70.8,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_300",
+          "bus": 7142,
+          "sn_mva": 70.8,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_376",
+          "bus": 7406,
+          "sn_mva": 75.72,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_370",
+          "bus": 7400,
+          "sn_mva": 86.4,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_371",
+          "bus": 7400,
+          "sn_mva": 86.4,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_372",
+          "bus": 7400,
+          "sn_mva": 86.4,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_373",
+          "bus": 7400,
+          "sn_mva": 86.4,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_400",
+          "bus": 7428,
+          "sn_mva": 90.0,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_308",
+          "bus": 7168,
+          "sn_mva": 105.26,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_309",
+          "bus": 7169,
+          "sn_mva": 105.26,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_379",
+          "bus": 7419,
+          "sn_mva": 105.84,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_380",
+          "bus": 7419,
+          "sn_mva": 105.84,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_327",
+          "bus": 7267,
+          "sn_mva": 108.768,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_328",
+          "bus": 7268,
+          "sn_mva": 108.768,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_329",
+          "bus": 7269,
+          "sn_mva": 108.768,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_264",
+          "bus": 7024,
+          "sn_mva": 113.76,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_333",
+          "bus": 7307,
+          "sn_mva": 116.02,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_334",
+          "bus": 7308,
+          "sn_mva": 116.02,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_336",
+          "bus": 7310,
+          "sn_mva": 116.02,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_392",
+          "bus": 7428,
+          "sn_mva": 120.62,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_395",
+          "bus": 7428,
+          "sn_mva": 120.62,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_396",
+          "bus": 7428,
+          "sn_mva": 120.62,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_397",
+          "bus": 7428,
+          "sn_mva": 120.62,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_398",
+          "bus": 7428,
+          "sn_mva": 120.62,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_399",
+          "bus": 7428,
+          "sn_mva": 120.62,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_342",
+          "bus": 7329,
+          "sn_mva": 122.28,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_378",
+          "bus": 7414,
+          "sn_mva": 122.88,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_357",
+          "bus": 7361,
+          "sn_mva": 123.24,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_358",
+          "bus": 7369,
+          "sn_mva": 128.72,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_359",
+          "bus": 7370,
+          "sn_mva": 128.72,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_360",
+          "bus": 7371,
+          "sn_mva": 128.72,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_361",
+          "bus": 7372,
+          "sn_mva": 128.72,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_362",
+          "bus": 7373,
+          "sn_mva": 128.72,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_363",
+          "bus": 7374,
+          "sn_mva": 128.72,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_302",
+          "bus": 7162,
+          "sn_mva": 132.72,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_303",
+          "bus": 7163,
+          "sn_mva": 132.72,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_304",
+          "bus": 7164,
+          "sn_mva": 132.72,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_305",
+          "bus": 7165,
+          "sn_mva": 132.72,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_306",
+          "bus": 7166,
+          "sn_mva": 132.72,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_307",
+          "bus": 7167,
+          "sn_mva": 132.72,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_384",
+          "bus": 7422,
+          "sn_mva": 135.0,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_385",
+          "bus": 7422,
+          "sn_mva": 135.0,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_386",
+          "bus": 7422,
+          "sn_mva": 135.0,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_387",
+          "bus": 7422,
+          "sn_mva": 135.0,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_268",
+          "bus": 7061,
+          "sn_mva": 137.88,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_269",
+          "bus": 7062,
+          "sn_mva": 137.88,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_270",
+          "bus": 7063,
+          "sn_mva": 137.88,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_271",
+          "bus": 7064,
+          "sn_mva": 137.88,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_272",
+          "bus": 7065,
+          "sn_mva": 137.88,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_273",
+          "bus": 7066,
+          "sn_mva": 137.88,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_338",
+          "bus": 7323,
+          "sn_mva": 149.37,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_339",
+          "bus": 7324,
+          "sn_mva": 149.37,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_340",
+          "bus": 7325,
+          "sn_mva": 149.37,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_341",
+          "bus": 7326,
+          "sn_mva": 149.37,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_393",
+          "bus": 7428,
+          "sn_mva": 156.0,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_394",
+          "bus": 7428,
+          "sn_mva": 156.0,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_374",
+          "bus": 7400,
+          "sn_mva": 172.8,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_280",
+          "bus": 7107,
+          "sn_mva": 180.0,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_255",
+          "bus": 7005,
+          "sn_mva": 195.6,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_256",
+          "bus": 7006,
+          "sn_mva": 195.6,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_257",
+          "bus": 7007,
+          "sn_mva": 195.6,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_258",
+          "bus": 7008,
+          "sn_mva": 195.6,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_259",
+          "bus": 7009,
+          "sn_mva": 195.6,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_382",
+          "bus": 7422,
+          "sn_mva": 206.64,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_383",
+          "bus": 7422,
+          "sn_mva": 206.64,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_389",
+          "bus": 7422,
+          "sn_mva": 206.64,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_390",
+          "bus": 7422,
+          "sn_mva": 206.64,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_391",
+          "bus": 7422,
+          "sn_mva": 206.64,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_323",
+          "bus": 7210,
+          "sn_mva": 214.2,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_324",
+          "bus": 7211,
+          "sn_mva": 214.2,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_325",
+          "bus": 7212,
+          "sn_mva": 214.2,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_330",
+          "bus": 7270,
+          "sn_mva": 217.536,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_364",
+          "bus": 7375,
+          "sn_mva": 220.392,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_365",
+          "bus": 7376,
+          "sn_mva": 220.392,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_366",
+          "bus": 7377,
+          "sn_mva": 220.392,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_367",
+          "bus": 7378,
+          "sn_mva": 220.392,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_368",
+          "bus": 7379,
+          "sn_mva": 220.392,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_266",
+          "bus": 7045,
+          "sn_mva": 226.14,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_267",
+          "bus": 7046,
+          "sn_mva": 226.14,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_388",
+          "bus": 7422,
+          "sn_mva": 229.32,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_337",
+          "bus": 7311,
+          "sn_mva": 232.04,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_283",
+          "bus": 7110,
+          "sn_mva": 235.2,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_284",
+          "bus": 7111,
+          "sn_mva": 235.2,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_285",
+          "bus": 7112,
+          "sn_mva": 235.2,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_286",
+          "bus": 7113,
+          "sn_mva": 235.2,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_287",
+          "bus": 7114,
+          "sn_mva": 235.2,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_288",
+          "bus": 7115,
+          "sn_mva": 235.2,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_292",
+          "bus": 7134,
+          "sn_mva": 247.86,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_293",
+          "bus": 7135,
+          "sn_mva": 247.86,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_294",
+          "bus": 7136,
+          "sn_mva": 247.86,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_295",
+          "bus": 7137,
+          "sn_mva": 247.86,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_354",
+          "bus": 7358,
+          "sn_mva": 270.24,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_355",
+          "bus": 7359,
+          "sn_mva": 270.24,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_356",
+          "bus": 7360,
+          "sn_mva": 270.24,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_274",
+          "bus": 7079,
+          "sn_mva": 274.38,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_275",
+          "bus": 7080,
+          "sn_mva": 274.38,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_276",
+          "bus": 7081,
+          "sn_mva": 274.38,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_277",
+          "bus": 7082,
+          "sn_mva": 274.38,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_316",
+          "bus": 7194,
+          "sn_mva": 277.14,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_317",
+          "bus": 7195,
+          "sn_mva": 277.14,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_318",
+          "bus": 7196,
+          "sn_mva": 277.14,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_319",
+          "bus": 7197,
+          "sn_mva": 277.14,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_326",
+          "bus": 7266,
+          "sn_mva": 365.52,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_377",
+          "bus": 7406,
+          "sn_mva": 372.0,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_345",
+          "bus": 7349,
+          "sn_mva": 376.59,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_346",
+          "bus": 7350,
+          "sn_mva": 376.59,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_347",
+          "bus": 7351,
+          "sn_mva": 376.59,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_348",
+          "bus": 7352,
+          "sn_mva": 376.59,
+          "had_exciter": true
+        },
+        {
+          "genrou": "GENROU_310",
+          "bus": 7170,
+          "sn_mva": 421.04,
+          "had_exciter": true
+        }
+      ],
+      "decommitted_count": 125,
+      "decommitted_mva": 20719.940000000006,
+      "dispatch": {
+        "rule": "must_run",
+        "k": 0.8675573470663385,
+        "units": 11,
+        "target_mw": 5854.382819999995,
+        "units_at_must_run": 0,
+        "units_at_capability": 0,
+        "must_run_fraction": 0.2
+      },
+      "export_reduction": {
+        "rule": "rest-of-interconnection load scaled down pro rata (constant PF)",
+        "delta_mw": 3300.5000000000005,
+        "factor": 0.9325638894574119,
+        "loads": 1109
+      },
+      "area_online_sync_units": 12,
+      "area_online_sync_mva": 10558.560000000001,
+      "area_online_units_with_exciter": 12,
+      "area_online_units_with_governor": 9,
+      "pss_completion": []
+    },
+    "exciter_completion": {
+      "mode": "all",
+      "added": 327,
+      "reparameterized_converted_sexs": 0,
+      "parameters": {
+        "TATB": 0.4,
+        "TB": 5.0,
+        "K": 20.0,
+        "TE": 1.0,
+        "EMIN": -99.0,
+        "EMAX": 99.0
+      },
+      "basis": "generic SEXS set ANDES uses for the case's converted exciter records"
+    },
+    "tie_impedance_scale": 15.0,
+    "ties_scaled": 21,
+    "export_reduction_mw": 3300.5,
+    "area_ehv_shunt_mvar": 1600.0,
+    "area_ehv_shunt_buses": 80,
+    "embedded_pv_units": 241,
+    "embedded_pv_mw": 1716.7450230000009,
+    "candidate_count": 74,
+    "zone_center": 7274,
+    "zone_center_distance_to_regulation_pu_x": 0.05616,
+    "zone_distance_from_center_pu_x": {
+      "7274": 0.0,
+      "7019": 0.02368,
+      "7029": 0.03556,
+      "7043": 0.03975,
+      "7042": 0.04883,
+      "7415": 0.05135,
+      "7018": 0.05148,
+      "7058": 0.056139999999999995,
+      "7407": 0.06225,
+      "7095": 0.06384999999999999,
+      "7059": 0.06669,
+      "7304": 0.07239999999999999,
+      "7096": 0.07710999999999998,
+      "7341": 0.08103999999999999,
+      "7305": 0.08481,
+      "7186": 0.08742999999999998,
+      "7346": 0.09274999999999999,
+      "7342": 0.09355999999999999,
+      "7125": 0.09402999999999999,
+      "7261": 0.09638999999999998,
+      "7187": 0.09649999999999997,
+      "7409": 0.09938999999999999,
+      "7327": 0.10049,
+      "7331": 0.10098999999999998,
+      "7347": 0.10260999999999998,
+      "7366": 0.10434999999999998
+    },
+    "zone_zth_pu": {
+      "7274": 0.018787259130118646,
+      "7019": 0.016660352425140766,
+      "7029": 0.019364413654090282,
+      "7043": 0.012702698005434339,
+      "7042": 0.0069748708385576185,
+      "7415": 0.023035445204353255,
+      "7018": 0.007326530628545017,
+      "7058": 0.005376613196962702,
+      "7407": 0.01183301962159657,
+      "7095": 0.0052530595473932,
+      "7059": 0.012499888398511263,
+      "7304": 0.005390732984293332,
+      "7096": 0.014539747798277573,
+      "7341": 0.0049873980726865205,
+      "7305": 0.010411612790295269,
+      "7186": 0.0030493949545305227,
+      "7346": 0.0019180301845542808,
+      "7342": 0.004913088295081375,
+      "7125": 0.0024458467422142,
+      "7261": 0.021232655849661244,
+      "7187": 0.00376720658285296,
+      "7409": 0.0039054390743845763,
+      "7327": 0.016399896501489573,
+      "7331": 0.00254296779898854,
+      "7347": 0.004608959892486946,
+      "7366": 0.0020448353223374792
+    },
+    "zone_500kv_lines_by_charging": [
+      "Line_2154",
+      "Line_1848",
+      "Line_1766",
+      "Line_1723",
+      "Line_1892",
+      "Line_2002",
+      "Line_2003",
+      "Line_1678",
+      "Line_1893"
+    ],
+    "pflow": {
+      "outer": 11,
+      "switch_operations": 111,
+      "n_pq": 109,
+      "back_switching_frozen": false,
+      "complementarity_residual_units": 0
+    },
+    "init_algebraic_settle": {
+      "max_abs_g_before": 21.695540202638472,
+      "variable": "Se ESDC1A 8",
+      "iterations": 2,
+      "variables_solved": 17,
+      "max_abs_g_after": 2.028901491257784e-10
+    },
+    "init_max_abs_dxdt": 3.9745984281580604e-14,
+    "init_max_abs_dxdt_state": "INT_y IEEET1 34"
+  },
+  "pre_cascade_actions": [
+    {
+      "code": "RES500",
+      "kind": "fixed_pf_res_reduction",
+      "start_s": 0.0,
+      "duration_s": 48.0,
+      "size": 708.0,
+      "unit": "MW",
+      "description": "Output of the protected plants reduced pro rata at fixed power factor (P and Q together).",
+      "justification": "Final report p. 13: large RES at fixed PF reduced output by about 500 MW between 12:32:00 and 12:32:48."
+    }
+  ]
+}

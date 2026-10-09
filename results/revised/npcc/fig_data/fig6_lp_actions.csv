@@ -1,0 +1,3 @@
+seed_id,control_id,control_class,alpha
+load_disconnection:PQ_48,plant_q_command:RES15,plant_q_command,0.18356989330115672
+load_disconnection:PQ_48,plant_q_command:RES16,plant_q_command,0.5213131375775125

@@ -1,0 +1,88 @@
+{
+  "script": "python -m pa_dvsa.replication.academic_replica",
+  "mode": "physics",
+  "claim": "ACTIVSg2000-backed mechanism replica (not a forensic Iberian equivalent); all protection triggers are measured quantities of the ANDES solution; no count/min-time/previous-stage gates.",
+  "time_zero_cest_reference": "2025-04-28T12:32:50+02:00",
+  "variants": {
+    "baseline": "Physics mode: report-like pre-cascade actions, uniform standard protection, everything after that emergent.",
+    "no_pre_cascade_actions": "Control run: no operator actions (OA1-OA3); checks that the operating point is steady.",
+    "no_ov_protection": "Plant over-voltage relays disabled (OV1/OV2 removed); all other protection unchanged.",
+    "delayed_protection": "Plant OV1 delay 2.0 s (IEEE 1547-2018 default OV1 clearing time) instead of 1.0 s.",
+    "preserved_absorption": "A plant trip removes its MW, but a collector reactor switched in at the trip keeps the pre-trip MVAr absorption.",
+    "voltage_mode_res": "Protected plants in volt-var mode (PVD1 droop dq/dv = 7.33 pu/pu on rating above the operating voltage), same initial operating point."
+  },
+  "sensitivity_cases": {
+    "margin_0p25pct": {
+      "tap_margin_pu": 0.0025
+    },
+    "margin_0p5pct": {
+      "tap_margin_pu": 0.005
+    },
+    "margin_2pct": {
+      "tap_margin_pu": 0.02
+    },
+    "pf_0p98": {
+      "fixed_pf": 0.98
+    },
+    "fixed_tap_0p95": {
+      "tap_rule": "fixed",
+      "tap_fixed": 0.95
+    },
+    "margin_0p25pct_preserved": {
+      "tap_margin_pu": 0.0025,
+      "preserved_absorption": true
+    }
+  },
+  "outputs": {
+    "baseline": "results/revised/activsg2000/baseline",
+    "no_pre_cascade_actions": "results/revised/activsg2000/no_pre_cascade_actions",
+    "no_ov_protection": "results/revised/activsg2000/no_ov_protection",
+    "delayed_protection": "results/revised/activsg2000/delayed_protection",
+    "preserved_absorption": "results/revised/activsg2000/preserved_absorption",
+    "voltage_mode_res": "results/revised/activsg2000/voltage_mode_res",
+    "margin_0p25pct": "results/revised/activsg2000/sensitivity/margin_0p25pct",
+    "margin_0p5pct": "results/revised/activsg2000/sensitivity/margin_0p5pct",
+    "margin_2pct": "results/revised/activsg2000/sensitivity/margin_2pct",
+    "pf_0p98": "results/revised/activsg2000/sensitivity/pf_0p98",
+    "fixed_tap_0p95": "results/revised/activsg2000/sensitivity/fixed_tap_0p95",
+    "margin_0p25pct_preserved": "results/revised/activsg2000/sensitivity/margin_0p25pct_preserved"
+  },
+  "figures": [
+    "results/revised/activsg2000/figures/fig_replica_timeseries.pdf",
+    "results/revised/activsg2000/figures/fig_replica_timeseries.png",
+    "results/revised/activsg2000/figures/fig_replica_timeseries_no_pre_cascade_actions.pdf",
+    "results/revised/activsg2000/figures/fig_replica_timeseries_no_pre_cascade_actions.png",
+    "results/revised/activsg2000/figures/fig_replica_timeseries_no_ov_protection.pdf",
+    "results/revised/activsg2000/figures/fig_replica_timeseries_no_ov_protection.png",
+    "results/revised/activsg2000/figures/fig_replica_timeseries_delayed_protection.pdf",
+    "results/revised/activsg2000/figures/fig_replica_timeseries_delayed_protection.png",
+    "results/revised/activsg2000/figures/fig_replica_timeseries_preserved_absorption.pdf",
+    "results/revised/activsg2000/figures/fig_replica_timeseries_preserved_absorption.png",
+    "results/revised/activsg2000/figures/fig_replica_timeseries_voltage_mode_res.pdf",
+    "results/revised/activsg2000/figures/fig_replica_timeseries_voltage_mode_res.png",
+    "results/revised/activsg2000/figures/fig_replica_timeseries_sens_fixed_tap_0p95.pdf",
+    "results/revised/activsg2000/figures/fig_replica_timeseries_sens_fixed_tap_0p95.png",
+    "results/revised/activsg2000/figures/fig_replica_timeseries_sens_margin_0p25pct.pdf",
+    "results/revised/activsg2000/figures/fig_replica_timeseries_sens_margin_0p25pct.png",
+    "results/revised/activsg2000/figures/fig_replica_timeseries_sens_margin_0p25pct_preserved.pdf",
+    "results/revised/activsg2000/figures/fig_replica_timeseries_sens_margin_0p25pct_preserved.png",
+    "results/revised/activsg2000/figures/fig_replica_timeseries_sens_margin_0p5pct.pdf",
+    "results/revised/activsg2000/figures/fig_replica_timeseries_sens_margin_0p5pct.png",
+    "results/revised/activsg2000/figures/fig_replica_timeseries_sens_margin_2pct.pdf",
+    "results/revised/activsg2000/figures/fig_replica_timeseries_sens_margin_2pct.png",
+    "results/revised/activsg2000/figures/fig_replica_timeseries_sens_pf_0p98.pdf",
+    "results/revised/activsg2000/figures/fig_replica_timeseries_sens_pf_0p98.png",
+    "results/revised/activsg2000/figures/fig_replica_variant_envelopes.pdf",
+    "results/revised/activsg2000/figures/fig_replica_variant_envelopes.png",
+    "results/revised/activsg2000/figures/fig_replica_variant_outcomes.pdf",
+    "results/revised/activsg2000/figures/fig_replica_variant_outcomes.png",
+    "results/revised/activsg2000/figures/fig_replica_condition_buildup.pdf",
+    "results/revised/activsg2000/figures/fig_replica_condition_buildup.png"
+  ],
+  "git": {
+    "head": "a4c75c133d3f48594d94592df569159e702aa107",
+    "dirty_files": 2
+  },
+  "wall_time_s": 462.9840409755707,
+  "python": "3.11.13"
+}

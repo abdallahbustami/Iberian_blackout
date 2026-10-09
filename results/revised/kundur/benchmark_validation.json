@@ -1,0 +1,2747 @@
+{
+ "ramp_screen_check": {
+  "baseline": {
+   "block": "RES03",
+   "screen_own_dv_1s_mpu": 0.5755072985140676,
+   "tds_own_dv_1s_mpu": 0.574276784680805,
+   "max_abs_err_0_0p3_mpu": 0.0003337814237525669,
+   "max_abs_err_0_1_mpu": 0.0012449456004867644,
+   "max_real_eig": 1.8679286315732854e-14
+  },
+  "voltage_mode_res": {
+   "block": "RES03",
+   "screen_own_dv_1s_mpu": 0.5755072985132397,
+   "tds_own_dv_1s_mpu": 0.39880788863944083,
+   "max_abs_err_0_0p3_mpu": 0.08953826857207337,
+   "max_abs_err_0_1_mpu": 0.18444054472131505,
+   "max_real_eig": -1.974916104498976e-13
+  }
+ },
+ "slug": "kundur",
+ "feasible": true,
+ "stock_load_reference": {
+  "build_runtime_s": 0.4674099580006441,
+  "static": {
+   "slug": "kundur",
+   "variant": "stock_load",
+   "pflow_converged": true,
+   "tds_init_test_ok": true,
+   "max_abs_fg_at_init": 3.552713678800501e-14,
+   "taps": [
+    0.8507442207363511,
+    0.8581461936501763,
+    0.8889292555419076,
+    0.8590176908380434
+   ],
+   "taps_within_range": true,
+   "max_q_rel_error": 1.0319642268362553e-09,
+   "q_within_1pct": true,
+   "n_taps_at_limit": 0,
+   "max_z0_error_pu": 2.220446049250313e-16,
+   "z0_shortfall_at_limit_pu": [],
+   "margins_pu": [
+    0.02933333333333321,
+    0.008000000000000007,
+    0.040000000000000036,
+    0.01866666666666661
+   ],
+   "n_states": 68,
+   "n_algebraic": 257,
+   "n_zero_tf_states": 0,
+   "augmented_size": 257,
+   "n_decoupled": 37,
+   "decoupled_examples": [
+    "q PV 2",
+    "q PV 3",
+    "q PV 4",
+    "q PV RES01",
+    "q PV RES02",
+    "q PV RES03",
+    "q PV RES04",
+    "q Slack 1"
+   ],
+   "coupled_size": 220,
+   "rank_method": "dense",
+   "augmented_rank": 257,
+   "full_rank": true,
+   "coupled_sigma_min": 0.0011724992120718761,
+   "coupled_sigma_max": 323.67004540155864,
+   "coupled_cond_2": 276051.39693835215,
+   "core_regularity_ok": true,
+   "core_regularity": {
+    "size": 224,
+    "condition_estimate": 1496.882299624162,
+    "removed_decoupled": 33,
+    "message": "augmented algebraic Jacobian is regular"
+   }
+  },
+  "no_event_max_abs_dv_pu": 0.0,
+  "no_event_max_abs_omega_dev": 0.0,
+  "voltage_profile": {
+   "bus_v_min_pu": 0.9227277972158476,
+   "bus_v_max_pu": 1.0000000000000004,
+   "bus_v_min_bus": "7",
+   "bus_v_max_bus": "2",
+   "hv_v_min_pu": 0.9227277972158476,
+   "hv_v_max_pu": 0.9728484351525866,
+   "hv_v_mean_pu": 0.9495549605373094,
+   "n_bus_over_1p10": 0,
+   "n_hv_bus_over_1p10": 0,
+   "kv_levels_over_1p10": [],
+   "block_hv_v_pu": {
+    "RES01": 0.939768565764749,
+    "RES02": 0.9655442804439132,
+    "RES03": 0.9728484351525866,
+    "RES04": 0.9577118354302259
+   },
+   "collector_v_pu": {
+    "RES01": 1.0706666666666669,
+    "RES02": 1.092,
+    "RES03": 1.06,
+    "RES04": 1.0813333333333335
+   },
+   "n_machines": 4,
+   "n_machines_absorbing_q": 0,
+   "machine_q_total_mvar": 1266.3978006389627,
+   "machine_q_min_mvar": 202.69193656347016,
+   "machine_q_max_mvar": 477.6127899800673,
+   "machine_q_over_sn_min": 0.22521326284830018,
+   "machine_q_over_sn_max": 0.5306808777556303,
+   "n_machines_rated": 4,
+   "machines_q_below_minus_half_sn": [],
+   "internal_angle_max_deg": 43.20435606120021,
+   "internal_angle_p50_deg": 25.721792306168986,
+   "internal_angle_p90_deg": 38.49165022905185,
+   "internal_angle_p99_deg": 42.73308547798537,
+   "n_internal_angle_over_60_deg": 0,
+   "n_internal_angle_over_90_deg": 0,
+   "internal_angle_top": [
+    {
+     "model": "GENROU",
+     "idx": 1,
+     "angle_deg": 43.20435606120021
+    },
+    {
+     "model": "GENROU",
+     "idx": 4,
+     "angle_deg": 27.49533662070568
+    },
+    {
+     "model": "GENROU",
+     "idx": 3,
+     "angle_deg": 23.948247991632293
+    },
+    {
+     "model": "GENROU",
+     "idx": 2,
+     "angle_deg": 20.725410317707375
+    }
+   ],
+   "min_machine_vf_pu": 1.5984717416784533,
+   "machines_absorbing": []
+  },
+  "dispatch": {
+   "rule": "pv_only_slack_keeps_base",
+   "load_stock_mw": 2734.0,
+   "load_scale": 1.0,
+   "load_p_mw": 2734.0,
+   "load_p_gross_mw": 2734.0,
+   "res_p_total_mw": 956.8999999999999,
+   "res_share_of_load": 0.35,
+   "dispatch_scale": 0.5443333333333333,
+   "target_sync_mw": 1869.9029213150204,
+   "stock_losses_mw": 92.80292131502037,
+   "sync_pv_p0_total_stock_mw": 2100.0,
+   "sync_pv_p0_total_new_mw": 1143.1000000000001,
+   "slack_scheduled_mw": 726.8029213150204,
+   "slack_pf_mw": 739.1708799031387,
+   "loss_corrected": false,
+   "feasible": true,
+   "rule_text": "all in-service synchronous PV p0 multiplied by (sum p0 - P_RES)/sum p0 so the renewable in-feed displaces synchronous generation and the slack keeps (approximately) its base output"
+  },
+  "slack": {
+   "idx": 1,
+   "bus": 1,
+   "p_mw": 739.1708799031387,
+   "q_mvar": 257.60535867629187,
+   "pmax_mw": 900.0,
+   "pmin_mw": 0.0,
+   "qmax_mvar": 600.0,
+   "qmin_mvar": 0.0,
+   "base_case_p_mw": 726.8029213150204,
+   "base_case_q_mvar": 109.46336786513433,
+   "p_within_limits": true,
+   "q_within_limits": true
+  },
+  "blocks": [
+   {
+    "asset_id": "RES01",
+    "cluster": 0,
+    "rank_in_cluster": 0,
+    "seed_bus": 6,
+    "hv_bus": 6,
+    "hv_vn_kv": 230.0,
+    "hv_area": 1,
+    "collector_bus": 900001,
+    "gsu_idx": "GSU_RES01",
+    "pv_idx": "PV_RES01",
+    "pvd1_idx": "RES01",
+    "p_mw": 263.1475,
+    "sn_mva": 302.619625,
+    "q_target_mvar": -86.49240056755491,
+    "gsu_x_device_pu": 0.12,
+    "gsu_r_device_pu": 0.003,
+    "gsu_x_pu_sysbase": 0.039653740235782796,
+    "gsu_r_pu_sysbase": 0.00099134350589457,
+    "d_to_seed_pu": 0.0,
+    "d_to_slack_pu": 0.037002499750025016,
+    "tap_initial_guess": 0.8807758285722074,
+    "s_sc_mva": 4905.200817754295,
+    "scr": 18.6404994071929,
+    "tap": 0.8507442207363511,
+    "tap_within_range": true,
+    "z0_design_pu": 1.0706666666666667,
+    "z0_op_pu": 1.0706666666666669,
+    "tap_at_limit": false,
+    "margin_pu": 0.02933333333333321,
+    "v_hv_op_pu": 0.939768565764749,
+    "p_op_mw": 263.1475,
+    "q_op_mvar": -86.49240051142448,
+    "q_rel_error": 6.489637617417388e-10,
+    "pf_op": 0.9500000000601102,
+    "drop_op_pu": -0.03397623640394576,
+    "drop_bound_op_pu": 0.10262216983924134,
+    "drop_bound_ilim_pu": 0.1560487423851919
+   },
+   {
+    "asset_id": "RES02",
+    "cluster": 0,
+    "rank_in_cluster": 1,
+    "seed_bus": 6,
+    "hv_bus": 5,
+    "hv_vn_kv": 230.0,
+    "hv_area": 1,
+    "collector_bus": 900002,
+    "gsu_idx": "GSU_RES02",
+    "pv_idx": "PV_RES02",
+    "pvd1_idx": "RES02",
+    "p_mw": 167.45749999999998,
+    "sn_mva": 192.57612499999993,
+    "q_target_mvar": -55.04061854298947,
+    "gsu_x_device_pu": 0.12,
+    "gsu_r_device_pu": 0.003,
+    "gsu_x_pu_sysbase": 0.06231302037051584,
+    "gsu_r_pu_sysbase": 0.0015578255092628958,
+    "d_to_seed_pu": 0.025002499750025005,
+    "d_to_slack_pu": 0.012000000000000004,
+    "tap_initial_guess": 0.8772150129462997,
+    "s_sc_mva": 4340.419238047398,
+    "scr": 25.919527271381686,
+    "tap": 0.8581461936501763,
+    "tap_within_range": true,
+    "z0_design_pu": 1.092,
+    "z0_op_pu": 1.092,
+    "tap_at_limit": false,
+    "margin_pu": 0.008000000000000007,
+    "v_hv_op_pu": 0.9655442804439132,
+    "p_op_mw": 167.45749999999998,
+    "q_op_mvar": -55.04061850193308,
+    "q_rel_error": 7.459289649462938e-10,
+    "pf_op": 0.9500000000690917,
+    "drop_op_pu": -0.03315127094710113,
+    "drop_bound_op_pu": 0.10061734112348199,
+    "drop_bound_ilim_pu": 0.15604874238519192
+   },
+   {
+    "asset_id": "RES03",
+    "cluster": 1,
+    "rank_in_cluster": 0,
+    "seed_bus": 10,
+    "hv_bus": 10,
+    "hv_vn_kv": 230.0,
+    "hv_area": 2,
+    "collector_bus": 900003,
+    "gsu_idx": "GSU_RES03",
+    "pv_idx": "PV_RES03",
+    "pvd1_idx": "RES03",
+    "p_mw": 310.99249999999995,
+    "sn_mva": 357.6413749999999,
+    "q_target_mvar": -102.2182915798376,
+    "gsu_x_device_pu": 0.12,
+    "gsu_r_device_pu": 0.003,
+    "gsu_x_pu_sysbase": 0.033553164814893136,
+    "gsu_r_pu_sysbase": 0.0008388291203723283,
+    "d_to_seed_pu": 0.0,
+    "d_to_slack_pu": 0.1553466648160237,
+    "tap_initial_guess": 0.9026294867523478,
+    "s_sc_mva": 4340.419238047398,
+    "scr": 13.956668530743984,
+    "tap": 0.8889292555419076,
+    "tap_within_range": true,
+    "z0_design_pu": 1.06,
+    "z0_op_pu": 1.06,
+    "tap_at_limit": false,
+    "margin_pu": 0.040000000000000036,
+    "v_hv_op_pu": 0.9728484351525866,
+    "p_op_mw": 310.99249999999995,
+    "q_op_mvar": -102.21829147435197,
+    "q_rel_error": 1.0319642268362553e-09,
+    "pf_op": 0.9500000000955856,
+    "drop_op_pu": -0.034404789905941646,
+    "drop_bound_op_pu": 0.10365484575828127,
+    "drop_bound_ilim_pu": 0.15604874238519195
+   },
+   {
+    "asset_id": "RES04",
+    "cluster": 1,
+    "rank_in_cluster": 1,
+    "seed_bus": 10,
+    "hv_bus": 9,
+    "hv_vn_kv": 230.0,
+    "hv_area": 2,
+    "collector_bus": 900004,
+    "gsu_idx": "GSU_RES04",
+    "pv_idx": "PV_RES04",
+    "pvd1_idx": "RES04",
+    "p_mw": 215.3025,
+    "sn_mva": 247.597875,
+    "q_target_mvar": -70.7665095552722,
+    "gsu_x_device_pu": 0.12,
+    "gsu_r_device_pu": 0.003,
+    "gsu_x_pu_sysbase": 0.04846568251040119,
+    "gsu_r_pu_sysbase": 0.0012116420627600298,
+    "d_to_seed_pu": 0.025002499750024998,
+    "d_to_slack_pu": 0.13034416506599866,
+    "tap_initial_guess": 0.8720781439471167,
+    "s_sc_mva": 4905.200817754295,
+    "scr": 22.782832608791328,
+    "tap": 0.8590176908380434,
+    "tap_within_range": true,
+    "z0_design_pu": 1.0813333333333335,
+    "z0_op_pu": 1.0813333333333335,
+    "tap_at_limit": false,
+    "margin_pu": 0.01866666666666661,
+    "v_hv_op_pu": 0.9577118354302259,
+    "p_op_mw": 215.3025,
+    "q_op_mvar": -70.7665095058626,
+    "q_rel_error": 6.982058016289687e-10,
+    "pf_op": 0.9500000000646712,
+    "drop_op_pu": -0.033558531694379834,
+    "drop_bound_op_pu": 0.10160986730026532,
+    "drop_bound_ilim_pu": 0.15604874238519192
+   }
+  ]
+ },
+ "variants": {
+  "baseline": {
+   "scenario": "light_load",
+   "max_abs_dv_vs_baseline_pu": 0.0,
+   "relays_disabled": false,
+   "dwell_s": 0.05,
+   "plant_control": "fixed power factor",
+   "trip_event": "plant_trip:RES03",
+   "tds_ok": true,
+   "neighbour_max_rise_pu": 0.012489999462077295,
+   "neighbour_mean_final_dv_pu": 0.000262866996077656,
+   "n_neighbours_over_pickup": 0,
+   "max_abs_dv_any_bus_pu": 0.05010567284062728
+  },
+  "voltage_mode_res": {
+   "scenario": "light_load",
+   "max_abs_dv_vs_baseline_pu": 0.0,
+   "relays_disabled": false,
+   "dwell_s": 0.05,
+   "plant_control": "voltage droop (over-voltage branch)",
+   "trip_event": "plant_trip:RES03",
+   "tds_ok": true,
+   "neighbour_max_rise_pu": 0.008989108026953518,
+   "neighbour_mean_final_dv_pu": -0.0001501809066855042,
+   "n_neighbours_over_pickup": 0,
+   "max_abs_dv_any_bus_pu": 0.0497389251957332
+  },
+  "preserved_absorption": {
+   "scenario": "light_load",
+   "max_abs_dv_vs_baseline_pu": 0.0,
+   "relays_disabled": false,
+   "dwell_s": 0.05,
+   "plant_control": "fixed power factor",
+   "trip_event": "plant_trip:RES03",
+   "tds_ok": true,
+   "neighbour_max_rise_pu": 0.006420160160063082,
+   "neighbour_mean_final_dv_pu": -0.0008393641707075498,
+   "n_neighbours_over_pickup": 0,
+   "max_abs_dv_any_bus_pu": 0.00844694730146145
+  },
+  "delayed_protection": {
+   "scenario": "light_load",
+   "max_abs_dv_vs_baseline_pu": 0.0,
+   "relays_disabled": false,
+   "dwell_s": 0.2,
+   "plant_control": "fixed power factor",
+   "trip_event": "plant_trip:RES03",
+   "tds_ok": true,
+   "neighbour_max_rise_pu": 0.012489999462077295,
+   "neighbour_mean_final_dv_pu": 0.000262866996077656,
+   "n_neighbours_over_pickup": 0,
+   "max_abs_dv_any_bus_pu": 0.05010567284062728
+  },
+  "no_ov_protection": {
+   "scenario": "light_load",
+   "max_abs_dv_vs_baseline_pu": 0.0,
+   "relays_disabled": true,
+   "dwell_s": 0.05,
+   "plant_control": "fixed power factor",
+   "trip_event": "plant_trip:RES03",
+   "tds_ok": true,
+   "neighbour_max_rise_pu": 0.012489999462077295,
+   "neighbour_mean_final_dv_pu": 0.000262866996077656,
+   "n_neighbours_over_pickup": 0,
+   "max_abs_dv_any_bus_pu": 0.05010567284062728
+  },
+  "stock_load": {
+   "scenario": "stock_load",
+   "max_abs_dv_vs_baseline_pu": null,
+   "relays_disabled": false,
+   "dwell_s": 0.05,
+   "plant_control": "fixed power factor",
+   "trip_event": "plant_trip:RES03",
+   "tds_ok": true,
+   "neighbour_max_rise_pu": 0.03730108942526145,
+   "neighbour_mean_final_dv_pu": -0.032721142466086185,
+   "n_neighbours_over_pickup": 1,
+   "max_abs_dv_any_bus_pu": 0.1818897199186954
+  }
+ },
+ "core_runner_crosscheck": {
+  "rows": [
+   {
+    "family": "plant_trip",
+    "event": "plant_trip:RES01",
+    "core_status": "ok",
+    "core_error": null,
+    "local_ok": true,
+    "max_abs_diff_collector_max_v_pu": 1.0074742062826658e-07
+   },
+   {
+    "family": "fixed_pf_ramp",
+    "event": "fixed_pf_ramp:RES01",
+    "core_status": "ok",
+    "core_error": null,
+    "local_ok": true,
+    "max_abs_diff_collector_max_v_pu": 8.881784197001252e-16
+   },
+   {
+    "family": "load_disconnection",
+    "event": "load_disconnection:PQ_1",
+    "core_status": "ok",
+    "core_error": null,
+    "local_ok": true,
+    "max_abs_diff_collector_max_v_pu": 0.0009289850134877042
+   },
+   {
+    "family": "generator_trip",
+    "event": "generator_trip:2",
+    "core_status": "ok",
+    "core_error": null,
+    "local_ok": true,
+    "max_abs_diff_collector_max_v_pu": 0.0003137808627231564
+   },
+   {
+    "family": "shunt_reactor_disconnection",
+    "event": "shunt_reactor_disconnection:SHR01",
+    "core_status": "ok",
+    "core_error": null,
+    "local_ok": true,
+    "max_abs_diff_collector_max_v_pu": 1.3038035673318404e-07
+   },
+   {
+    "family": "capacitor_switching",
+    "event": "capacitor_switching:SHC01",
+    "core_status": "ok",
+    "core_error": null,
+    "local_ok": true,
+    "max_abs_diff_collector_max_v_pu": 8.413994900813293e-08
+   },
+   {
+    "family": "line_energization",
+    "event": "line_energization:LPAR01",
+    "core_status": "ok",
+    "core_error": null,
+    "local_ok": true,
+    "max_abs_diff_collector_max_v_pu": 8.693382436142372e-08
+   }
+  ]
+ },
+ "build_runtime_s": 2.055640541992034,
+ "static": {
+  "slug": "kundur",
+  "variant": "baseline",
+  "pflow_converged": true,
+  "tds_init_test_ok": true,
+  "max_abs_fg_at_init": 2.1316282072803006e-14,
+  "taps": [
+   0.9,
+   0.9,
+   0.9075500043179586,
+   0.9
+  ],
+  "taps_within_range": true,
+  "max_q_rel_error": 1.9343047978266885e-09,
+  "q_within_1pct": true,
+  "n_taps_at_limit": 3,
+  "max_z0_error_pu": 0.0,
+  "z0_shortfall_at_limit_pu": [
+   0.012974502774372842,
+   0.023682864758699518,
+   0.016208611580607934
+  ],
+  "margins_pu": [
+   0.042307836107706276,
+   0.031682864758699525,
+   0.040000000000000036,
+   0.034875278247274544
+  ],
+  "n_states": 68,
+  "n_algebraic": 257,
+  "n_zero_tf_states": 0,
+  "augmented_size": 257,
+  "n_decoupled": 37,
+  "decoupled_examples": [
+   "q PV 2",
+   "q PV 3",
+   "q PV 4",
+   "q PV RES01",
+   "q PV RES02",
+   "q PV RES03",
+   "q PV RES04",
+   "q Slack 1"
+  ],
+  "coupled_size": 220,
+  "rank_method": "dense",
+  "augmented_rank": 257,
+  "full_rank": true,
+  "coupled_sigma_min": 0.0011724992120720824,
+  "coupled_sigma_max": 315.4713584723781,
+  "coupled_cond_2": 269058.9087176151,
+  "core_regularity_ok": true,
+  "core_regularity": {
+   "size": 224,
+   "condition_estimate": 2275.278636910885,
+   "removed_decoupled": 33,
+   "message": "augmented algebraic Jacobian is regular"
+  }
+ },
+ "no_event": {
+  "tds_ok": true,
+  "reached_tf": true,
+  "tds_message": "",
+  "t_end": 3.0,
+  "n_steps": 602,
+  "pre_event_max_drift_pu": 0.0,
+  "max_abs_dv_any_bus_pu": 0.0,
+  "argmax_bus": "1",
+  "collector_max_dv_pu": [
+   0.0,
+   0.0,
+   0.0,
+   0.0
+  ],
+  "collector_min_dv_pu": [
+   0.0,
+   0.0,
+   0.0,
+   0.0
+  ],
+  "collector_final_dv_pu": [
+   0.0,
+   0.0,
+   0.0,
+   0.0
+  ],
+  "collector_max_v_pu": [
+   1.0576921638922938,
+   1.0683171352413006,
+   1.06,
+   1.0651247217527255
+  ],
+  "max_abs_omega_dev": 0.0,
+  "angle_spread_init_deg": 13.495299987651041,
+  "angle_spread_max_deg": 13.495299987651041,
+  "angle_spread_final_deg": 13.495299987651041,
+  "runtime_s": 0.3924022499995772,
+  "loss_of_synchronism": false,
+  "kind": "noevent",
+  "id": "no_event_3s"
+ },
+ "families": {
+  "plant_trip": {
+   "n": 4,
+   "n_converged": 4,
+   "n_dv_gt_1e-4": 4,
+   "max_abs_dv_any_bus_pu": 0.05010567284062728,
+   "min_abs_dv_any_bus_pu": 0.04072702859679311,
+   "max_collector_rise_pu": 0.012489999462077295,
+   "max_collector_drop_pu": -0.0023992272690442906,
+   "n_collector_over_pickup": 0,
+   "max_angle_spread_increase_deg": 4.800324078183234,
+   "max_abs_omega_dev": 0.0022106584531846885,
+   "n_loss_of_synchronism": 0,
+   "n_collectors_over_pickup_total": 0,
+   "failures": []
+  },
+  "fixed_pf_ramp": {
+   "n": 4,
+   "n_converged": 4,
+   "n_dv_gt_1e-4": 4,
+   "max_abs_dv_any_bus_pu": 0.016903935252658764,
+   "min_abs_dv_any_bus_pu": 0.013808264343397214,
+   "max_collector_rise_pu": 0.016903935252658764,
+   "max_collector_drop_pu": -0.00015165185210030963,
+   "n_collector_over_pickup": 0,
+   "max_angle_spread_increase_deg": 1.3112361712207061,
+   "max_abs_omega_dev": 0.0006439251348430153,
+   "n_loss_of_synchronism": 0,
+   "n_collectors_over_pickup_total": 0,
+   "failures": []
+  },
+  "load_disconnection": {
+   "n": 2,
+   "n_converged": 2,
+   "n_dv_gt_1e-4": 2,
+   "max_abs_dv_any_bus_pu": 0.052272359878619334,
+   "min_abs_dv_any_bus_pu": 0.05157422665452138,
+   "max_collector_rise_pu": 0.03320630405885905,
+   "max_collector_drop_pu": -0.051888509905285485,
+   "n_collector_over_pickup": 0,
+   "max_angle_spread_increase_deg": 27.119214921301417,
+   "max_abs_omega_dev": 0.032286570601327336,
+   "n_loss_of_synchronism": 0,
+   "n_collectors_over_pickup_total": 0,
+   "failures": []
+  },
+  "generator_trip": {
+   "n": 3,
+   "n_converged": 3,
+   "n_dv_gt_1e-4": 3,
+   "max_abs_dv_any_bus_pu": 0.09085683041231352,
+   "min_abs_dv_any_bus_pu": 0.05475203527654793,
+   "max_collector_rise_pu": 0.003312613375794582,
+   "max_collector_drop_pu": -0.08549039217343213,
+   "n_collector_over_pickup": 0,
+   "max_angle_spread_increase_deg": 28.954259005297946,
+   "max_abs_omega_dev": 0.011690486340668826,
+   "n_loss_of_synchronism": 0,
+   "n_collectors_over_pickup_total": 0,
+   "failures": []
+  },
+  "generation_redispatch": {
+   "n": 0
+  },
+  "shunt_reactor_disconnection": {
+   "n": 1,
+   "n_converged": 1,
+   "n_dv_gt_1e-4": 1,
+   "max_abs_dv_any_bus_pu": 0.03586458948568305,
+   "min_abs_dv_any_bus_pu": 0.03586458948568305,
+   "max_collector_rise_pu": 0.03586458948568305,
+   "max_collector_drop_pu": 0.0001425477091920868,
+   "n_collector_over_pickup": 0,
+   "max_angle_spread_increase_deg": 0.5288230662763311,
+   "max_abs_omega_dev": 0.0013942291885307156,
+   "n_loss_of_synchronism": 0,
+   "n_collectors_over_pickup_total": 0,
+   "failures": []
+  },
+  "capacitor_switching": {
+   "n": 2,
+   "n_converged": 2,
+   "n_dv_gt_1e-4": 2,
+   "max_abs_dv_any_bus_pu": 0.03521150770672121,
+   "min_abs_dv_any_bus_pu": 0.022565024344424867,
+   "max_collector_rise_pu": 0.03521150770672121,
+   "max_collector_drop_pu": -0.00043578079865813635,
+   "n_collector_over_pickup": 0,
+   "max_angle_spread_increase_deg": 1.0564333344092471,
+   "max_abs_omega_dev": 0.0009457026632964105,
+   "n_loss_of_synchronism": 0,
+   "n_collectors_over_pickup_total": 0,
+   "failures": []
+  },
+  "line_energization": {
+   "n": 2,
+   "n_converged": 2,
+   "n_dv_gt_1e-4": 2,
+   "max_abs_dv_any_bus_pu": 0.009314383908477497,
+   "min_abs_dv_any_bus_pu": 0.008920074517033028,
+   "max_collector_rise_pu": 0.008920074517033028,
+   "max_collector_drop_pu": -0.00022628335718666293,
+   "n_collector_over_pickup": 0,
+   "max_angle_spread_increase_deg": 0.0,
+   "max_abs_omega_dev": 0.0007122521864372233,
+   "n_loss_of_synchronism": 0,
+   "n_collectors_over_pickup_total": 0,
+   "failures": []
+  }
+ },
+ "controls": {
+  "statcom": {
+   "n": 1,
+   "n_converged": 1,
+   "n_bus_voltage_dropped": 1,
+   "n_bus_voltage_dropped_first_0p5s": 1,
+   "early_min_dv_pu_min": -0.016961552756239007,
+   "early_min_dv_pu_max": -0.016961552756239007,
+   "n_loss_of_synchronism": 0,
+   "final_dv_at_bus_pu_min": -0.010902163699010647,
+   "final_dv_at_bus_pu_max": -0.010902163699010647,
+   "max_abs_dv_any_bus_pu": 0.01964839952384967
+  },
+  "plant_q_command": {
+   "n": 4,
+   "n_converged": 4,
+   "n_bus_voltage_dropped": 4,
+   "n_bus_voltage_dropped_first_0p5s": 4,
+   "early_min_dv_pu_min": -0.02345039623779699,
+   "early_min_dv_pu_max": -0.020768331527299733,
+   "n_loss_of_synchronism": 0,
+   "final_dv_at_bus_pu_min": -0.021706772871072255,
+   "final_dv_at_bus_pu_max": -0.019819148526832864,
+   "max_abs_dv_any_bus_pu": 0.02346390198843551
+  },
+  "avr_vref": {
+   "n": 4,
+   "n_converged": 4,
+   "n_bus_voltage_dropped": 4,
+   "n_bus_voltage_dropped_first_0p5s": 4,
+   "early_min_dv_pu_min": -0.0034770219995643448,
+   "early_min_dv_pu_max": -0.003329385079145153,
+   "n_loss_of_synchronism": 0,
+   "final_dv_at_bus_pu_min": -0.01655765703818235,
+   "final_dv_at_bus_pu_max": -0.015422886947421888,
+   "max_abs_dv_any_bus_pu": 0.01655765703818235
+  },
+  "fast_reactor": {
+   "n": 1,
+   "n_converged": 1,
+   "n_bus_voltage_dropped": 1,
+   "n_bus_voltage_dropped_first_0p5s": 1,
+   "early_min_dv_pu_min": -0.01446814153903897,
+   "early_min_dv_pu_max": -0.01446814153903897,
+   "n_loss_of_synchronism": 0,
+   "final_dv_at_bus_pu_min": -0.009503488757603873,
+   "final_dv_at_bus_pu_max": -0.009503488757603873,
+   "max_abs_dv_any_bus_pu": 0.016991108841708513
+  },
+  "manual_reactor": {
+   "n": 1,
+   "n_converged": 1,
+   "n_bus_voltage_dropped": 0,
+   "n_bus_voltage_dropped_first_0p5s": 0,
+   "early_min_dv_pu_min": 0.0,
+   "early_min_dv_pu_max": 0.0,
+   "n_loss_of_synchronism": 0,
+   "final_dv_at_bus_pu_min": 0.0,
+   "final_dv_at_bus_pu_max": 0.0,
+   "max_abs_dv_any_bus_pu": 0.0
+  }
+ },
+ "interaction": {
+  "tripped_block": "RES03",
+  "tripped_q_mvar": -22.78007645328457,
+  "rows": [
+   {
+    "asset_id": "RES01",
+    "cluster": 0,
+    "margin_pu": 0.042307836107706276,
+    "max_dv_pu": 0.0011668805182327713,
+    "final_dv_pu": -0.0021400050595639097,
+    "max_v_pu": 1.0588590444105266
+   },
+   {
+    "asset_id": "RES02",
+    "cluster": 0,
+    "margin_pu": 0.031682864758699525,
+    "max_dv_pu": 0.0009572219428741757,
+    "final_dv_pu": -0.0023992272690442906,
+    "max_v_pu": 1.0692743571841747
+   },
+   {
+    "asset_id": "RES03",
+    "cluster": 1,
+    "margin_pu": 0.040000000000000036,
+    "max_dv_pu": 0.05010567284062728,
+    "final_dv_pu": 0.04265556830019546,
+    "max_v_pu": 1.1101056728406273
+   },
+   {
+    "asset_id": "RES04",
+    "cluster": 1,
+    "margin_pu": 0.034875278247274544,
+    "max_dv_pu": 0.012489999462077295,
+    "final_dv_pu": 0.0053278333168411685,
+    "max_v_pu": 1.0776147212148028
+   }
+  ]
+ },
+ "events": [
+  {
+   "tds_ok": true,
+   "reached_tf": true,
+   "tds_message": "",
+   "t_end": 2.0,
+   "n_steps": 401,
+   "pre_event_max_drift_pu": 0.0,
+   "max_abs_dv_any_bus_pu": 0.04512580202891425,
+   "argmax_bus": "900001",
+   "collector_max_dv_pu": [
+    0.04512580202891425,
+    0.008836316565722369,
+    0.0034236057338690173,
+    0.0036237739377311673
+   ],
+   "collector_min_dv_pu": [
+    0.0380099473148674,
+    0.0015869804639614404,
+    -0.001980611077627037,
+    -0.0015774753089290439
+   ],
+   "collector_final_dv_pu": [
+    0.03814233195398642,
+    0.001808572563061217,
+    -0.001980611077627037,
+    -0.0015774753089290439
+   ],
+   "collector_max_v_pu": [
+    1.102817965921208,
+    1.077153451807023,
+    1.063423605733869,
+    1.0687484956904567
+   ],
+   "max_abs_omega_dev": 0.001983141080211137,
+   "angle_spread_init_deg": 13.495299987651041,
+   "angle_spread_max_deg": 13.495299987651041,
+   "angle_spread_final_deg": 13.279222492995649,
+   "runtime_s": 0.45569741699728183,
+   "loss_of_synchronism": false,
+   "kind": "event",
+   "id": "plant_trip:RES01",
+   "family": "plant_trip",
+   "variant": "baseline",
+   "self": [
+    0
+   ]
+  },
+  {
+   "tds_ok": true,
+   "reached_tf": true,
+   "tds_message": "",
+   "t_end": 2.0,
+   "n_steps": 401,
+   "pre_event_max_drift_pu": 0.0,
+   "max_abs_dv_any_bus_pu": 0.04373760793544923,
+   "argmax_bus": "900002",
+   "collector_max_dv_pu": [
+    0.008611098439883946,
+    0.04373760793544923,
+    0.0025843701258094764,
+    0.0028022224251356143
+   ],
+   "collector_min_dv_pu": [
+    0.0021622897822173304,
+    0.03755880852502402,
+    -0.0014087089070382586,
+    -0.0010752536541578372
+   ],
+   "collector_final_dv_pu": [
+    0.002702569095289098,
+    0.038164937517012776,
+    -0.0014087089070382586,
+    -0.0010752536541578372
+   ],
+   "collector_max_v_pu": [
+    1.0663032623321778,
+    1.1120547431767498,
+    1.0625843701258095,
+    1.0679269441778612
+   ],
+   "max_abs_omega_dev": 0.0012786192486663461,
+   "angle_spread_init_deg": 13.495299987651041,
+   "angle_spread_max_deg": 13.495299987651041,
+   "angle_spread_final_deg": 13.118012383155328,
+   "runtime_s": 0.4816468750068452,
+   "loss_of_synchronism": false,
+   "kind": "event",
+   "id": "plant_trip:RES02",
+   "family": "plant_trip",
+   "variant": "baseline",
+   "self": [
+    1
+   ]
+  },
+  {
+   "tds_ok": true,
+   "reached_tf": true,
+   "tds_message": "",
+   "t_end": 2.0,
+   "n_steps": 401,
+   "pre_event_max_drift_pu": 0.0,
+   "max_abs_dv_any_bus_pu": 0.05010567284062728,
+   "argmax_bus": "900003",
+   "collector_max_dv_pu": [
+    0.0011668805182327713,
+    0.0009572219428741757,
+    0.05010567284062728,
+    0.012489999462077295
+   ],
+   "collector_min_dv_pu": [
+    -0.0021400050595639097,
+    -0.0023992272690442906,
+    0.040672930579685795,
+    0.0036952341396441213
+   ],
+   "collector_final_dv_pu": [
+    -0.0021400050595639097,
+    -0.0023992272690442906,
+    0.04265556830019546,
+    0.0053278333168411685
+   ],
+   "collector_max_v_pu": [
+    1.0588590444105266,
+    1.0692743571841747,
+    1.1101056728406273,
+    1.0776147212148028
+   ],
+   "max_abs_omega_dev": 0.0022106584531846885,
+   "angle_spread_init_deg": 13.495299987651041,
+   "angle_spread_max_deg": 18.295624065834275,
+   "angle_spread_final_deg": 13.643796161283083,
+   "runtime_s": 0.4824342920037452,
+   "loss_of_synchronism": false,
+   "kind": "event",
+   "id": "plant_trip:RES03",
+   "family": "plant_trip",
+   "variant": "baseline",
+   "self": [
+    2
+   ]
+  },
+  {
+   "tds_ok": true,
+   "reached_tf": true,
+   "tds_message": "",
+   "t_end": 2.0,
+   "n_steps": 401,
+   "pre_event_max_drift_pu": 0.0,
+   "max_abs_dv_any_bus_pu": 0.04072702859679311,
+   "argmax_bus": "900004",
+   "collector_max_dv_pu": [
+    0.0004023863402089489,
+    0.0004112611566700064,
+    0.005603131442255327,
+    0.04072702859679311
+   ],
+   "collector_min_dv_pu": [
+    -0.0017091672394031754,
+    -0.0017294553405040602,
+    0.0010090483946718631,
+    0.03661120951074559
+   ],
+   "collector_final_dv_pu": [
+    -0.0017091672394031754,
+    -0.0017294553405040602,
+    0.0016012285491171507,
+    0.036965277001743235
+   ],
+   "collector_max_v_pu": [
+    1.0580945502325028,
+    1.0687283963979706,
+    1.0656031314422554,
+    1.1058517503495187
+   ],
+   "max_abs_omega_dev": 0.0015081196994650714,
+   "angle_spread_init_deg": 13.495299987651041,
+   "angle_spread_max_deg": 16.492738023141868,
+   "angle_spread_final_deg": 13.992357441627385,
+   "runtime_s": 0.4811052919976646,
+   "loss_of_synchronism": false,
+   "kind": "event",
+   "id": "plant_trip:RES04",
+   "family": "plant_trip",
+   "variant": "baseline",
+   "self": [
+    3
+   ]
+  },
+  {
+   "tds_ok": true,
+   "reached_tf": true,
+   "tds_message": "",
+   "t_end": 2.0,
+   "n_steps": 401,
+   "pre_event_max_drift_pu": 0.0,
+   "max_abs_dv_any_bus_pu": 0.015294298606245205,
+   "argmax_bus": "900001",
+   "collector_max_dv_pu": [
+    0.015294298606245205,
+    0.0029356685115928816,
+    0.0011603331111513793,
+    0.00128732348963001
+   ],
+   "collector_min_dv_pu": [
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "collector_final_dv_pu": [
+    0.013657258188929156,
+    0.0013007302677612298,
+    0.00020866384242013147,
+    0.0003280347744176737
+   ],
+   "collector_max_v_pu": [
+    1.072986462498539,
+    1.0712528037528934,
+    1.0611603331111514,
+    1.0664120452423556
+   ],
+   "max_abs_omega_dev": 0.0005665109533368184,
+   "angle_spread_init_deg": 13.495299987651041,
+   "angle_spread_max_deg": 13.495299987651041,
+   "angle_spread_final_deg": 13.263407837097922,
+   "runtime_s": 0.4579535829980159,
+   "loss_of_synchronism": false,
+   "kind": "event",
+   "id": "fixed_pf_ramp:RES01",
+   "family": "fixed_pf_ramp",
+   "variant": "baseline",
+   "self": []
+  },
+  {
+   "tds_ok": true,
+   "reached_tf": true,
+   "tds_message": "",
+   "t_end": 2.0,
+   "n_steps": 401,
+   "pre_event_max_drift_pu": 0.0,
+   "max_abs_dv_any_bus_pu": 0.014652756802510769,
+   "argmax_bus": "900002",
+   "collector_max_dv_pu": [
+    0.0027375024859084274,
+    0.014652756802510769,
+    0.0008210465034705905,
+    0.0009202784259996211
+   ],
+   "collector_min_dv_pu": [
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "collector_final_dv_pu": [
+    0.0013940054586547568,
+    0.013347266638850552,
+    0.00015527032908746463,
+    0.00023580598753980553
+   ],
+   "collector_max_v_pu": [
+    1.0604296663782022,
+    1.0829698920438113,
+    1.0608210465034706,
+    1.0660450001787252
+   ],
+   "max_abs_omega_dev": 0.00036985451486082344,
+   "angle_spread_init_deg": 13.495299987651041,
+   "angle_spread_max_deg": 13.495299987651041,
+   "angle_spread_final_deg": 13.260232247212947,
+   "runtime_s": 0.46537541699944995,
+   "loss_of_synchronism": false,
+   "kind": "event",
+   "id": "fixed_pf_ramp:RES02",
+   "family": "fixed_pf_ramp",
+   "variant": "baseline",
+   "self": []
+  },
+  {
+   "tds_ok": true,
+   "reached_tf": true,
+   "tds_message": "",
+   "t_end": 2.0,
+   "n_steps": 401,
+   "pre_event_max_drift_pu": 0.0,
+   "max_abs_dv_any_bus_pu": 0.016903935252658764,
+   "argmax_bus": "900003",
+   "collector_max_dv_pu": [
+    0.00040272881760494705,
+    0.00041478343344936164,
+    0.016903935252658764,
+    0.004106113899249975
+   ],
+   "collector_min_dv_pu": [
+    -0.00012039584289191829,
+    -9.385369880932082e-05,
+    0.0,
+    0.0
+   ],
+   "collector_final_dv_pu": [
+    -0.00012039584289191829,
+    -9.385369880932082e-05,
+    0.014903159365965646,
+    0.0022247734351401593
+   ],
+   "collector_max_v_pu": [
+    1.0580948927098988,
+    1.06873191867475,
+    1.0769039352526588,
+    1.0692308356519755
+   ],
+   "max_abs_omega_dev": 0.0006439251348430153,
+   "angle_spread_init_deg": 13.495299987651041,
+   "angle_spread_max_deg": 14.806536158871747,
+   "angle_spread_final_deg": 13.846068919484145,
+   "runtime_s": 0.4668412090104539,
+   "loss_of_synchronism": false,
+   "kind": "event",
+   "id": "fixed_pf_ramp:RES03",
+   "family": "fixed_pf_ramp",
+   "variant": "baseline",
+   "self": []
+  },
+  {
+   "tds_ok": true,
+   "reached_tf": true,
+   "tds_message": "",
+   "t_end": 2.0,
+   "n_steps": 401,
+   "pre_event_max_drift_pu": 0.0,
+   "max_abs_dv_any_bus_pu": 0.013808264343397214,
+   "argmax_bus": "900004",
+   "collector_max_dv_pu": [
+    0.00017736437534576766,
+    0.00023397930743662698,
+    0.0018945691913194729,
+    0.013808264343397214
+   ],
+   "collector_min_dv_pu": [
+    -0.00015165185210030963,
+    -0.00011124200135870232,
+    0.0,
+    0.0
+   ],
+   "collector_final_dv_pu": [
+    -0.00015165185210030963,
+    -0.00011124200135870232,
+    0.0008442788692624159,
+    0.01283288168636254
+   ],
+   "collector_max_v_pu": [
+    1.0578695282676396,
+    1.0685511145487372,
+    1.0618945691913195,
+    1.0789329860961228
+   ],
+   "max_abs_omega_dev": 0.000432875081698203,
+   "angle_spread_init_deg": 13.495299987651041,
+   "angle_spread_max_deg": 14.332973508947607,
+   "angle_spread_final_deg": 13.799227130205004,
+   "runtime_s": 0.5007775830017636,
+   "loss_of_synchronism": false,
+   "kind": "event",
+   "id": "fixed_pf_ramp:RES04",
+   "family": "fixed_pf_ramp",
+   "variant": "baseline",
+   "self": []
+  },
+  {
+   "tds_ok": true,
+   "reached_tf": true,
+   "tds_message": "",
+   "t_end": 2.0,
+   "n_steps": 402,
+   "pre_event_max_drift_pu": 0.0,
+   "max_abs_dv_any_bus_pu": 0.05157422665452138,
+   "argmax_bus": "900002",
+   "collector_max_dv_pu": [
+    0.03029349218746824,
+    0.02568427648027294,
+    0.023650493622453528,
+    0.03320630405885905
+   ],
+   "collector_min_dv_pu": [
+    -0.04964096775724358,
+    -0.05157422665452138,
+    -0.03838265964565046,
+    -0.03787673195108332
+   ],
+   "collector_final_dv_pu": [
+    0.03029349218746824,
+    0.02568427648027294,
+    0.023375050248661156,
+    0.03320630405885905
+   ],
+   "collector_max_v_pu": [
+    1.087985656079762,
+    1.0940014117215735,
+    1.0836504936224536,
+    1.0983310258115846
+   ],
+   "max_abs_omega_dev": 0.032286570601327336,
+   "angle_spread_init_deg": 13.495299987651041,
+   "angle_spread_max_deg": 40.61451490895246,
+   "angle_spread_final_deg": 11.373928394676216,
+   "runtime_s": 0.8687614579976071,
+   "loss_of_synchronism": false,
+   "kind": "event",
+   "id": "load_disconnection:PQ_1",
+   "family": "load_disconnection",
+   "variant": "baseline",
+   "self": []
+  },
+  {
+   "tds_ok": true,
+   "reached_tf": true,
+   "tds_message": "",
+   "t_end": 2.0,
+   "n_steps": 401,
+   "pre_event_max_drift_pu": 0.0,
+   "max_abs_dv_any_bus_pu": 0.052272359878619334,
+   "argmax_bus": "8",
+   "collector_max_dv_pu": [
+    0.019934949780561873,
+    0.01591462882402661,
+    0.016801160932760295,
+    0.01611508801473782
+   ],
+   "collector_min_dv_pu": [
+    -0.04211547379982705,
+    -0.038982579865316946,
+    -0.04748596565699126,
+    -0.051888509905285485
+   ],
+   "collector_final_dv_pu": [
+    0.01887657069407278,
+    0.01497901718892325,
+    0.016801160932760295,
+    0.01611508801473782
+   ],
+   "collector_max_v_pu": [
+    1.0776271136728557,
+    1.0842317640653272,
+    1.0768011609327603,
+    1.0812398097674634
+   ],
+   "max_abs_omega_dev": 0.0245054726321976,
+   "angle_spread_init_deg": 13.495299987651041,
+   "angle_spread_max_deg": 36.05345912454384,
+   "angle_spread_final_deg": 16.37526001076222,
+   "runtime_s": 0.9175708330003545,
+   "loss_of_synchronism": false,
+   "kind": "event",
+   "id": "load_disconnection:PQ_0",
+   "family": "load_disconnection",
+   "variant": "baseline",
+   "self": []
+  },
+  {
+   "tds_ok": true,
+   "reached_tf": true,
+   "tds_message": "",
+   "t_end": 2.0,
+   "n_steps": 401,
+   "pre_event_max_drift_pu": 0.0,
+   "max_abs_dv_any_bus_pu": 0.09085683041231352,
+   "argmax_bus": "2",
+   "collector_max_dv_pu": [
+    -0.07101592266422962,
+    -0.04663604105599983,
+    -0.014729173546232488,
+    -0.02228171173392446
+   ],
+   "collector_min_dv_pu": [
+    -0.08549039217343213,
+    -0.06162603172913794,
+    -0.01996156502089752,
+    -0.03032310279342587
+   ],
+   "collector_final_dv_pu": [
+    -0.0716059851655243,
+    -0.04663604105599983,
+    -0.018020237174122045,
+    -0.02494704152175453
+   ],
+   "collector_max_v_pu": [
+    0.9866762412280642,
+    1.0216810941853007,
+    1.0452708264537676,
+    1.042843010018801
+   ],
+   "max_abs_omega_dev": 0.008691694383180182,
+   "angle_spread_init_deg": 13.495299987651041,
+   "angle_spread_max_deg": 13.705125511618595,
+   "angle_spread_final_deg": 8.937030402180927,
+   "runtime_s": 0.6961273339984473,
+   "loss_of_synchronism": false,
+   "kind": "event",
+   "id": "generator_trip:2",
+   "family": "generator_trip",
+   "variant": "baseline",
+   "self": []
+  },
+  {
+   "tds_ok": true,
+   "reached_tf": true,
+   "tds_message": "",
+   "t_end": 2.0,
+   "n_steps": 401,
+   "pre_event_max_drift_pu": 0.0,
+   "max_abs_dv_any_bus_pu": 0.05475203527654793,
+   "argmax_bus": "7",
+   "collector_max_dv_pu": [
+    -0.010639985833638121,
+    -0.007493675852484616,
+    -0.005890694023256149,
+    0.003312613375794582
+   ],
+   "collector_min_dv_pu": [
+    -0.05161222182621095,
+    -0.03530967748175051,
+    -0.0542373455983709,
+    -0.04472903133579487
+   ],
+   "collector_final_dv_pu": [
+    -0.024770816485376157,
+    -0.018327663687845552,
+    -0.012646798335958165,
+    -0.0034233934605538696
+   ],
+   "collector_max_v_pu": [
+    1.0470521780586557,
+    1.060823459388816,
+    1.054109305976744,
+    1.0684373351285201
+   ],
+   "max_abs_omega_dev": 0.011690486340668826,
+   "angle_spread_init_deg": 13.495299987651041,
+   "angle_spread_max_deg": 42.44955899294899,
+   "angle_spread_final_deg": 25.765244602390695,
+   "runtime_s": 0.743631582998205,
+   "loss_of_synchronism": false,
+   "kind": "event",
+   "id": "generator_trip:4",
+   "family": "generator_trip",
+   "variant": "baseline",
+   "self": []
+  },
+  {
+   "tds_ok": true,
+   "reached_tf": true,
+   "tds_message": "",
+   "t_end": 2.0,
+   "n_steps": 401,
+   "pre_event_max_drift_pu": 0.0,
+   "max_abs_dv_any_bus_pu": 0.08294108210770179,
+   "argmax_bus": "900004",
+   "collector_max_dv_pu": [
+    -0.02347245903954942,
+    -0.015449411083935827,
+    -0.03630905780014548,
+    -0.059463346361869895
+   ],
+   "collector_min_dv_pu": [
+    -0.049095280585827794,
+    -0.03368530585062168,
+    -0.05962793147070622,
+    -0.08294108210770179
+   ],
+   "collector_final_dv_pu": [
+    -0.02603375824276788,
+    -0.017542341134575867,
+    -0.03630905780014548,
+    -0.059463346361869895
+   ],
+   "collector_max_v_pu": [
+    1.0342197048527444,
+    1.0528677241573647,
+    1.0236909421998546,
+    1.0056613753908556
+   ],
+   "max_abs_omega_dev": 0.007669180084162064,
+   "angle_spread_init_deg": 10.278329944636729,
+   "angle_spread_max_deg": 27.563268776575086,
+   "angle_spread_final_deg": 12.095861652234236,
+   "runtime_s": 0.7136790829972597,
+   "loss_of_synchronism": false,
+   "kind": "event",
+   "id": "generator_trip:3",
+   "family": "generator_trip",
+   "variant": "baseline",
+   "self": []
+  },
+  {
+   "tds_ok": true,
+   "reached_tf": true,
+   "tds_message": "",
+   "t_end": 2.0,
+   "n_steps": 401,
+   "pre_event_max_drift_pu": 0.0,
+   "max_abs_dv_any_bus_pu": 0.03586458948568305,
+   "argmax_bus": "900001",
+   "collector_max_dv_pu": [
+    0.03586458948568305,
+    0.02666715771845074,
+    0.008457054573377754,
+    0.01092498539224862
+   ],
+   "collector_min_dv_pu": [
+    0.021279207741562223,
+    0.012328355766563659,
+    0.0001425477091920868,
+    0.002035045062949381
+   ],
+   "collector_final_dv_pu": [
+    0.021279207741562223,
+    0.012328355766563659,
+    0.0001425477091920868,
+    0.002035045062949381
+   ],
+   "collector_max_v_pu": [
+    1.0935567533779769,
+    1.0949842929597513,
+    1.0684570545733778,
+    1.0760497071449742
+   ],
+   "max_abs_omega_dev": 0.0013942291885307156,
+   "angle_spread_init_deg": 13.495299987651041,
+   "angle_spread_max_deg": 14.024123053927372,
+   "angle_spread_final_deg": 13.999337972878457,
+   "runtime_s": 0.5042777499911608,
+   "loss_of_synchronism": false,
+   "kind": "event",
+   "id": "shunt_reactor_disconnection:SHR01",
+   "family": "shunt_reactor_disconnection",
+   "variant": "baseline",
+   "self": []
+  },
+  {
+   "tds_ok": true,
+   "reached_tf": true,
+   "tds_message": "",
+   "t_end": 2.0,
+   "n_steps": 401,
+   "pre_event_max_drift_pu": 0.0,
+   "max_abs_dv_any_bus_pu": 0.022565024344424867,
+   "argmax_bus": "900002",
+   "collector_max_dv_pu": [
+    0.014633294183185486,
+    0.022565024344424867,
+    0.003442105936138029,
+    0.004448486676512431
+   ],
+   "collector_min_dv_pu": [
+    0.007052501041548087,
+    0.014074416524073152,
+    -0.0002932506863300155,
+    0.00036548616307419124
+   ],
+   "collector_final_dv_pu": [
+    0.007052501041548087,
+    0.014074416524073152,
+    -0.0002932506863300155,
+    0.00036548616307419124
+   ],
+   "collector_max_v_pu": [
+    1.0723254580754793,
+    1.0908821595857254,
+    1.063442105936138,
+    1.069573208429238
+   ],
+   "max_abs_omega_dev": 0.0005433769216993678,
+   "angle_spread_init_deg": 13.495299987651041,
+   "angle_spread_max_deg": 14.208456052690986,
+   "angle_spread_final_deg": 14.208456052690986,
+   "runtime_s": 0.5061465839971788,
+   "loss_of_synchronism": false,
+   "kind": "event",
+   "id": "capacitor_switching:SHC01",
+   "family": "capacitor_switching",
+   "variant": "baseline",
+   "self": []
+  },
+  {
+   "tds_ok": true,
+   "reached_tf": true,
+   "tds_message": "",
+   "t_end": 2.0,
+   "n_steps": 401,
+   "pre_event_max_drift_pu": 0.0,
+   "max_abs_dv_any_bus_pu": 0.03521150770672121,
+   "argmax_bus": "900003",
+   "collector_max_dv_pu": [
+    0.005612505617695884,
+    0.004422917957081829,
+    0.03521150770672121,
+    0.02285906252461678
+   ],
+   "collector_min_dv_pu": [
+    0.0005529164666429054,
+    -0.00043578079865813635,
+    0.022300297449339146,
+    0.011505335953281737
+   ],
+   "collector_final_dv_pu": [
+    0.0005529164666429054,
+    -0.00043578079865813635,
+    0.022324494269564843,
+    0.011505335953281737
+   ],
+   "collector_max_v_pu": [
+    1.0633046695099897,
+    1.0727400531983824,
+    1.0952115077067213,
+    1.0879837842773423
+   ],
+   "max_abs_omega_dev": 0.0009457026632964105,
+   "angle_spread_init_deg": 13.495299987651041,
+   "angle_spread_max_deg": 14.551733322060288,
+   "angle_spread_final_deg": 12.764441565849365,
+   "runtime_s": 0.46785191699746065,
+   "loss_of_synchronism": false,
+   "kind": "event",
+   "id": "capacitor_switching:SHC02",
+   "family": "capacitor_switching",
+   "variant": "baseline",
+   "self": []
+  },
+  {
+   "tds_ok": true,
+   "reached_tf": true,
+   "tds_message": "",
+   "t_end": 2.0,
+   "n_steps": 401,
+   "pre_event_max_drift_pu": 0.0,
+   "max_abs_dv_any_bus_pu": 0.009314383908477497,
+   "argmax_bus": "7",
+   "collector_max_dv_pu": [
+    0.008572688717188859,
+    0.006529264004164759,
+    0.005961924705286004,
+    0.0078037177235725785
+   ],
+   "collector_min_dv_pu": [
+    0.003466516921669216,
+    0.0018590129575715153,
+    0.001389461908762879,
+    0.0033399659419148797
+   ],
+   "collector_final_dv_pu": [
+    0.003855945407362338,
+    0.0022067438152493235,
+    0.001389461908762879,
+    0.0033399659419148797
+   ],
+   "collector_max_v_pu": [
+    1.0662648526094827,
+    1.0748463992454653,
+    1.065961924705286,
+    1.0729284394762981
+   ],
+   "max_abs_omega_dev": 0.0007122521864372233,
+   "angle_spread_init_deg": 13.495299987651041,
+   "angle_spread_max_deg": 13.495299987651041,
+   "angle_spread_final_deg": 12.745395384727248,
+   "runtime_s": 0.4341729169973405,
+   "loss_of_synchronism": false,
+   "kind": "event",
+   "id": "line_energization:LPAR01",
+   "family": "line_energization",
+   "variant": "baseline",
+   "self": []
+  },
+  {
+   "tds_ok": true,
+   "reached_tf": true,
+   "tds_message": "",
+   "t_end": 2.0,
+   "n_steps": 401,
+   "pre_event_max_drift_pu": 0.0,
+   "max_abs_dv_any_bus_pu": 0.008920074517033028,
+   "argmax_bus": "900001",
+   "collector_max_dv_pu": [
+    0.008920074517033028,
+    0.005789367429807291,
+    0.002075209477905071,
+    0.002563376413261098
+   ],
+   "collector_min_dv_pu": [
+    0.003528275077689935,
+    0.0007350135983370532,
+    -0.00022628335718666293,
+    0.000338915143368812
+   ],
+   "collector_final_dv_pu": [
+    0.004942785656261828,
+    0.0023424366338751224,
+    -0.00022628335718666293,
+    0.000338915143368812
+   ],
+   "collector_max_v_pu": [
+    1.0666122384093268,
+    1.0741065026711079,
+    1.0620752094779051,
+    1.0676880981659866
+   ],
+   "max_abs_omega_dev": 0.0003862806212907577,
+   "angle_spread_init_deg": 13.495299987651041,
+   "angle_spread_max_deg": 13.495299987651041,
+   "angle_spread_final_deg": 12.06902415268524,
+   "runtime_s": 0.4762931250006659,
+   "loss_of_synchronism": false,
+   "kind": "event",
+   "id": "line_energization:LPAR02",
+   "family": "line_energization",
+   "variant": "baseline",
+   "self": []
+  }
+ ],
+ "control_runs": [
+  {
+   "tds_ok": true,
+   "reached_tf": true,
+   "tds_message": "",
+   "t_end": 2.0,
+   "n_steps": 401,
+   "pre_event_max_drift_pu": 0.0,
+   "max_abs_dv_any_bus_pu": 0.01964839952384967,
+   "argmax_bus": "900002",
+   "collector_max_dv_pu": [
+    0.0,
+    0.0,
+    0.00010403484055654388,
+    0.0
+   ],
+   "collector_min_dv_pu": [
+    -0.012711518778840247,
+    -0.01964839952384967,
+    -0.002986750307169883,
+    -0.003867707017321864
+   ],
+   "collector_final_dv_pu": [
+    -0.0063100648165830275,
+    -0.012630965649350623,
+    0.00010403484055654388,
+    -0.00048470321045224196
+   ],
+   "collector_max_v_pu": [
+    1.0576921638922938,
+    1.0683171352413006,
+    1.0601040348405566,
+    1.0651247217527255
+   ],
+   "max_abs_omega_dev": 0.0005249244062170977,
+   "angle_spread_init_deg": 13.495299987651041,
+   "angle_spread_max_deg": 13.900897157959289,
+   "angle_spread_final_deg": 12.68038595585815,
+   "runtime_s": 0.4874210419948213,
+   "loss_of_synchronism": false,
+   "watch": {
+    "5": {
+     "final_dv_pu": -0.010902163699010647,
+     "min_dv_pu": -0.016961552756239007,
+     "max_dv_pu": 0.0,
+     "min_dv_first_0p5s_pu": -0.016961552756239007
+    }
+   },
+   "kind": "control",
+   "id": "statcom:STATCOM01",
+   "family": "statcom",
+   "bus": 5
+  },
+  {
+   "tds_ok": true,
+   "reached_tf": true,
+   "tds_message": "",
+   "t_end": 2.0,
+   "n_steps": 401,
+   "pre_event_max_drift_pu": 0.0,
+   "max_abs_dv_any_bus_pu": 0.022119932721793134,
+   "argmax_bus": "900001",
+   "collector_max_dv_pu": [
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "collector_min_dv_pu": [
+    -0.022119932721793134,
+    -0.0029610012808969355,
+    -0.0009412803086474852,
+    -0.001219445561157606
+   ],
+   "collector_final_dv_pu": [
+    -0.020651904866267445,
+    -0.0015543904038983758,
+    -0.00016184191190360409,
+    -0.00037908463964497763
+   ],
+   "collector_max_v_pu": [
+    1.0576921638922938,
+    1.0683171352413006,
+    1.06,
+    1.0651247217527255
+   ],
+   "max_abs_omega_dev": 0.0001606378064376024,
+   "angle_spread_init_deg": 13.495299987651041,
+   "angle_spread_max_deg": 13.636342671294944,
+   "angle_spread_final_deg": 13.411914806884335,
+   "runtime_s": 0.4589926659973571,
+   "loss_of_synchronism": false,
+   "watch": {
+    "900001": {
+     "final_dv_pu": -0.020651904866267445,
+     "min_dv_pu": -0.022119932721793134,
+     "max_dv_pu": 0.0,
+     "min_dv_first_0p5s_pu": -0.022086141825063077
+    }
+   },
+   "kind": "control",
+   "id": "plant_q_command:RES01",
+   "family": "plant_q_command",
+   "bus": 900001
+  },
+  {
+   "tds_ok": true,
+   "reached_tf": true,
+   "tds_message": "",
+   "t_end": 2.0,
+   "n_steps": 401,
+   "pre_event_max_drift_pu": 0.0,
+   "max_abs_dv_any_bus_pu": 0.02078086071137153,
+   "argmax_bus": "900002",
+   "collector_max_dv_pu": [
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "collector_min_dv_pu": [
+    -0.0018685581123121242,
+    -0.02078086071137153,
+    -0.000438843658889132,
+    -0.0005681527878265147
+   ],
+   "collector_final_dv_pu": [
+    -0.0010215633377095301,
+    -0.019819148526832864,
+    -3.975985437509877e-05,
+    -0.00012878717869568845
+   ],
+   "collector_max_v_pu": [
+    1.0576921638922938,
+    1.0683171352413006,
+    1.06,
+    1.0651247217527255
+   ],
+   "max_abs_omega_dev": 6.867616206274185e-05,
+   "angle_spread_init_deg": 13.495299987651041,
+   "angle_spread_max_deg": 13.552482416886983,
+   "angle_spread_final_deg": 13.412225476068764,
+   "runtime_s": 0.4359667919925414,
+   "loss_of_synchronism": false,
+   "watch": {
+    "900002": {
+     "final_dv_pu": -0.019819148526832864,
+     "min_dv_pu": -0.02078086071137153,
+     "max_dv_pu": 0.0,
+     "min_dv_first_0p5s_pu": -0.020768331527299733
+    }
+   },
+   "kind": "control",
+   "id": "plant_q_command:RES02",
+   "family": "plant_q_command",
+   "bus": 900002
+  },
+  {
+   "tds_ok": true,
+   "reached_tf": true,
+   "tds_message": "",
+   "t_end": 2.0,
+   "n_steps": 401,
+   "pre_event_max_drift_pu": 0.0,
+   "max_abs_dv_any_bus_pu": 0.02346390198843551,
+   "argmax_bus": "900003",
+   "collector_max_dv_pu": [
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "collector_min_dv_pu": [
+    -0.0008628912096122487,
+    -0.0006786631709503332,
+    -0.02346390198843551,
+    -0.0034738562058700406
+   ],
+   "collector_final_dv_pu": [
+    -0.0002042278807727893,
+    -5.668558873495044e-05,
+    -0.021706772871072255,
+    -0.0019512834857198236
+   ],
+   "collector_max_v_pu": [
+    1.0576921638922938,
+    1.0683171352413006,
+    1.06,
+    1.0651247217527255
+   ],
+   "max_abs_omega_dev": 0.000146049133809667,
+   "angle_spread_init_deg": 13.495299987651041,
+   "angle_spread_max_deg": 13.577505425356756,
+   "angle_spread_final_deg": 13.577505425356756,
+   "runtime_s": 0.4829231659969082,
+   "loss_of_synchronism": false,
+   "watch": {
+    "900003": {
+     "final_dv_pu": -0.021706772871072255,
+     "min_dv_pu": -0.02346390198843551,
+     "max_dv_pu": 0.0,
+     "min_dv_first_0p5s_pu": -0.02345039623779699
+    }
+   },
+   "kind": "control",
+   "id": "plant_q_command:RES03",
+   "family": "plant_q_command",
+   "bus": 900003
+  },
+  {
+   "tds_ok": true,
+   "reached_tf": true,
+   "tds_message": "",
+   "t_end": 2.0,
+   "n_steps": 401,
+   "pre_event_max_drift_pu": 0.0,
+   "max_abs_dv_any_bus_pu": 0.02119081755988761,
+   "argmax_bus": "900004",
+   "collector_max_dv_pu": [
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "collector_min_dv_pu": [
+    -0.0008084766171132518,
+    -0.0006368177831428401,
+    -0.0023916233766310135,
+    -0.02119081755988761
+   ],
+   "collector_final_dv_pu": [
+    -0.0002570530832575191,
+    -0.00010330284575488236,
+    -0.0012946584700339603,
+    -0.02007114821722178
+   ],
+   "collector_max_v_pu": [
+    1.0576921638922938,
+    1.0683171352413006,
+    1.06,
+    1.0651247217527255
+   ],
+   "max_abs_omega_dev": 0.00014176967579415667,
+   "angle_spread_init_deg": 13.495299987651041,
+   "angle_spread_max_deg": 13.554266303974721,
+   "angle_spread_final_deg": 13.554266303974721,
+   "runtime_s": 0.47037112498946954,
+   "loss_of_synchronism": false,
+   "watch": {
+    "900004": {
+     "final_dv_pu": -0.02007114821722178,
+     "min_dv_pu": -0.02119081755988761,
+     "max_dv_pu": 0.0,
+     "min_dv_first_0p5s_pu": -0.021178316659948182
+    }
+   },
+   "kind": "control",
+   "id": "plant_q_command:RES04",
+   "family": "plant_q_command",
+   "bus": 900004
+  },
+  {
+   "tds_ok": true,
+   "reached_tf": true,
+   "tds_message": "",
+   "t_end": 2.0,
+   "n_steps": 401,
+   "pre_event_max_drift_pu": 0.0,
+   "max_abs_dv_any_bus_pu": 0.01655765703818235,
+   "argmax_bus": "1",
+   "collector_max_dv_pu": [
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "collector_min_dv_pu": [
+    -0.010142420575980582,
+    -0.01635302382344661,
+    -0.0021630757675084045,
+    -0.002887328457652938
+   ],
+   "collector_final_dv_pu": [
+    -0.010142420575980582,
+    -0.01635302382344661,
+    -0.0021630757675084045,
+    -0.002887328457652938
+   ],
+   "collector_max_v_pu": [
+    1.0576921638922938,
+    1.0683171352413006,
+    1.06,
+    1.0651247217527255
+   ],
+   "max_abs_omega_dev": 0.00028435116850156206,
+   "angle_spread_init_deg": 13.495299987651041,
+   "angle_spread_max_deg": 15.635679097714217,
+   "angle_spread_final_deg": 15.635679097714217,
+   "runtime_s": 0.5361393749917625,
+   "loss_of_synchronism": false,
+   "watch": {
+    "1": {
+     "final_dv_pu": -0.01655765703818235,
+     "min_dv_pu": -0.01655765703818235,
+     "max_dv_pu": 0.0,
+     "min_dv_first_0p5s_pu": -0.003410334920044611
+    }
+   },
+   "kind": "control",
+   "id": "avr_vref:1",
+   "family": "avr_vref",
+   "bus": 1
+  },
+  {
+   "tds_ok": true,
+   "reached_tf": true,
+   "tds_message": "",
+   "t_end": 2.0,
+   "n_steps": 401,
+   "pre_event_max_drift_pu": 0.0,
+   "max_abs_dv_any_bus_pu": 0.016099977333363658,
+   "argmax_bus": "2",
+   "collector_max_dv_pu": [
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "collector_min_dv_pu": [
+    -0.015260182581560144,
+    -0.010800761255166602,
+    -0.003182408785754154,
+    -0.004284875737720295
+   ],
+   "collector_final_dv_pu": [
+    -0.015260182581560144,
+    -0.010800761255166602,
+    -0.003182408785754154,
+    -0.004284875737720295
+   ],
+   "collector_max_v_pu": [
+    1.0576921638922938,
+    1.0683171352413006,
+    1.06,
+    1.0651247217527255
+   ],
+   "max_abs_omega_dev": 0.0004156034068218961,
+   "angle_spread_init_deg": 13.495299987651041,
+   "angle_spread_max_deg": 13.847021896509569,
+   "angle_spread_final_deg": 13.841910061793882,
+   "runtime_s": 0.5134727499971632,
+   "loss_of_synchronism": false,
+   "watch": {
+    "2": {
+     "final_dv_pu": -0.016099977333363658,
+     "min_dv_pu": -0.016099977333363658,
+     "max_dv_pu": 0.0,
+     "min_dv_first_0p5s_pu": -0.003354482737399578
+    }
+   },
+   "kind": "control",
+   "id": "avr_vref:2",
+   "family": "avr_vref",
+   "bus": 2
+  },
+  {
+   "tds_ok": true,
+   "reached_tf": true,
+   "tds_message": "",
+   "t_end": 2.0,
+   "n_steps": 401,
+   "pre_event_max_drift_pu": 0.0,
+   "max_abs_dv_any_bus_pu": 0.01654853608395679,
+   "argmax_bus": "4",
+   "collector_max_dv_pu": [
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "collector_min_dv_pu": [
+    -0.0023137070305905283,
+    -0.001768909205519531,
+    -0.016243514513984314,
+    -0.010090000687167588
+   ],
+   "collector_final_dv_pu": [
+    -0.0023137070305905283,
+    -0.001768909205519531,
+    -0.016243514513984314,
+    -0.010090000687167588
+   ],
+   "collector_max_v_pu": [
+    1.0576921638922938,
+    1.0683171352413006,
+    1.06,
+    1.0651247217527255
+   ],
+   "max_abs_omega_dev": 0.00032541650064144,
+   "angle_spread_init_deg": 13.495299987651041,
+   "angle_spread_max_deg": 13.530175229910457,
+   "angle_spread_final_deg": 13.149552794690543,
+   "runtime_s": 0.515305624998291,
+   "loss_of_synchronism": false,
+   "watch": {
+    "4": {
+     "final_dv_pu": -0.01654853608395679,
+     "min_dv_pu": -0.01654853608395679,
+     "max_dv_pu": 0.0,
+     "min_dv_first_0p5s_pu": -0.0034770219995643448
+    }
+   },
+   "kind": "control",
+   "id": "avr_vref:4",
+   "family": "avr_vref",
+   "bus": 4
+  },
+  {
+   "tds_ok": true,
+   "reached_tf": true,
+   "tds_message": "",
+   "t_end": 2.0,
+   "n_steps": 401,
+   "pre_event_max_drift_pu": 0.0,
+   "max_abs_dv_any_bus_pu": 0.015422886947421888,
+   "argmax_bus": "3",
+   "collector_max_dv_pu": [
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "collector_min_dv_pu": [
+    -0.0033051508928767515,
+    -0.0025049658586357992,
+    -0.010194413976089,
+    -0.014472222978602067
+   ],
+   "collector_final_dv_pu": [
+    -0.0033051508928767515,
+    -0.0025049658586357992,
+    -0.010194413976089,
+    -0.014472222978602067
+   ],
+   "collector_max_v_pu": [
+    1.0576921638922938,
+    1.0683171352413006,
+    1.06,
+    1.0651247217527255
+   ],
+   "max_abs_omega_dev": 0.0004457876556636098,
+   "angle_spread_init_deg": 13.495299987651041,
+   "angle_spread_max_deg": 13.495299987651041,
+   "angle_spread_final_deg": 11.137667245268645,
+   "runtime_s": 0.5049681660020724,
+   "loss_of_synchronism": false,
+   "watch": {
+    "3": {
+     "final_dv_pu": -0.015422886947421888,
+     "min_dv_pu": -0.015422886947421888,
+     "max_dv_pu": 0.0,
+     "min_dv_first_0p5s_pu": -0.003329385079145153
+    }
+   },
+   "kind": "control",
+   "id": "avr_vref:3",
+   "family": "avr_vref",
+   "bus": 3
+  },
+  {
+   "tds_ok": true,
+   "reached_tf": true,
+   "tds_message": "",
+   "t_end": 2.0,
+   "n_steps": 401,
+   "pre_event_max_drift_pu": 0.0,
+   "max_abs_dv_any_bus_pu": 0.016991108841708513,
+   "argmax_bus": "900001",
+   "collector_max_dv_pu": [
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "collector_min_dv_pu": [
+    -0.016991108841708513,
+    -0.012564590588129976,
+    -0.004003885742382529,
+    -0.005186696121116441
+   ],
+   "collector_final_dv_pu": [
+    -0.011022725045238158,
+    -0.006774213327685352,
+    -0.0007905213030865443,
+    -0.0017249001762291716
+   ],
+   "collector_max_v_pu": [
+    1.0576921638922938,
+    1.0683171352413006,
+    1.06,
+    1.0651247217527255
+   ],
+   "max_abs_omega_dev": 0.0007326702744410163,
+   "angle_spread_init_deg": 13.495299987651041,
+   "angle_spread_max_deg": 14.097881685272133,
+   "angle_spread_final_deg": 13.008330023661106,
+   "runtime_s": 0.5155099580006208,
+   "loss_of_synchronism": false,
+   "watch": {
+    "6": {
+     "final_dv_pu": -0.009503488757603873,
+     "min_dv_pu": -0.014653259876959757,
+     "max_dv_pu": 0.0,
+     "min_dv_first_0p5s_pu": -0.01446814153903897
+    }
+   },
+   "kind": "control",
+   "id": "fast_reactor:FASTR01",
+   "family": "fast_reactor",
+   "bus": 6
+  },
+  {
+   "tds_ok": true,
+   "reached_tf": true,
+   "tds_message": "",
+   "t_end": 2.0,
+   "n_steps": 401,
+   "pre_event_max_drift_pu": 0.0,
+   "max_abs_dv_any_bus_pu": 0.0,
+   "argmax_bus": "1",
+   "collector_max_dv_pu": [
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "collector_min_dv_pu": [
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "collector_final_dv_pu": [
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "collector_max_v_pu": [
+    1.0576921638922938,
+    1.0683171352413006,
+    1.06,
+    1.0651247217527255
+   ],
+   "max_abs_omega_dev": 0.0,
+   "angle_spread_init_deg": 13.495299987651041,
+   "angle_spread_max_deg": 13.495299987651041,
+   "angle_spread_final_deg": 13.495299987651041,
+   "runtime_s": 0.42849512500106357,
+   "loss_of_synchronism": false,
+   "watch": {
+    "6": {
+     "final_dv_pu": 0.0,
+     "min_dv_pu": 0.0,
+     "max_dv_pu": 0.0,
+     "min_dv_first_0p5s_pu": 0.0
+    }
+   },
+   "kind": "control",
+   "id": "manual_reactor:MANR01",
+   "family": "manual_reactor",
+   "bus": 6
+  }
+ ],
+ "design_summary": {
+  "device_counts": {
+   "augmented": {
+    "buses": 14,
+    "lines": 13,
+    "lines_in_service": 11,
+    "transformers": 8,
+    "transformers_in_service": 8,
+    "machines": 4,
+    "machines_in_service": 4,
+    "machines_models": {
+     "GENROU": 4
+    },
+    "exciters": 4,
+    "exciters_in_service": 4,
+    "exciters_models": {
+     "EXDC2": 4
+    },
+    "governors": 4,
+    "governors_in_service": 4,
+    "governors_models": {
+     "TGOV1": 4
+    },
+    "pss": 0,
+    "pss_in_service": 0,
+    "pss_models": {},
+    "loads": 2,
+    "loads_in_service": 2,
+    "loads_models": {
+     "PQ": 2
+    },
+    "shunts": 6,
+    "shunts_in_service": 4,
+    "shunts_models": {
+     "Shunt": 6
+    },
+    "static_gens": 8,
+    "static_gens_in_service": 0,
+    "static_gens_models": {
+     "PV": 7,
+     "Slack": 1
+    },
+    "der": 4,
+    "der_in_service": 4,
+    "der_models": {
+     "PVD1": 4
+    },
+    "freq_measurement": 4,
+    "freq_measurement_in_service": 4,
+    "freq_measurement_models": {
+     "BusFreq": 4
+    },
+    "pvd1": 4
+   },
+   "base_case": {
+    "buses": 10,
+    "lines": 11,
+    "lines_in_service": 11,
+    "transformers": 4,
+    "transformers_in_service": 4,
+    "machines": 4,
+    "machines_in_service": 4,
+    "machines_models": {
+     "GENROU": 4
+    },
+    "exciters": 4,
+    "exciters_in_service": 4,
+    "exciters_models": {
+     "EXDC2": 4
+    },
+    "governors": 4,
+    "governors_in_service": 4,
+    "governors_models": {
+     "TGOV1": 4
+    },
+    "pss": 0,
+    "pss_in_service": 0,
+    "pss_models": {},
+    "loads": 2,
+    "loads_in_service": 2,
+    "loads_models": {
+     "PQ": 2
+    },
+    "shunts": 0,
+    "shunts_in_service": 0,
+    "shunts_models": {},
+    "static_gens": 4,
+    "static_gens_in_service": 4,
+    "static_gens_models": {
+     "PV": 3,
+     "Slack": 1
+    },
+    "der": 0,
+    "der_in_service": 0,
+    "der_models": {},
+    "freq_measurement": 0,
+    "freq_measurement_in_service": 0,
+    "freq_measurement_models": {},
+    "pvd1": 0
+   }
+  },
+  "slack": {
+   "idx": 1,
+   "bus": 1,
+   "p_mw": 374.72900165407157,
+   "q_mvar": 42.54059865232354,
+   "pmax_mw": 900.0,
+   "pmin_mw": 0.0,
+   "qmax_mvar": 600.0,
+   "qmin_mvar": 0.0,
+   "base_case_p_mw": 726.8029213150204,
+   "base_case_q_mvar": 109.46336786513433,
+   "p_within_limits": true,
+   "q_within_limits": true
+  },
+  "dispatch": {
+   "rule": "proportional_must_run",
+   "load_stock_mw": 2734.0,
+   "load_scale": 0.6,
+   "load_p_mw": 1640.4,
+   "load_p_gross_mw": 1640.4,
+   "res_p_total_mw": 213.252,
+   "res_share_of_load": 0.13,
+   "dispatch_scale": 0.515585436807134,
+   "target_sync_mw": 1457.4584189538873,
+   "stock_losses_mw": 92.80292131502037,
+   "sync_pv_p0_total_stock_mw": 2100.0,
+   "sync_pv_p0_total_new_mw": 1082.7294172949812,
+   "slack_scheduled_mw": 374.7290016589058,
+   "slack_pf_mw": 374.72900165407157,
+   "loss_corrected": true,
+   "feasible": true,
+   "n_units": 4,
+   "n_at_must_run": 0,
+   "n_must_run_governor_basis": 4,
+   "n_fixed_nonpositive": 0,
+   "must_run_total_mw": 1440.4,
+   "units": [
+    {
+     "idx": 2,
+     "kind": "PV",
+     "bus": 2,
+     "p0_pu": 700.0,
+     "pmax_pu": 900.0,
+     "rating_pu": 900.0,
+     "capability_pu": 900.0,
+     "governor_min_pu": 360.0,
+     "must_run_pu": 360.1,
+     "must_run_basis": "governor VMIN",
+     "p_new_pu": 360.90980576499373,
+     "at_must_run": false
+    },
+    {
+     "idx": 3,
+     "kind": "PV",
+     "bus": 3,
+     "p0_pu": 700.0,
+     "pmax_pu": 900.0,
+     "rating_pu": 900.0,
+     "capability_pu": 900.0,
+     "governor_min_pu": 360.0,
+     "must_run_pu": 360.1,
+     "must_run_basis": "governor VMIN",
+     "p_new_pu": 360.90980576499373,
+     "at_must_run": false
+    },
+    {
+     "idx": 4,
+     "kind": "PV",
+     "bus": 4,
+     "p0_pu": 700.0,
+     "pmax_pu": 2000.0,
+     "rating_pu": 900.0,
+     "capability_pu": 900.0,
+     "governor_min_pu": 360.0,
+     "must_run_pu": 360.1,
+     "must_run_basis": "governor VMIN",
+     "p_new_pu": 360.90980576499373,
+     "at_must_run": false
+    },
+    {
+     "idx": 1,
+     "kind": "Slack",
+     "bus": 1,
+     "p0_pu": 726.8029213150204,
+     "pmax_pu": 900.0,
+     "rating_pu": 900.0,
+     "capability_pu": 900.0,
+     "governor_min_pu": 360.0,
+     "must_run_pu": 360.1,
+     "must_run_basis": "governor VMIN",
+     "p_new_pu": 374.7290016589058,
+     "at_must_run": false
+    }
+   ],
+   "units_unit_note": "all *_pu fields of 'units' are converted to MW (system base 100 MVA)",
+   "rule_text": "one common factor k for every synchronous unit (PV and slack): P_i = max(k P_i,stock, must-run_i); must-run_i = max(20 % of capability_i, governor VMIN_i), capped at the stock output; capability = min(PV.pmax if < 99 pu, MVA rating if >= stock output); units with stock output <= 0 unchanged; k solved so that the slack produces exactly its own share (loss-corrected on the final power flow); voltage set points unchanged, all units online"
+  },
+  "operating_point": {
+   "v_min_pu": 0.9818373638851173,
+   "v_max_pu": 1.0683171352413006,
+   "v_max_bus": 900002,
+   "v_max_non_collector_pu": 1.0000000000000004,
+   "pflow_converged": true,
+   "tds_initialized": true,
+   "tds_init_test_ok": true,
+   "max_abs_fg_at_init": 2.1316282072803006e-14,
+   "controllers_at_limit": []
+  },
+  "voltage_profile": {
+   "bus_v_min_pu": 0.9818373638851173,
+   "bus_v_max_pu": 1.0000000000000004,
+   "bus_v_min_bus": "7",
+   "bus_v_max_bus": "2",
+   "hv_v_min_pu": 0.9818373638851173,
+   "hv_v_max_pu": 0.9932270832323228,
+   "hv_v_mean_pu": 0.9875469692537141,
+   "n_bus_over_1p10": 0,
+   "n_hv_bus_over_1p10": 0,
+   "kv_levels_over_1p10": [],
+   "block_hv_v_pu": {
+    "RES01": 0.9829720418571082,
+    "RES02": 0.9921481510737558,
+    "RES03": 0.9932270832323228,
+    "RES04": 0.9893900234206409
+   },
+   "collector_v_pu": {
+    "RES01": 1.0576921638922938,
+    "RES02": 1.0683171352413006,
+    "RES03": 1.06,
+    "RES04": 1.0651247217527255
+   },
+   "n_machines": 4,
+   "n_machines_absorbing_q": 0,
+   "machine_q_total_mvar": 262.0038203123657,
+   "machine_q_min_mvar": 34.11364184737211,
+   "machine_q_max_mvar": 119.3454807379467,
+   "machine_q_over_sn_min": 0.03790404649708012,
+   "machine_q_over_sn_max": 0.13260608970882967,
+   "n_machines_rated": 4,
+   "machines_q_below_minus_half_sn": [],
+   "internal_angle_max_deg": 33.231822593051994,
+   "internal_angle_p50_deg": 31.929784538041993,
+   "internal_angle_p90_deg": 33.05353405436805,
+   "internal_angle_p99_deg": 33.2139937391836,
+   "n_internal_angle_over_60_deg": 0,
+   "n_internal_angle_over_90_deg": 0,
+   "internal_angle_top": [
+    {
+     "model": "GENROU",
+     "idx": 1,
+     "angle_deg": 33.231822593051994
+    },
+    {
+     "model": "GENROU",
+     "idx": 4,
+     "angle_deg": 32.6375274641055
+    },
+    {
+     "model": "GENROU",
+     "idx": 3,
+     "angle_deg": 31.222041611978486
+    },
+    {
+     "model": "GENROU",
+     "idx": 2,
+     "angle_deg": 29.087602318045743
+    }
+   ],
+   "min_machine_vf_pu": 1.2888470099609977,
+   "machines_absorbing": []
+  },
+  "scenario": {
+   "name": "light_load",
+   "load_scale": 0.6,
+   "res_share": 0.13,
+   "tap_range": [
+    0.9,
+    1.1
+   ],
+   "dispatch_rule": "proportional_must_run",
+   "must_run_fraction": 0.2,
+   "description": "light load (every PQ load at 60 % of the stock P and Q), RES = 50 % of the scaled load, all synchronous units online with one common dispatch factor and a must-run minimum, stock voltage set points, taps within +/-10 %",
+   "res_share_requested": 0.5,
+   "res_share_capped": true,
+   "res_share_reason": "capped by must-run: 1440 MW committed minimum vs 858 MW required at the requested share 0.50 (scaled load 1640 MW - RES 820 MW + losses 38 MW); 4 of 4 units on the governor-minimum basis",
+   "res_share_search": [
+    {
+     "res_share": 0.5,
+     "feasible": false,
+     "must_run_mw": 1440.4,
+     "required_mw": 857.8821299190638,
+     "losses_mw": 37.68212991906381,
+     "balance_share": 0.144892788294967
+    },
+    {
+     "res_share": 0.14,
+     "feasible": false,
+     "must_run_mw": 1440.4,
+     "required_mw": 1440.710299697668,
+     "losses_mw": 29.966299697667864,
+     "balance_share": 0.14018916099589607
+    },
+    {
+     "res_share": 0.13,
+     "feasible": true
+    }
+   ],
+   "res_share_cap_detail": {
+    "scenario": "light_load",
+    "must_run_total_mw": 1440.4,
+    "sync_needed_mw": 857.8821299190638,
+    "scaled_load_mw": 1640.4,
+    "res_share": 0.5,
+    "res_mw": 820.2,
+    "losses_mw": 37.68212991906381,
+    "n_units_online": 4,
+    "n_units_governor_minimum": 4,
+    "slack_at_all_must_run_mw": -222.41787008093624,
+    "slack_must_run_mw": 360.1,
+    "max_feasible_res_share": 0.144892788294967,
+    "largest_must_run_units": [
+     {
+      "unit": 2,
+      "must_run_mw": 360.1,
+      "basis": "governor VMIN",
+      "stock_mw": 700.0
+     },
+     {
+      "unit": 3,
+      "must_run_mw": 360.1,
+      "basis": "governor VMIN",
+      "stock_mw": 700.0
+     },
+     {
+      "unit": 4,
+      "must_run_mw": 360.1,
+      "basis": "governor VMIN",
+      "stock_mw": 700.0
+     },
+     {
+      "unit": 1,
+      "must_run_mw": 360.1,
+      "basis": "governor VMIN",
+      "stock_mw": 726.8029213150204
+     }
+    ]
+   }
+  },
+  "uel": {
+   "applied": false
+  },
+  "blocks": [
+   {
+    "asset_id": "RES01",
+    "cluster": 0,
+    "rank_in_cluster": 0,
+    "seed_bus": 6,
+    "hv_bus": 6,
+    "hv_vn_kv": 230.0,
+    "hv_area": 1,
+    "collector_bus": 900001,
+    "gsu_idx": "GSU_RES01",
+    "pv_idx": "PV_RES01",
+    "pvd1_idx": "RES01",
+    "p_mw": 58.6443,
+    "sn_mva": 67.440945,
+    "q_target_mvar": -19.275449269340807,
+    "gsu_x_device_pu": 0.12,
+    "gsu_r_device_pu": 0.003,
+    "gsu_x_pu_sysbase": 0.17793344977594844,
+    "gsu_r_pu_sysbase": 0.004448336244398711,
+    "d_to_seed_pu": 0.0,
+    "d_to_slack_pu": 0.037002499750025016,
+    "tap_initial_guess": 0.8807758285722074,
+    "s_sc_mva": 4905.200817754295,
+    "scr": 83.64326657073738,
+    "tap": 0.9,
+    "tap_within_range": true,
+    "z0_design_pu": 1.0706666666666667,
+    "z0_op_pu": 1.0576921638922938,
+    "tap_at_limit": true,
+    "margin_pu": 0.042307836107706276,
+    "v_hv_op_pu": 0.9829720418571082,
+    "p_op_mw": 58.6443,
+    "q_op_mvar": -19.2754492692622,
+    "q_rel_error": 4.078210585919719e-12,
+    "pf_op": 0.9500000000003778,
+    "drop_op_pu": -0.03449899372671528,
+    "drop_bound_op_pu": 0.10388101591908759,
+    "drop_bound_ilim_pu": 0.15604874238519192
+   },
+   {
+    "asset_id": "RES02",
+    "cluster": 0,
+    "rank_in_cluster": 1,
+    "seed_bus": 6,
+    "hv_bus": 5,
+    "hv_vn_kv": 230.0,
+    "hv_area": 1,
+    "collector_bus": 900002,
+    "gsu_idx": "GSU_RES02",
+    "pv_idx": "PV_RES02",
+    "pvd1_idx": "RES02",
+    "p_mw": 37.3191,
+    "sn_mva": 42.916965,
+    "q_target_mvar": -12.266194989580512,
+    "gsu_x_device_pu": 0.12,
+    "gsu_r_device_pu": 0.003,
+    "gsu_x_pu_sysbase": 0.2796097067907761,
+    "gsu_r_pu_sysbase": 0.006990242669769403,
+    "d_to_seed_pu": 0.025002499750025005,
+    "d_to_slack_pu": 0.012000000000000004,
+    "tap_initial_guess": 0.8772150129462997,
+    "s_sc_mva": 4340.419238047398,
+    "scr": 116.30557108953319,
+    "tap": 0.9,
+    "tap_within_range": true,
+    "z0_design_pu": 1.092,
+    "z0_op_pu": 1.0683171352413006,
+    "tap_at_limit": true,
+    "margin_pu": 0.031682864758699525,
+    "v_hv_op_pu": 0.9921481510737558,
+    "p_op_mw": 37.3191,
+    "q_op_mvar": -12.266194989563784,
+    "q_rel_error": 1.363771360046807e-12,
+    "pf_op": 0.9500000000001263,
+    "drop_op_pu": -0.03406969928509462,
+    "drop_bound_op_pu": 0.10284786501154587,
+    "drop_bound_ilim_pu": 0.15604874238519198
+   },
+   {
+    "asset_id": "RES03",
+    "cluster": 1,
+    "rank_in_cluster": 0,
+    "seed_bus": 10,
+    "hv_bus": 10,
+    "hv_vn_kv": 230.0,
+    "hv_area": 2,
+    "collector_bus": 900003,
+    "gsu_idx": "GSU_RES03",
+    "pv_idx": "PV_RES03",
+    "pvd1_idx": "RES03",
+    "p_mw": 69.3069,
+    "sn_mva": 79.702935,
+    "q_target_mvar": -22.780076409220957,
+    "gsu_x_device_pu": 0.12,
+    "gsu_r_device_pu": 0.003,
+    "gsu_x_pu_sysbase": 0.150559072887341,
+    "gsu_r_pu_sysbase": 0.003763976822183525,
+    "d_to_seed_pu": 0.0,
+    "d_to_slack_pu": 0.1553466648160237,
+    "tap_initial_guess": 0.9026294867523478,
+    "s_sc_mva": 4340.419238047398,
+    "scr": 62.62607674051787,
+    "tap": 0.9075500043179586,
+    "tap_within_range": true,
+    "z0_design_pu": 1.06,
+    "z0_op_pu": 1.06,
+    "tap_at_limit": false,
+    "margin_pu": 0.040000000000000036,
+    "v_hv_op_pu": 0.9932270832323228,
+    "p_op_mw": 69.3069,
+    "q_op_mvar": -22.78007645328457,
+    "q_rel_error": 1.9343047978266885e-09,
+    "pf_op": 0.949999999820835,
+    "drop_op_pu": -0.034404802497634446,
+    "drop_bound_op_pu": 0.10365484578825937,
+    "drop_bound_ilim_pu": 0.15604874238519192
+   },
+   {
+    "asset_id": "RES04",
+    "cluster": 1,
+    "rank_in_cluster": 1,
+    "seed_bus": 10,
+    "hv_bus": 9,
+    "hv_vn_kv": 230.0,
+    "hv_area": 2,
+    "collector_bus": 900004,
+    "gsu_idx": "GSU_RES04",
+    "pv_idx": "PV_RES04",
+    "pvd1_idx": "RES04",
+    "p_mw": 47.9817,
+    "sn_mva": 55.178954999999995,
+    "q_target_mvar": -15.77082212946066,
+    "gsu_x_device_pu": 0.12,
+    "gsu_r_device_pu": 0.003,
+    "gsu_x_pu_sysbase": 0.21747421639282588,
+    "gsu_r_pu_sysbase": 0.005436855409820647,
+    "d_to_seed_pu": 0.025002499750024998,
+    "d_to_slack_pu": 0.13034416506599866,
+    "tap_initial_guess": 0.8720781439471167,
+    "s_sc_mva": 4905.200817754295,
+    "scr": 102.23065914201236,
+    "tap": 0.9,
+    "tap_within_range": true,
+    "z0_design_pu": 1.0813333333333335,
+    "z0_op_pu": 1.0651247217527255,
+    "tap_at_limit": true,
+    "margin_pu": 0.034875278247274544,
+    "v_hv_op_pu": 0.9893900234206409,
+    "p_op_mw": 47.9817,
+    "q_op_mvar": -15.77082212875144,
+    "q_rel_error": 4.497031219941157e-11,
+    "pf_op": 0.9500000000041653,
+    "drop_op_pu": -0.03419752649243102,
+    "drop_bound_op_pu": 0.10315612272480838,
+    "drop_bound_ilim_pu": 0.15604874238519195
+   }
+  ],
+  "placement": {
+   "rule": "candidates: in-service buses with Vn >= 200 kV, no static or synchronous generator, in the slack's island, short-circuit ratio S_sc/P_max >= 3 (S_sc: reactance network, machines through x''d; P_max = largest block). Strong set S: S_sc >= median over candidates. Hubs: strongest bus of S, then farthest-point (max-min effective reactance) sampling within S. Members: clusters take turns adding the nearest unassigned bus to their hub, first from S then from all candidates, skipping buses within 0.005 pu effective reactance of a placed plant (one plant per substation). Ties by bus order.",
+   "strong_quantile": 0.5,
+   "plant_spacing_pu": 0.005,
+   "repairs": [],
+   "n_candidates": 6,
+   "scr_min": 3.0,
+   "p_max_block_mw": 69.3069,
+   "cluster_seeds": [
+    {
+     "cluster": 0,
+     "seed_bus": "6"
+    },
+    {
+     "cluster": 1,
+     "seed_bus": "10"
+    }
+   ]
+  },
+  "n_excluded_candidates": 0,
+  "redispatch": {
+   "channel": "governor pref0",
+   "partition": "case areas",
+   "net_export_mw": {
+    "1": 136.20220741906525,
+    "2": -105.89178847001239
+   },
+   "n_pairs": 0,
+   "pairing_rule": "down units in exporting, up units in importing (pseudo-)areas, ranked by P; a pair is used only if the down unit stays above max(must-run, governor VMIN) and the up unit below min(governor VMAX, capability) after the 20 % exchange",
+   "n_down_candidates": 2,
+   "n_down_with_headroom": 0
+  },
+  "control_notes": {},
+  "event_family_counts": {
+   "plant_trip": 4,
+   "fixed_pf_ramp": 4,
+   "load_disconnection": 2,
+   "generator_trip": 3,
+   "generation_redispatch": 0,
+   "shunt_reactor_disconnection": 1,
+   "capacitor_switching": 2,
+   "line_energization": 2
+  },
+  "control_class_counts": {
+   "statcom": 1,
+   "plant_q_command": 4,
+   "avr_vref": 4,
+   "fast_reactor": 1,
+   "manual_reactor": 1
+  },
+  "generator_trip_machines": [
+   2,
+   4,
+   3
+  ]
+ },
+ "validation_runtime_s": 21.218426042003557
+}

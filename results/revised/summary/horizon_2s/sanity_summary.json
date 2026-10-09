@@ -1,0 +1,46 @@
+{
+ "kundur": {
+  "a_rerun": null,
+  "b_no_noop": true,
+  "c_self_terms": true,
+  "d_rigorous_K": true,
+  "e_mitigation_spot_checks": null,
+  "f_predicted_times_in_window": true,
+  "a_rerun_identical": true,
+  "a_rerun_finer_step_same_sets": true,
+  "anomalies": []
+ },
+ "ieee39": {
+  "a_rerun": null,
+  "b_no_noop": true,
+  "c_self_terms": true,
+  "d_rigorous_K": true,
+  "e_mitigation_spot_checks": null,
+  "f_predicted_times_in_window": true,
+  "a_rerun_identical": true,
+  "a_rerun_finer_step_same_sets": true,
+  "anomalies": []
+ },
+ "npcc": {
+  "a_rerun": null,
+  "b_no_noop": true,
+  "c_self_terms": true,
+  "d_rigorous_K": true,
+  "e_mitigation_spot_checks": null,
+  "f_predicted_times_in_window": true,
+  "a_rerun_identical": true,
+  "a_rerun_finer_step_same_sets": true,
+  "anomalies": []
+ },
+ "gbnetwork": {
+  "a_rerun": null,
+  "b_no_noop": true,
+  "c_self_terms": true,
+  "d_rigorous_K": true,
+  "e_mitigation_spot_checks": null,
+  "f_predicted_times_in_window": true,
+  "a_rerun_identical": true,
+  "a_rerun_finer_step_same_sets": true,
+  "anomalies": []
+ }
+}

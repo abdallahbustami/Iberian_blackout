@@ -1,0 +1,426 @@
+[
+ {
+  "seed": "plant_trip:Granada355",
+  "wall_s": 21.83144949999405,
+  "build_s": 2.6225750000448897,
+  "sim_s": 19.18851854192326,
+  "status": "ok",
+  "same_trips_as_validation": true
+ },
+ {
+  "seed": "plant_trip:Badajoz582",
+  "wall_s": 19.084092542005237,
+  "build_s": 1.4081862079910934,
+  "sim_s": 17.675780042016413,
+  "status": "ok",
+  "same_trips_as_validation": true
+ },
+ {
+  "seed": "plant_trip:Badajoz145",
+  "wall_s": 20.205557624984067,
+  "build_s": 1.3663556660176255,
+  "sim_s": 18.83909100096207,
+  "status": "ok",
+  "same_trips_as_validation": true
+ },
+ {
+  "seed": "plant_trip:Segovia23",
+  "wall_s": 16.760657750011887,
+  "build_s": 1.3713595409644768,
+  "sim_s": 15.38916916801827,
+  "status": "ok",
+  "same_trips_as_validation": true
+ },
+ {
+  "seed": "plant_trip:Seville550",
+  "wall_s": 20.74264208402019,
+  "build_s": 1.4063069580006413,
+  "sim_s": 19.336185791995376,
+  "status": "ok",
+  "same_trips_as_validation": true
+ },
+ {
+  "seed": "plant_trip:Segovia94",
+  "wall_s": 17.35641145799309,
+  "build_s": 1.3785742910113186,
+  "sim_s": 15.97773566795513,
+  "status": "ok",
+  "same_trips_as_validation": true
+ },
+ {
+  "seed": "plant_trip:Badajoz118",
+  "wall_s": 17.078493457986042,
+  "build_s": 1.385852082981728,
+  "sim_s": 15.692542125063483,
+  "status": "ok",
+  "same_trips_as_validation": true
+ },
+ {
+  "seed": "plant_trip:Huelva34",
+  "wall_s": 16.770512208982836,
+  "build_s": 1.3833773329970427,
+  "sim_s": 15.387027876044158,
+  "status": "ok",
+  "same_trips_as_validation": true
+ },
+ {
+  "seed": "plant_trip:Caceres38",
+  "wall_s": 16.641882958007045,
+  "build_s": 1.377826042007655,
+  "sim_s": 15.263958748953883,
+  "status": "ok",
+  "same_trips_as_validation": true
+ },
+ {
+  "seed": "plant_trip:Badajoz72",
+  "wall_s": 17.44995579199167,
+  "build_s": 1.4580089999944903,
+  "sim_s": 15.99184170801891,
+  "status": "ok",
+  "same_trips_as_validation": true
+ },
+ {
+  "seed": "plant_trip:Badajoz16",
+  "wall_s": 15.705098625039682,
+  "build_s": 1.353511624969542,
+  "sim_s": 14.351478625030722,
+  "status": "ok",
+  "same_trips_as_validation": true
+ },
+ {
+  "seed": "plant_trip:Caceres41",
+  "wall_s": 16.13877499999944,
+  "build_s": 1.3606435840483755,
+  "sim_s": 14.778023707913235,
+  "status": "ok",
+  "same_trips_as_validation": true
+ },
+ {
+  "seed": "plant_trip:Cadiz26",
+  "wall_s": 15.657059375022072,
+  "build_s": 1.359583833022043,
+  "sim_s": 14.297366291983053,
+  "status": "ok",
+  "same_trips_as_validation": true
+ },
+ {
+  "seed": "plant_trip:Cadiz128",
+  "wall_s": 19.722366208967287,
+  "build_s": 1.3498695000307634,
+  "sim_s": 18.372388958989177,
+  "status": "ok",
+  "same_trips_as_validation": true
+ },
+ {
+  "seed": "plant_trip:Malaga154",
+  "wall_s": 20.659348874993157,
+  "build_s": 1.350867000001017,
+  "sim_s": 19.308354792010505,
+  "status": "ok",
+  "same_trips_as_validation": true
+ },
+ {
+  "seed": "plant_trip:Cuenca530",
+  "wall_s": 21.248496415966656,
+  "build_s": 1.3682427080348134,
+  "sim_s": 19.880124999966938,
+  "status": "ok",
+  "same_trips_as_validation": true
+ },
+ {
+  "seed": "fixed_pf_ramp:Granada355",
+  "wall_s": 17.2128737080493,
+  "build_s": 1.3838407910079695,
+  "sim_s": 15.828925292997155,
+  "status": "ok",
+  "same_trips_as_validation": true
+ },
+ {
+  "seed": "fixed_pf_ramp:Badajoz582",
+  "wall_s": 18.845551541016903,
+  "build_s": 1.3950125420233235,
+  "sim_s": 17.450367915967945,
+  "status": "ok",
+  "same_trips_as_validation": true
+ },
+ {
+  "seed": "fixed_pf_ramp:Badajoz145",
+  "wall_s": 15.932168417028151,
+  "build_s": 1.3804554169764742,
+  "sim_s": 14.551590624032542,
+  "status": "ok",
+  "same_trips_as_validation": true
+ },
+ {
+  "seed": "fixed_pf_ramp:Segovia23",
+  "wall_s": 13.010717333003413,
+  "build_s": 1.4126533339731395,
+  "sim_s": 11.597965874010697,
+  "status": "ok",
+  "same_trips_as_validation": true
+ },
+ {
+  "seed": "fixed_pf_ramp:Seville550",
+  "wall_s": 19.150128874985967,
+  "build_s": 1.389682583976537,
+  "sim_s": 17.760341707034968,
+  "status": "ok",
+  "same_trips_as_validation": true
+ },
+ {
+  "seed": "fixed_pf_ramp:Segovia94",
+  "wall_s": 15.865689542028122,
+  "build_s": 1.4168109580059536,
+  "sim_s": 14.448775541968644,
+  "status": "ok",
+  "same_trips_as_validation": true
+ },
+ {
+  "seed": "fixed_pf_ramp:Badajoz118",
+  "wall_s": 16.75234016700415,
+  "build_s": 1.4401998749817722,
+  "sim_s": 15.312041375029366,
+  "status": "ok",
+  "same_trips_as_validation": true
+ },
+ {
+  "seed": "fixed_pf_ramp:Huelva34",
+  "wall_s": 16.056719582993537,
+  "build_s": 1.4159771669656038,
+  "sim_s": 14.640632374037523,
+  "status": "ok",
+  "same_trips_as_validation": true
+ },
+ {
+  "seed": "fixed_pf_ramp:Caceres38",
+  "wall_s": 15.214632542047184,
+  "build_s": 1.4030449999845587,
+  "sim_s": 13.811463583027944,
+  "status": "ok",
+  "same_trips_as_validation": true
+ },
+ {
+  "seed": "fixed_pf_ramp:Badajoz72",
+  "wall_s": 16.76947541703703,
+  "build_s": 1.3927675840095617,
+  "sim_s": 15.376600998977665,
+  "status": "ok",
+  "same_trips_as_validation": true
+ },
+ {
+  "seed": "fixed_pf_ramp:Badajoz16",
+  "wall_s": 12.87993599998299,
+  "build_s": 1.3735694580245763,
+  "sim_s": 11.506175833987072,
+  "status": "ok",
+  "same_trips_as_validation": true
+ },
+ {
+  "seed": "fixed_pf_ramp:Caceres41",
+  "wall_s": 15.198602667020168,
+  "build_s": 1.432752332999371,
+  "sim_s": 13.765695000009146,
+  "status": "ok",
+  "same_trips_as_validation": true
+ },
+ {
+  "seed": "fixed_pf_ramp:Cadiz26",
+  "wall_s": 12.07983395800693,
+  "build_s": 1.3740660829935223,
+  "sim_s": 10.705637375009246,
+  "status": "ok",
+  "same_trips_as_validation": true
+ },
+ {
+  "seed": "fixed_pf_ramp:Cadiz128",
+  "wall_s": 16.02310358401155,
+  "build_s": 1.3644971249741502,
+  "sim_s": 14.658476375043392,
+  "status": "ok",
+  "same_trips_as_validation": true
+ },
+ {
+  "seed": "fixed_pf_ramp:Malaga154",
+  "wall_s": 16.422910124994814,
+  "build_s": 1.4217417080071755,
+  "sim_s": 15.001068707962986,
+  "status": "ok",
+  "same_trips_as_validation": true
+ },
+ {
+  "seed": "fixed_pf_ramp:Cuenca530",
+  "wall_s": 17.323861500015482,
+  "build_s": 1.3841367500135675,
+  "sim_s": 15.939610583998729,
+  "status": "ok",
+  "same_trips_as_validation": true
+ },
+ {
+  "seed": "load_disconnection:PQ_1113",
+  "wall_s": 20.528452875034418,
+  "build_s": 1.4047353339847177,
+  "sim_s": 19.12361549900379,
+  "status": "ok",
+  "same_trips_as_validation": true
+ },
+ {
+  "seed": "load_disconnection:PQ_1016",
+  "wall_s": 20.634112457977608,
+  "build_s": 1.3845046249916777,
+  "sim_s": 19.249493125011213,
+  "status": "ok",
+  "same_trips_as_validation": true
+ },
+ {
+  "seed": "load_disconnection:PQ_1013",
+  "wall_s": 20.738103458017576,
+  "build_s": 1.3607407080125995,
+  "sim_s": 19.377260749985,
+  "status": "ok",
+  "same_trips_as_validation": true
+ },
+ {
+  "seed": "load_disconnection:PQ_1054",
+  "wall_s": 20.60767208301695,
+  "build_s": 1.4266650829813443,
+  "sim_s": 19.18090395804029,
+  "status": "ok",
+  "same_trips_as_validation": true
+ },
+ {
+  "seed": "load_disconnection:PQ_998",
+  "wall_s": 20.632764416979626,
+  "build_s": 1.4036928339628503,
+  "sim_s": 19.22894395806361,
+  "status": "ok",
+  "same_trips_as_validation": true
+ },
+ {
+  "seed": "load_disconnection:PQ_1094",
+  "wall_s": 20.758896666986402,
+  "build_s": 1.4134371249820106,
+  "sim_s": 19.345343167020474,
+  "status": "ok",
+  "same_trips_as_validation": true
+ },
+ {
+  "seed": "load_disconnection:PQ_1090",
+  "wall_s": 20.599660665960982,
+  "build_s": 1.3999082500231452,
+  "sim_s": 19.19962787500117,
+  "status": "ok",
+  "same_trips_as_validation": true
+ },
+ {
+  "seed": "load_disconnection:PQ_1224",
+  "wall_s": 21.035391000041272,
+  "build_s": 1.420482667046599,
+  "sim_s": 19.614783666911535,
+  "status": "ok",
+  "same_trips_as_validation": true
+ },
+ {
+  "seed": "generator_trip:GENROU_279",
+  "wall_s": 24.987800124974456,
+  "build_s": 1.3897422080044635,
+  "sim_s": 23.597934457997326,
+  "status": "ok",
+  "same_trips_as_validation": true
+ },
+ {
+  "seed": "generator_trip:GENROU_321",
+  "wall_s": 18.51861916697817,
+  "build_s": 1.423626542033162,
+  "sim_s": 17.094869832973927,
+  "status": "ok",
+  "same_trips_as_validation": true
+ },
+ {
+  "seed": "generator_trip:GENROU_322",
+  "wall_s": 17.924734083004296,
+  "build_s": 1.391345708980225,
+  "sim_s": 16.533260957046878,
+  "status": "ok",
+  "same_trips_as_validation": true
+ },
+ {
+  "seed": "generator_trip:GENROU_352",
+  "wall_s": 19.82324570795754,
+  "build_s": 1.4225266249850392,
+  "sim_s": 18.40061254199827,
+  "status": "ok",
+  "same_trips_as_validation": true
+ },
+ {
+  "seed": "generator_trip:GENROU_349",
+  "wall_s": 18.953377500001807,
+  "build_s": 1.3759487500065006,
+  "sim_s": 17.57731237495318,
+  "status": "ok",
+  "same_trips_as_validation": true
+ },
+ {
+  "seed": "generator_trip:GENROU_351",
+  "wall_s": 19.310383625037502,
+  "build_s": 1.4078341249842197,
+  "sim_s": 17.902431083028205,
+  "status": "ok",
+  "same_trips_as_validation": true
+ },
+ {
+  "seed": "generation_redispatch:TGOV1_271->TGOV1_168",
+  "wall_s": 15.68417295801919,
+  "build_s": 1.4277031660312787,
+  "sim_s": 14.256359125953168,
+  "status": "ok",
+  "same_trips_as_validation": true
+ },
+ {
+  "seed": "generation_redispatch:TGOV1_272->TGOV1_109",
+  "wall_s": 14.747267541009933,
+  "build_s": 1.4149284579907544,
+  "sim_s": 13.332233041990548,
+  "status": "ok",
+  "same_trips_as_validation": true
+ },
+ {
+  "seed": "generation_redispatch:TGOV1_300->TGOV1_110",
+  "wall_s": 15.155100208998192,
+  "build_s": 1.487916083948221,
+  "sim_s": 13.667064124078024,
+  "status": "ok",
+  "same_trips_as_validation": true
+ },
+ {
+  "seed": "line_energization:PAR_Line_1766",
+  "wall_s": 18.975885041989386,
+  "build_s": 1.3833610419533215,
+  "sim_s": 17.592393583036028,
+  "status": "ok",
+  "same_trips_as_validation": true
+ },
+ {
+  "seed": "line_energization:PAR_Line_1723",
+  "wall_s": 17.163844999973662,
+  "build_s": 1.3975652499939315,
+  "sim_s": 15.766157209000085,
+  "status": "ok",
+  "same_trips_as_validation": true
+ },
+ {
+  "seed": "capacitor_switching:CAPCAND_1_7415",
+  "wall_s": 16.44754116702825,
+  "build_s": 1.3800883750081994,
+  "sim_s": 15.067315791966394,
+  "status": "ok",
+  "same_trips_as_validation": true
+ },
+ {
+  "seed": "capacitor_switching:CAPCAND_2_7029",
+  "wall_s": 17.25490954198176,
+  "build_s": 1.3934064999921247,
+  "sim_s": 15.861391333979554,
+  "status": "ok",
+  "same_trips_as_validation": true
+ }
+]

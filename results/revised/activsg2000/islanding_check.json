@@ -1,0 +1,78 @@
+{
+  "area_net_export_mw_base": 4253.06292246227,
+  "A_base_export": {
+    "t_open_s": 1.0,
+    "tf_s": 10.0,
+    "tds_ok": true,
+    "final_time_s": 1.5132163491633226,
+    "islands_after_opening": 2,
+    "island_sizes": [
+      1569,
+      447
+    ],
+    "cut_set_size": 21,
+    "affected_island_f_pu_range": [
+      1.0077712392810791,
+      1.0080026503326094
+    ],
+    "rest_f_pu_range": [
+      0.9953834529163545,
+      0.9954835610533702
+    ],
+    "frequencies_diverge": true,
+    "area_export_at_t0_mw": 4253.06292246227,
+    "cut_set_sum_abs_p_at_t0_mw": 5115.427613334368,
+    "min_bus_voltage_after_opening_pu": 0.2484179397626054,
+    "balance_redispatch_mw": 0.0,
+    "rejected_step_calls": 0,
+    "stalled": "step size < 1e-4 s for 300 attempts at t=1.5132 s",
+    "andes_handles_island": false
+  },
+  "B_balanced": {
+    "t_open_s": 1.0,
+    "tf_s": 10.0,
+    "tds_ok": true,
+    "final_time_s": 1.5362540882724578,
+    "islands_after_opening": 2,
+    "island_sizes": [
+      1569,
+      447
+    ],
+    "cut_set_size": 21,
+    "affected_island_f_pu_range": [
+      1.0003534029588799,
+      1.000458838935241
+    ],
+    "rest_f_pu_range": [
+      0.9990915434678662,
+      0.9991082335988288
+    ],
+    "frequencies_diverge": true,
+    "area_export_at_t0_mw": 172.2864588531673,
+    "cut_set_sum_abs_p_at_t0_mw": 5306.06433061279,
+    "min_bus_voltage_after_opening_pu": 0.42388784723114326,
+    "balance_redispatch_mw": 4253.06292246227,
+    "rejected_step_calls": 0,
+    "stalled": "step size < 1e-4 s for 300 attempts at t=1.5363 s",
+    "andes_handles_island": false
+  },
+  "C_single_machine": {
+    "found": true,
+    "branch_opened": "Line_2360",
+    "island_buses": [
+      1050
+    ],
+    "machines": [
+      "GENROU_28"
+    ],
+    "tds_ok": true,
+    "final_time_s": 4.0,
+    "islands_after": 2,
+    "island_machine_speed_pu_end": [
+      1.3737933675104428
+    ],
+    "note": "machine rejects its load with protection disabled; the overspeed is physical (no overspeed relay modeled)"
+  },
+  "andes_can_integrate_an_island": true,
+  "affected_area_separation_integrable": false
+}
